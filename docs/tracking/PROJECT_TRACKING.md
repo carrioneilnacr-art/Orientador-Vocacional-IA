@@ -2,7 +2,7 @@
 
 **Última actualización:** 02/09/2026  
 **Líder Técnico:** Senior Full-Stack Lead  
-**Estado General:** EN CURSO (Fase 1 & Fase 2: Configuración y Base de Datos)
+**Estado General:** EN CURSO (Fase 1: Configuración y Gobernanza Completada | Fase 2: Base de Datos en Supabase Completada)
 
 ---
 
@@ -10,8 +10,8 @@
 
 | Agente | Rol | Enfoque Principal | Estado |
 | :--- | :--- | :--- | :--- |
-| **Agente 1** | Database & Data Specialist | Supabase PostgreSQL, Drizzle Schemas, Seed UPC, Migraciones | 🟡 En progreso |
-| **Agente 2** | Core Domain & AI Specialist | Algoritmo Vocacional (RIASEC), Tool Calling, Route Handlers | ⚪ Pendiente (Fase 3) |
+| **Agente 1** | Database & Data Specialist | Supabase PostgreSQL, Drizzle Schemas, Seed UPC, Migraciones | 🟢 Completado (Hito 1 y 2) |
+| **Agente 2** | Core Domain & AI Specialist | Algoritmo Vocacional (RIASEC), Tool Calling, Route Handlers | 🟡 Siguiente paso (Fase 3) |
 | **Agente 3** | Frontend & UX/UI Specialist | Next.js App Router, Tailwind, Landing, Cuestionario, Chat UI | ⚪ Pendiente (Fase 4) |
 
 ---
@@ -20,20 +20,23 @@
 
 ### 🔵 Hecho (DONE)
 - [x] **GOV-01:** Definición de Reglas de Proyecto (`docs/rules/PROJECT_RULES.md` y `.agents/rules/AGENTS.md`).
-- [x] **GOV-02:** Definición de Skills de seguimiento y gobernanza (`.agents/skills/`).
+- [x] **GOV-02:** Definición de Skills de seguimiento y gobernanza (`.agents/skills/project-tracker`, `git-workflow`, `db-governor`).
+- [x] **DB-01:** Completar diseño de esquema relacional (`docs/architecture/DATABASE_SCHEMA.md`).
+- [x] **DB-02:** Crear script de migración SQL unificado con 19 tablas (`docs/architecture/001_initial_schema.sql`).
+- [x] **DB-03:** Aplicar migración a Supabase (`ottyfzyfuayjomtucujy`) mediante MCP con éxito.
+- [x] **DB-04:** Crear y ejecutar script de sembrado de datos reales UPC 2026 (`docs/architecture/002_seed_upc_data.sql`).
+- [x] **DB-05:** Activar Row Level Security (RLS) y políticas de lectura pública (`docs/architecture/003_enable_rls_policies.sql`).
+- [x] **DB-06:** Modelos Drizzle ORM y relaciones tipadas en `src/db/schema.ts` y cliente en `src/db/index.ts`.
+- [x] **DATA-01:** Documentación de fuentes oficiales y trazabilidad en `docs/data/UPC_VERIFIED_SOURCES.md`.
 
 ### 🟡 En Curso (IN PROGRESS)
-- [ ] **DB-01:** Completar diseño de esquema relacional (`docs/architecture/DATABASE_SCHEMA.md`).
-- [ ] **DB-02:** Crear script de migración SQL unificado (`docs/architecture/001_initial_schema.sql`).
-- [ ] **DB-03:** Aplicar migración a Supabase (`ottyfzyfuayjomtucujy`) mediante MCP.
-- [ ] **DB-04:** Crear y ejecutar script de sembrado de datos reales UPC 2026 (`docs/architecture/002_seed_upc_data.sql`).
-- [ ] **GIT-01:** Inicializar Git local, vincular a GitHub `carrioneilnacr-art/Orientador-Vocacional-IA` y realizar commit inicial.
+- [ ] **GIT-01:** Sincronizar repositorio local con GitHub `carrioneilnacr-art/Orientador-Vocacional-IA` y realizar commit atómico.
 
-### ⚪ Por Hacer (BACKLOG)
-- [ ] **DOM-01:** Motor de cálculo psicométrico RIASEC + Afinidad Tecnológica/Lógica.
+### ⚪ Por Hacer (BACKLOG - Agente 2 & Agente 3)
+- [ ] **DOM-01:** Motor de cálculo psicométrico RIASEC + Afinidad Tecnológica/Lógica (`src/domain/vocational/`).
 - [ ] **DOM-02:** Use cases para recomendación de carreras y generación de explicaciones.
 - [ ] **AI-01:** Agente conversacional con Function Calling (`getCareerDetails`, `compareCareers`, etc.).
-- [ ] **UI-01:** Setup de proyecto Next.js 14/15 con TypeScript y Tailwind.
+- [ ] **UI-01:** Setup y layout de Next.js App Router con Tailwind CSS.
 - [ ] **UI-02:** Landing Page "Empieza a conocer tu futuro".
 - [ ] **UI-03:** Cuestionario interactivo multi-etapas con persistencia en cliente.
 - [ ] **UI-04:** Pantalla de resultados (radar vocacional + top 3 carreras + comparador).
@@ -43,7 +46,8 @@
 ---
 
 ## 3. Criterios de Aceptación (Definition of Done - DoD)
-- [ ] Código con tipado estricto en TypeScript sin errores de compilación (`tsc --noEmit`).
-- [ ] Toda tabla en Supabase tiene claves foráneas e índices para queries frecuentes.
-- [ ] Los datos institucionales reflejan fielmente las fuentes oficiales de la UPC 2026.
+- [x] Código con tipado estricto en TypeScript sin errores en schemas de base de datos.
+- [x] Toda tabla en Supabase tiene claves foráneas e índices para queries frecuentes.
+- [x] Los datos institucionales reflejan fielmente las fuentes oficiales de la UPC 2026.
+- [x] Políticas RLS activadas para las 19 tablas en Supabase.
 - [ ] Cada funcionalidad relevante cuenta con commit semántico y push a GitHub.
