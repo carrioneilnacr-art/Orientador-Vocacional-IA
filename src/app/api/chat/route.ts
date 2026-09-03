@@ -1,62 +1,95 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { AnswerVocationalChatUseCase, IChatDataRepository } from '../../../application/use-cases/answerVocationalChatUseCase';
+import { google } from '@ai-sdk/google';
+import { streamText } from 'ai';
+import { db } from '@/db';
+import { careers, campuses, academicOffers, tuitionFees } from '@/db/schema';
+import { eq, ilike } from 'drizzle-orm';
 
-// MOCK Data Repo (hasta que la BD esté conectada por el Agente 1)
-const mockDataRepo: IChatDataRepository = {
-  async getCareerDetails(slug: string) {
-    if (slug === 'ingenieria-de-software') {
-      return { 
-        name: 'Ingeniería de Software', 
-        faculty: 'Ingeniería', 
-        description: 'Construye el futuro digital con arquitectura de software.',
-        courses: ['Programación', 'Bases de Datos', 'Arquitectura de Software'] 
-      };
-    }
-    return { name: slug, description: 'Información general de la carrera.' };
-  },
-  async compareCareers(slugs: string[]) {
-    return { 
-      comparison: `Comparación entre ${slugs.join(' y ')}.`,
-      differences: 'Una se enfoca en hardware, otra en software puramente.' 
-    };
-  },
-  async getTuition(slug: string, campus: string) {
-    return { 
-      career: slug, 
-      campus: campus, 
-      scales: [
-        { scale: 'T', price: 1600 },
-        { scale: 'U', price: 1900 },
-        { scale: 'V', price: 2300 }
-      ],
-      scholarships: ['Beca Honor', 'Beca Deportiva'] 
-    };
-  },
-  async getCampusInfo(campus: string, schoolId?: string) {
-    return { 
-      campus: campus, 
-      location: 'Av. La Marina 2810, San Miguel',
-      features: ['Laboratorios Apple', 'Biblioteca moderna']
-    };
-  }
-};
+export const maxDuration = 30;
 
-const chatUseCase = new AnswerVocationalChatUseCase(mockDataRepo);
+async function fetchCareerContext(userMessage: string): Promise<string> {
+  // Extract candidate words (4+ chars, not stopwords)
+  const stopwords = new Set(['para', 'cuanto', 'cuesta', 'sedes', 'donde', 'cual', 'como', 'tiene', 'dime', 'sabes', 'sobre', 'que', 'hay', 'una', 'este', 'esta', 'con', 'del', 'los', 'las', 'por', 'estudiar', 'temas', 'ciclo', 'primer', 'segundo', 'malla', 'curricular']);
+  const words = userMessage.toLowerCase().replace(/[^a-záéíóúñü\s]/gi, ' ').split(/\s+/).filter(w => w.length >= 4 && !stopwords.has(w));
 
-export async function POST(req: NextRequest) {
+  if (words.length === 0) return '';
+
   try {
-    const body = await req.json();
-    const { message, history = [] } = body;
-
-    if (!message) {
-      return NextResponse.json({ error: 'Mensaje requerido' }, { status: 400 });
+    // Try each word until we find careers
+    let found: any[] = [];
+    for (const word of words) {
+      found = await db.select().from(careers).where(ilike(careers.name, `%${word}%`)).limit(3);
+      if (found.length > 0) break;
     }
+    if (found.length === 0) return '';
 
-    const reply = await chatUseCase.execute(history, message);
-    
-    return NextResponse.json({ reply });
-  } catch (error: any) {
-    console.error("Chat Error:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    const details = await Promise.all(
+      found.map(async (career) => {
+        const offers = await db
+          .select({ campusName: campuses.name, modality: academicOffers.modality })
+          .from(academicOffers)
+          .innerJoin(campuses, eq(academicOffers.campusId, campuses.id))
+          .where(eq(academicOffers.careerId, career.id));
+
+        const allOffers = await db
+          .select({ id: academicOffers.id })
+          .from(academicOffers)
+          .where(eq(academicOffers.careerId, career.id))
+          .limit(1);
+
+        let feesText = '';
+        if (allOffers.length > 0) {
+          const fees = await db
+            .select()
+            .from(tuitionFees)
+            .where(eq(tuitionFees.academicOfferId, allOffers[0].id));
+          feesText = fees.map(f => `${f.concept}: ${f.currency} ${f.amount}`).join(', ');
+        }
+
+        return `
+Carrera: ${career.name}
+Facultad: ${career.faculty}
+Grado: ${career.degree}
+Duración: ${career.durationYears} años (${career.durationSemesters} semestres)
+Sedes: ${offers.map(o => `${o.campusName} (${o.modality})`).join(', ') || 'No disponible'}
+Pensiones: ${feesText || 'No disponible'}
+Perfil: ${career.generalProfile?.substring(0, 300) || 'No disponible'}
+        `.trim();
+      })
+    );
+
+    return `\n\n=== INFORMACIÓN OFICIAL DE LA BASE DE DATOS UPC ===\n${details.join('\n\n---\n')}\n===================================================\n`;
+  } catch {
+    return '';
+  }
+}
+
+export async function POST(req: Request) {
+  try {
+    const { messages, profileContext } = await req.json();
+
+    // Get the last user message to fetch relevant career context from DB
+    const lastUserMsg = [...messages].reverse().find((m: any) => m.role === 'user');
+    const careerContext = lastUserMsg ? await fetchCareerContext(lastUserMsg.content) : '';
+
+    const systemPrompt = `Eres el Asistente Vocacional Oficial de la UPC (Universidad Peruana de Ciencias Aplicadas).
+Tu objetivo es ayudar a los postulantes a encontrar la carrera ideal y responder sus dudas sobre sedes, mallas curriculares, costos y grado académico.
+IMPORTANTE: Usa SOLO la información del contexto oficial provisto más abajo para responder preguntas sobre carreras, pensiones y sedes. Si no tienes datos en el contexto, dilo claramente.
+Si tienes el perfil vocacional del usuario, personaliza tu respuesta destacando por qué esa carrera es adecuada para su perfil específico.
+No uses emojis ni emoticones. Responde de forma profesional y directa.${profileContext || ''}${careerContext}`;
+
+    const result = streamText({
+      model: google('gemini-3.6-flash'),
+      messages,
+      system: systemPrompt,
+    });
+
+    return result.toUIMessageStreamResponse();
+  } catch (e: any) {
+    const errorMsg = e.message || e.toString();
+    console.error('[Chat API Error]', errorMsg);
+    return new Response(JSON.stringify({ error: errorMsg }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
 }

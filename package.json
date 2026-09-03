@@ -1,43 +1,57 @@
 {
-  "name": "temp-app",
+  "name": "orientador-vocacional-ia",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "vitest",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
-    "next": "16.3.4",
-    "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "@ai-sdk/google": "^4.0.63",
+    "@ai-sdk/openai": "^4.0.57",
+    "@ai-sdk/react": "^4.0.94",
+    "@supabase/supabase-js": "^2.49.1",
+    "ai": "^7.0.91",
+    "dotenv": "^16.4.7",
+    "drizzle-orm": "^0.39.3",
+    "drizzle-zod": "^0.7.0",
+    "lucide-react": "^1.39.0",
+    "next": "15.2.1",
+    "postgres": "^3.4.5",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "recharts": "^3.10.1",
+    "zod": "^3.24.2"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "drizzle-kit": "^0.30.4",
     "eslint": "^9",
-    "eslint-config-next": "16.3.4",
+    "eslint-config-next": "15.2.1",
     "tailwindcss": "^4",
     "typescript": "^5"
   },
-  "description": "This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).",
-  "main": "index.js",
-  "directories": {
-    "doc": "docs"
-  },
+  "description": "Plataforma web de orientación vocacional asistida por IA con datos verificados de la UPC.",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/carrioneilnacr-art/Orientador-Vocacional-IA.git"
   },
-  "keywords": [],
+  "keywords": [
+    "orientador-vocacional",
+    "upc",
+    "ai",
+    "nextjs",
+    "supabase"
+  ],
   "author": "",
-  "license": "ISC",
-  "type": "commonjs",
-  "bugs": {
-    "url": "https://github.com/carrioneilnacr-art/Orientador-Vocacional-IA/issues"
-  },
-  "homepage": "https://github.com/carrioneilnacr-art/Orientador-Vocacional-IA#readme"
+  "license": "ISC"
 }
