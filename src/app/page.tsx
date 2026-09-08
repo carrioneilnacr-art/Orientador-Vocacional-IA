@@ -19,10 +19,10 @@ export default function Home() {
       </header>
 
       {/* Hero Section */}
-      <main className="relative flex-1 w-full min-h-[calc(100vh-80px)] flex flex-col md:flex-row items-center justify-between px-6 md:px-12 lg:px-24 pt-24 pb-12 overflow-hidden">
+      <main className="relative flex-1 w-full min-h-[calc(100vh-80px)] flex flex-col justify-center px-6 md:px-12 lg:px-24 pt-24 pb-12 overflow-hidden">
         
         {/* Background Image constrained to left side to prevent extreme zoom */}
-        <div className="absolute inset-y-0 left-0 w-full md:w-[60%] lg:w-[55%] z-0">
+        <div className="absolute inset-y-0 left-0 w-full md:w-[55%] z-0">
           <Image 
             src="/assets/robot_bg.jpg" 
             alt="Robot explorador" 
@@ -33,18 +33,15 @@ export default function Home() {
           {/* Gradients para difuminar el borde derecho de la imagen hacia el fondo */}
           <div className="absolute inset-y-0 right-0 w-full sm:w-2/3 bg-gradient-to-l from-[#F8FCFF] via-[#F8FCFF]/80 to-transparent z-10" />
           {/* Gradiente adicional en móvil para que el texto se lea encima */}
-          <div className="absolute inset-0 bg-gradient-to-t from-[#F8FCFF] via-[#F8FCFF]/80 to-transparent z-10 md:hidden" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#F8FCFF] via-[#F8FCFF]/90 to-transparent z-10 md:hidden" />
         </div>
 
-        {/* Empty space for flex layout to push content to the right */}
-        <div className="hidden md:block w-[45%] z-10 relative"></div>
-
-        {/* Content Overlay (Right Aligned) */}
-        <div className="relative z-20 w-full md:w-[55%] max-w-[650px] mt-4 md:mt-0 flex flex-col items-center md:items-start text-center md:text-left">
+        {/* Content Overlay (Strictly Right Aligned) */}
+        <div className="relative z-20 w-full md:w-[50%] lg:w-[45%] max-w-[650px] ml-auto mt-20 md:mt-0 flex flex-col items-center md:items-start text-center md:text-left">
           
           {/* Floating Note (Above Text) */}
           <div className="mb-8 w-full flex justify-center md:justify-start">
-            <div className="bg-white/95 backdrop-blur-md p-5 rounded-[20px] rounded-br-none shadow-[0_10px_30px_rgb(8,42,74,0.1)] border border-[#D6E5EF] rotate-[-2deg] max-w-[280px]">
+            <div className="bg-white/95 backdrop-blur-md p-5 rounded-[20px] rounded-br-none shadow-[0_10px_30px_rgb(8,42,74,0.1)] border border-[#D6E5EF] rotate-[2deg] max-w-[280px]">
                <p className="text-[16px] font-serif italic text-[#082A4A] leading-snug">
                  "Grandes decisiones también empiezan con una pregunta."
                </p>
