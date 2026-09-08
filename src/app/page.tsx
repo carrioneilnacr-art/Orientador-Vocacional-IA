@@ -24,21 +24,21 @@ export default function Home() {
         {/* Background Image full cover */}
         <div className="absolute inset-0 z-0">
           <Image 
-            src="/assets/robot_bg.jpg" 
+            src="/assets/hero_landscape.jpg" 
             alt="Robot explorador" 
             fill 
-            className="object-cover object-[70%_center] md:object-center"
+            className="object-cover object-center -scale-x-100"
             priority
           />
-          {/* Gradients para legibilidad en la izquierda (Fondo claro, texto oscuro) */}
-          <div className="absolute inset-0 bg-gradient-to-r from-[#F8FCFF] via-[#F8FCFF]/80 to-transparent md:w-3/4 lg:w-2/3 z-10" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#F8FCFF] via-transparent to-transparent z-10 opacity-70" />
+          {/* Gradients para legibilidad en la derecha (Fondo claro, texto oscuro) */}
+          <div className="absolute inset-0 bg-gradient-to-l from-[#F8FCFF] via-[#F8FCFF]/85 to-transparent md:w-3/4 lg:w-2/3 ml-auto z-10" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#F8FCFF] via-transparent to-transparent z-10 opacity-80" />
           {/* Gradiente adicional sutil en móvil para asegurar lectura */}
           <div className="absolute inset-0 bg-gradient-to-b from-[#F8FCFF]/60 via-transparent to-transparent z-10 md:hidden" />
         </div>
 
-        {/* Content Overlay (Left Aligned) */}
-        <div className="relative z-20 w-full max-w-[650px] mt-4 md:mt-10">
+        {/* Content Overlay (Right Aligned) */}
+        <div className="relative z-20 w-full max-w-[650px] mt-4 md:mt-10 ml-auto">
           <h1 className="text-[40px] md:text-[56px] lg:text-[64px] font-extrabold tracking-tight text-[#082A4A] mb-6 leading-[1.05]">
             Tu futuro<br />
             también es parte de nuestra<br />
@@ -91,9 +91,9 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Floating Note (Moved to Right as in reference image) */}
-        <div className="hidden lg:block absolute top-32 right-16 xl:right-24 z-20 max-w-[250px]">
-          <div className="bg-white/95 backdrop-blur-md p-5 rounded-[20px] rounded-br-none shadow-[0_10px_30px_rgb(8,42,74,0.1)] border border-[#D6E5EF] rotate-[-3deg] hover:rotate-0 transition-transform duration-300">
+        {/* Floating Note (Moved to Left) */}
+        <div className="hidden lg:block absolute top-32 left-16 xl:left-24 z-20 max-w-[250px]">
+          <div className="bg-white/95 backdrop-blur-md p-5 rounded-[20px] rounded-bl-none shadow-[0_10px_30px_rgb(8,42,74,0.1)] border border-[#D6E5EF] rotate-[3deg] hover:rotate-0 transition-transform duration-300">
              <p className="text-[16px] font-serif italic text-[#082A4A] leading-snug">
                "Grandes decisiones también empiezan con una pregunta."
              </p>
