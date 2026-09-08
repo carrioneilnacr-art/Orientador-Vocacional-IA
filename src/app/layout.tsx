@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Orientador Vocacional IA - UPC",
+  title: "Orientador Vocacional IA",
   description: "Descubre la carrera ideal para tu futuro profesional con nuestro orientador vocacional potenciado por Inteligencia Artificial.",
 };
 

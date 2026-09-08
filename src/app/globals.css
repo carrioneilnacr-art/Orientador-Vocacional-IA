@@ -17,3 +17,45 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+@media print {
+  header, aside, .no-print, .no-pdf {
+    display: none !important;
+  }
+  body, main {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #F8FCFF !important;
+  }
+  #report-content {
+    width: 100% !important;
+    display: block !important;
+  }
+}
+
+/* Modo de exportación a PDF para html2canvas */
+#report-content.pdf-export-mode {
+  width: 1200px !important;
+  max-width: 1200px !important;
+  margin: 0 auto !important;
+  padding: 32px !important;
+  background-color: #F8FCFF !important;
+  box-sizing: border-box !important;
+}
+
+#report-content.pdf-export-mode .copilot-column,
+#report-content.pdf-export-mode .no-pdf {
+  display: none !important;
+}
+
+#report-content.pdf-export-mode .hero-grid {
+  grid-template-columns: 1.2fr 1fr !important;
+  gap: 28px !important;
+}
+
+#report-content.pdf-export-mode .pdf-only-banner {
+  display: flex !important;
+}
+

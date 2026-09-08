@@ -57,7 +57,7 @@ Perfil: ${career.generalProfile?.substring(0, 300) || 'No disponible'}
       })
     );
 
-    return `\n\n=== INFORMACIÓN OFICIAL DE LA BASE DE DATOS UPC ===\n${details.join('\n\n---\n')}\n===================================================\n`;
+    return `\n\n=== INFORMACIÓN OFICIAL DE LA BASE DE DATOS ===\n${details.join('\n\n---\n')}\n===================================================\n`;
   } catch {
     return '';
   }
@@ -71,9 +71,9 @@ export async function POST(req: Request) {
     const lastUserMsg = [...messages].reverse().find((m: any) => m.role === 'user');
     const careerContext = lastUserMsg ? await fetchCareerContext(lastUserMsg.content) : '';
 
-    const systemPrompt = `Eres el Asistente Vocacional Oficial de la UPC (Universidad Peruana de Ciencias Aplicadas).
-Tu objetivo es ayudar a los postulantes a encontrar la carrera ideal y responder sus dudas sobre sedes, mallas curriculares, costos y grado académico.
-IMPORTANTE: Usa SOLO la información del contexto oficial provisto más abajo para responder preguntas sobre carreras, pensiones y sedes. Si no tienes datos en el contexto, dilo claramente.
+    const systemPrompt = `Eres el Asistente Vocacional de nuestra plataforma de orientación.
+Tu objetivo es ayudar a los postulantes a encontrar la carrera ideal y responder sus dudas sobre sedes, mallas curriculares, costos y grado académico de las diversas universidades que tenemos en nuestra base de datos.
+IMPORTANTE: Usa SOLO la información del contexto oficial provisto más abajo para responder preguntas. Si no tienes datos en el contexto, dilo claramente.
 Si tienes el perfil vocacional del usuario, personaliza tu respuesta destacando por qué esa carrera es adecuada para su perfil específico.
 REGLA ESTRICTA: No uses ningún tipo de emoji, emoticon, ni signos de exclamación excesivos. Mantén un tono sumamente profesional, sobrio y directo en todas tus respuestas.${profileContext || ''}${careerContext}`;
 
