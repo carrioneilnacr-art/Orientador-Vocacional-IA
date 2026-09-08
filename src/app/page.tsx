@@ -21,22 +21,22 @@ export default function Home() {
       {/* Hero Section Full Screen */}
       <main className="relative flex-1 w-full min-h-screen flex flex-col justify-center px-6 md:px-12 lg:px-24 pt-20">
         
-        {/* Background Image full cover */}
+        {/* Background Image full cover (Flipped so robot is on left) */}
         <div className="absolute inset-0 z-0">
           <Image 
             src="/assets/robot_bg.jpg" 
             alt="Robot explorador" 
             fill 
-            className="object-cover object-[70%_center] md:object-center"
+            className="object-cover object-center -scale-x-100"
             priority
           />
-          {/* Gradients para desvanecido y legibilidad */}
-          <div className="absolute inset-0 bg-gradient-to-r from-[#F8FCFF] via-[#F8FCFF]/90 to-transparent md:w-3/4 lg:w-2/3 z-10" />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#F8FCFF]/50 via-transparent to-[#F8FCFF] z-10" />
+          {/* Gradients para desvanecido y legibilidad (Reducidos y en la derecha) */}
+          <div className="absolute inset-0 bg-gradient-to-l from-[#F8FCFF] via-[#F8FCFF]/70 to-transparent md:w-3/4 lg:w-2/3 ml-auto z-10" />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#F8FCFF] z-10 opacity-70" />
         </div>
 
-        {/* Content Overlay */}
-        <div className="relative z-20 max-w-[650px] py-12 md:py-20 mt-10">
+        {/* Content Overlay (Right Aligned) */}
+        <div className="relative z-20 max-w-[650px] py-12 md:py-20 mt-10 ml-auto">
           <h1 className="text-[48px] md:text-[64px] lg:text-[72px] font-extrabold tracking-tight text-[#082A4A] mb-6 leading-[1.05]">
             Tu futuro<br />
             también es parte de nuestra<br />
@@ -89,9 +89,9 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Floating Note */}
-        <div className="hidden lg:block absolute bottom-24 right-24 z-20 max-w-[280px]">
-          <div className="bg-white/90 backdrop-blur-md p-6 rounded-[24px] rounded-br-none shadow-[0_20px_40px_rgb(8,42,74,0.12)] border border-[#D6E5EF] rotate-[-2deg] hover:rotate-0 transition-transform duration-300">
+        {/* Floating Note (Moved to left) */}
+        <div className="hidden lg:block absolute bottom-24 left-24 z-20 max-w-[280px]">
+          <div className="bg-white/90 backdrop-blur-md p-6 rounded-[24px] rounded-bl-none shadow-[0_20px_40px_rgb(8,42,74,0.12)] border border-[#D6E5EF] rotate-[2deg] hover:rotate-0 transition-transform duration-300">
              <p className="text-[18px] font-serif italic text-[#082A4A] leading-relaxed">
                "Grandes decisiones también empiezan con una pregunta."
              </p>
