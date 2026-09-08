@@ -21,33 +21,24 @@ export default function Home() {
       {/* Hero Section */}
       <main className="relative flex-1 w-full min-h-[calc(100vh-80px)] flex flex-col justify-center px-6 md:px-12 lg:px-24 pt-24 pb-12 overflow-hidden">
         
-        {/* Background Image constrained to left side to prevent extreme zoom */}
-        <div className="absolute inset-y-0 left-0 w-full md:w-[55%] z-0">
+        {/* Background Image constrained to RIGHT side to prevent extreme zoom */}
+        <div className="absolute inset-y-0 right-0 w-full md:w-[60%] lg:w-[55%] z-0">
           <Image 
             src="/assets/robot_bg.jpg" 
             alt="Robot explorador" 
             fill 
-            className="object-cover object-[center_30%] md:object-center -scale-x-100"
+            className="object-cover object-[center_30%] md:object-center"
             priority
           />
-          {/* Gradients para difuminar el borde derecho de la imagen hacia el fondo */}
-          <div className="absolute inset-y-0 right-0 w-full sm:w-2/3 bg-gradient-to-l from-[#F8FCFF] via-[#F8FCFF]/80 to-transparent z-10" />
+          {/* Gradients para difuminar el borde izquierdo de la imagen hacia el fondo */}
+          <div className="absolute inset-y-0 left-0 w-full sm:w-2/3 bg-gradient-to-r from-[#F8FCFF] via-[#F8FCFF]/80 to-transparent z-10" />
           {/* Gradiente adicional en móvil para que el texto se lea encima */}
           <div className="absolute inset-0 bg-gradient-to-t from-[#F8FCFF] via-[#F8FCFF]/90 to-transparent z-10 md:hidden" />
         </div>
 
-        {/* Content Overlay (Strictly Right Aligned) */}
-        <div className="relative z-20 w-full md:w-[50%] lg:w-[45%] max-w-[650px] ml-auto mt-20 md:mt-0 flex flex-col items-center md:items-start text-center md:text-left">
+        {/* Content Overlay (Strictly Left Aligned) */}
+        <div className="relative z-20 w-full md:w-[50%] lg:w-[45%] max-w-[650px] mr-auto mt-20 md:mt-0 flex flex-col items-center md:items-start text-center md:text-left">
           
-          {/* Floating Note (Above Text) */}
-          <div className="mb-8 w-full flex justify-center md:justify-start">
-            <div className="bg-white/95 backdrop-blur-md p-5 rounded-[20px] rounded-br-none shadow-[0_10px_30px_rgb(8,42,74,0.1)] border border-[#D6E5EF] rotate-[2deg] max-w-[280px]">
-               <p className="text-[16px] font-serif italic text-[#082A4A] leading-snug">
-                 "Grandes decisiones también empiezan con una pregunta."
-               </p>
-            </div>
-          </div>
-
           <h1 className="text-[40px] md:text-[56px] lg:text-[64px] font-extrabold tracking-tight text-[#082A4A] mb-6 leading-[1.05]">
             Tu futuro<br className="hidden md:block" />
             también es parte de nuestra <span className="text-[#00C2E0]">historia.</span>
@@ -96,6 +87,15 @@ export default function Home() {
               </div>
               <div className="text-[#4F6B85] text-[13px] font-medium sm:ml-7">carreras analizadas</div>
             </div>
+          </div>
+        </div>
+
+        {/* Floating Note (Top Right) */}
+        <div className="hidden lg:block absolute top-32 right-16 xl:right-24 z-20 max-w-[250px]">
+          <div className="bg-white/95 backdrop-blur-md p-5 rounded-[20px] rounded-br-none shadow-[0_10px_30px_rgb(8,42,74,0.1)] border border-[#D6E5EF] rotate-[-3deg] hover:rotate-0 transition-transform duration-300">
+             <p className="text-[16px] font-serif italic text-[#082A4A] leading-snug">
+               "Grandes decisiones también empiezan con una pregunta."
+             </p>
           </div>
         </div>
       </main>
