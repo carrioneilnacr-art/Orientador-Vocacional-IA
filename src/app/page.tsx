@@ -19,20 +19,20 @@ export default function Home() {
       </header>
 
       {/* Hero Section */}
-      <main className="relative flex-1 w-full min-h-[calc(100vh-80px)] flex flex-col justify-center px-6 md:px-12 lg:px-24 pt-24 pb-12 overflow-hidden">
+      <main className="relative flex-1 w-full min-h-[calc(100vh-80px)] flex flex-col justify-center px-6 md:px-12 lg:px-24 pt-24 pb-12 overflow-hidden bg-[#F8FCFF]">
         
-        {/* Background Image constrained to RIGHT side to prevent extreme zoom */}
-        <div className="absolute inset-y-0 right-0 w-full md:w-[55%] z-0">
+        {/* Background Image constrained to RIGHT side */}
+        <div className="absolute inset-y-0 right-0 w-full md:w-[60%] z-0">
           <Image 
             src="/assets/robot_bg.jpg" 
             alt="Robot explorador" 
             fill 
-            className="object-cover object-[center_30%] md:object-center -scale-x-100"
+            className="object-cover object-[center_60%] md:object-[center_80%] -scale-x-100"
             priority
           />
-          {/* Gradients para difuminar el borde izquierdo de la imagen hacia el fondo */}
-          <div className="absolute inset-y-0 left-0 w-full sm:w-2/3 bg-gradient-to-r from-[#F8FCFF] via-[#F8FCFF]/80 to-transparent z-10" />
-          {/* Gradiente adicional en móvil para que el texto se lea encima */}
+          {/* Gradients para borrar cualquier línea dura en el centro (fusión perfecta con el fondo) */}
+          <div className="absolute inset-y-0 left-[-2px] w-[50%] bg-gradient-to-r from-[#F8FCFF] via-[#F8FCFF] to-transparent z-10" />
+          {/* Gradiente adicional en móvil */}
           <div className="absolute inset-0 bg-gradient-to-t from-[#F8FCFF] via-[#F8FCFF]/90 to-transparent z-10 md:hidden" />
         </div>
 
