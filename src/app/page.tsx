@@ -21,17 +21,17 @@ export default function Home() {
       {/* Hero Section */}
       <main className="relative flex-1 w-full min-h-[calc(100vh-80px)] flex flex-col justify-center px-6 md:px-12 lg:px-24 pt-24 pb-12 overflow-hidden">
         
-        {/* Background Image constrained to RIGHT side to prevent extreme zoom */}
-        <div className="absolute inset-y-0 right-0 w-full md:w-[60%] lg:w-[55%] z-0">
+        {/* Background Image constrained to right side but taking more space */}
+        <div className="absolute inset-y-0 right-0 w-full md:w-[70%] lg:w-[65%] z-0">
           <Image 
             src="/assets/robot_bg.jpg" 
             alt="Robot explorador" 
             fill 
-            className="object-cover object-[center_30%] md:object-center"
+            className="object-cover object-[center_30%] md:object-[center_20%] -scale-x-100"
             priority
           />
           {/* Gradients para difuminar el borde izquierdo de la imagen hacia el fondo */}
-          <div className="absolute inset-y-0 left-0 w-full sm:w-2/3 bg-gradient-to-r from-[#F8FCFF] via-[#F8FCFF]/80 to-transparent z-10" />
+          <div className="absolute inset-y-0 left-0 w-full sm:w-[80%] bg-gradient-to-r from-[#F8FCFF] via-[#F8FCFF]/80 to-transparent z-10" />
           {/* Gradiente adicional en móvil para que el texto se lea encima */}
           <div className="absolute inset-0 bg-gradient-to-t from-[#F8FCFF] via-[#F8FCFF]/90 to-transparent z-10 md:hidden" />
         </div>
@@ -88,14 +88,14 @@ export default function Home() {
               <div className="text-[#4F6B85] text-[13px] font-medium sm:ml-7">carreras analizadas</div>
             </div>
           </div>
-        </div>
-
-        {/* Floating Note (Top Right) */}
-        <div className="hidden lg:block absolute top-32 right-16 xl:right-24 z-20 max-w-[250px]">
-          <div className="bg-white/95 backdrop-blur-md p-5 rounded-[20px] rounded-br-none shadow-[0_10px_30px_rgb(8,42,74,0.1)] border border-[#D6E5EF] rotate-[-3deg] hover:rotate-0 transition-transform duration-300">
-             <p className="text-[16px] font-serif italic text-[#082A4A] leading-snug">
-               "Grandes decisiones también empiezan con una pregunta."
-             </p>
+          
+          {/* Floating Note (Top Right, above robot head) */}
+          <div className="hidden lg:block absolute top-[-60px] right-[-180px] xl:right-[-300px] z-20 max-w-[250px]">
+            <div className="bg-white/95 backdrop-blur-md p-5 rounded-[20px] rounded-br-none shadow-[0_10px_30px_rgb(8,42,74,0.1)] border border-[#D6E5EF] rotate-[3deg] hover:rotate-0 transition-transform duration-300">
+               <p className="text-[16px] font-serif italic text-[#082A4A] leading-snug">
+                 "Grandes decisiones también empiezan con una pregunta."
+               </p>
+            </div>
           </div>
         </div>
       </main>
