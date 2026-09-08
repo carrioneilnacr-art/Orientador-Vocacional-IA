@@ -19,38 +19,40 @@ export default function Home() {
       </header>
 
       {/* Hero Section Full Screen */}
-      <main className="relative flex-1 w-full min-h-screen flex flex-col justify-center px-6 md:px-12 lg:px-24 pt-20">
+      <main className="relative flex-1 w-full min-h-[calc(100vh-80px)] flex flex-col justify-center px-6 md:px-12 lg:px-24 pt-24 pb-12">
         
-        {/* Background Image full cover (Flipped so robot is on left) */}
+        {/* Background Image full cover */}
         <div className="absolute inset-0 z-0">
           <Image 
             src="/assets/robot_bg.jpg" 
             alt="Robot explorador" 
             fill 
-            className="object-cover object-center -scale-x-100"
+            className="object-cover object-[70%_center] md:object-center"
             priority
           />
-          {/* Gradients para desvanecido y legibilidad (Reducidos y en la derecha) */}
-          <div className="absolute inset-0 bg-gradient-to-l from-[#F8FCFF] via-[#F8FCFF]/70 to-transparent md:w-3/4 lg:w-2/3 ml-auto z-10" />
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#F8FCFF] z-10 opacity-70" />
+          {/* Gradients para legibilidad en la izquierda (Fondo claro, texto oscuro) */}
+          <div className="absolute inset-0 bg-gradient-to-r from-[#F8FCFF] via-[#F8FCFF]/80 to-transparent md:w-3/4 lg:w-2/3 z-10" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#F8FCFF] via-transparent to-transparent z-10 opacity-70" />
+          {/* Gradiente adicional sutil en móvil para asegurar lectura */}
+          <div className="absolute inset-0 bg-gradient-to-b from-[#F8FCFF]/60 via-transparent to-transparent z-10 md:hidden" />
         </div>
 
-        {/* Content Overlay (Right Aligned) */}
-        <div className="relative z-20 max-w-[650px] py-12 md:py-20 mt-10 ml-auto">
-          <h1 className="text-[48px] md:text-[64px] lg:text-[72px] font-extrabold tracking-tight text-[#082A4A] mb-6 leading-[1.05]">
+        {/* Content Overlay (Left Aligned) */}
+        <div className="relative z-20 w-full max-w-[650px] mt-4 md:mt-10">
+          <h1 className="text-[40px] md:text-[56px] lg:text-[64px] font-extrabold tracking-tight text-[#082A4A] mb-6 leading-[1.05]">
             Tu futuro<br />
             también es parte de nuestra<br />
             <span className="text-[#00C2E0]">historia.</span>
           </h1>
           
-          <p className="text-[16px] md:text-[20px] text-[#4F6B85] mb-10 max-w-lg font-medium leading-relaxed">
+          <p className="text-[16px] md:text-[18px] text-[#4F6B85] mb-8 max-w-md font-medium leading-relaxed">
             Descubre tu vocación con IA y conecta tus talentos con las oportunidades del mundo real.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 mb-16">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-12">
             <Link 
               href="/cuestionario"
-              className="inline-flex h-[60px] items-center justify-center rounded-[16px] bg-[#00C2E0] hover:bg-[#0EA5C6] px-10 text-[18px] font-bold text-white shadow-xl shadow-[#00C2E0]/30 transition-all duration-300 hover:-translate-y-1"
+              className="inline-flex h-[56px] items-center justify-center rounded-[16px] bg-[#00C2E0] hover:bg-[#0EA5C6] px-8 text-[16px] md:text-[18px] font-bold text-white shadow-xl shadow-[#00C2E0]/30 transition-all duration-300 hover:-translate-y-1"
             >
               Comenzar ahora
               <ArrowRight className="ml-3 h-5 w-5" />
@@ -58,41 +60,41 @@ export default function Home() {
           </div>
 
           {/* Stats Bar integrado */}
-          <div className="w-full max-w-[700px] bg-white/90 backdrop-blur-xl rounded-[24px] p-6 sm:p-8 flex flex-col sm:flex-row justify-between items-center shadow-[0_20px_40px_rgb(8,42,74,0.08)] border border-[#D6E5EF] gap-6 sm:gap-0">
+          <div className="w-full max-w-[650px] bg-white/95 backdrop-blur-xl rounded-[20px] p-6 flex flex-col sm:flex-row justify-between items-center shadow-[0_10px_30px_rgb(8,42,74,0.06)] border border-[#D6E5EF]/50 gap-4 sm:gap-0">
             <div className="flex flex-col items-center sm:items-start w-full sm:w-auto">
               <div className="flex items-center gap-2 mb-1">
                 <Users className="h-5 w-5 text-[#00C2E0]" />
-                <div className="font-bold text-[28px] md:text-[32px] text-[#082A4A] leading-none">+10K</div>
+                <div className="font-bold text-[24px] md:text-[28px] text-[#082A4A] leading-none">+10K</div>
               </div>
-              <div className="text-[#4F6B85] text-[14px] font-medium sm:ml-7">estudiantes</div>
+              <div className="text-[#4F6B85] text-[13px] font-medium sm:ml-7">estudiantes</div>
             </div>
             
-            <div className="hidden sm:block w-px h-16 bg-[#D6E5EF]"></div>
+            <div className="hidden sm:block w-px h-12 bg-[#D6E5EF]"></div>
             
             <div className="flex flex-col items-center sm:items-start w-full sm:w-auto">
               <div className="flex items-center gap-2 mb-1">
                 <Star className="h-5 w-5 text-[#00C2E0] fill-[#00C2E0]" />
-                <div className="font-bold text-[28px] md:text-[32px] text-[#082A4A] leading-none">95%</div>
+                <div className="font-bold text-[24px] md:text-[28px] text-[#082A4A] leading-none">95%</div>
               </div>
-              <div className="text-[#4F6B85] text-[14px] font-medium sm:ml-7">recomiendan</div>
+              <div className="text-[#4F6B85] text-[13px] font-medium sm:ml-7">recomiendan</div>
             </div>
 
-            <div className="hidden sm:block w-px h-16 bg-[#D6E5EF]"></div>
+            <div className="hidden sm:block w-px h-12 bg-[#D6E5EF]"></div>
 
             <div className="flex flex-col items-center sm:items-start w-full sm:w-auto">
               <div className="flex items-center gap-2 mb-1">
                 <CheckCircle className="h-5 w-5 text-[#00C2E0]" />
-                <div className="font-bold text-[28px] md:text-[32px] text-[#082A4A] leading-none">+100</div>
+                <div className="font-bold text-[24px] md:text-[28px] text-[#082A4A] leading-none">+100</div>
               </div>
-              <div className="text-[#4F6B85] text-[14px] font-medium sm:ml-7">carreras analizadas</div>
+              <div className="text-[#4F6B85] text-[13px] font-medium sm:ml-7">carreras analizadas</div>
             </div>
           </div>
         </div>
 
-        {/* Floating Note (Moved to left) */}
-        <div className="hidden lg:block absolute bottom-24 left-24 z-20 max-w-[280px]">
-          <div className="bg-white/90 backdrop-blur-md p-6 rounded-[24px] rounded-bl-none shadow-[0_20px_40px_rgb(8,42,74,0.12)] border border-[#D6E5EF] rotate-[2deg] hover:rotate-0 transition-transform duration-300">
-             <p className="text-[18px] font-serif italic text-[#082A4A] leading-relaxed">
+        {/* Floating Note (Moved to Right as in reference image) */}
+        <div className="hidden lg:block absolute top-32 right-16 xl:right-24 z-20 max-w-[250px]">
+          <div className="bg-white/95 backdrop-blur-md p-5 rounded-[20px] rounded-br-none shadow-[0_10px_30px_rgb(8,42,74,0.1)] border border-[#D6E5EF] rotate-[-3deg] hover:rotate-0 transition-transform duration-300">
+             <p className="text-[16px] font-serif italic text-[#082A4A] leading-snug">
                "Grandes decisiones también empiezan con una pregunta."
              </p>
           </div>
