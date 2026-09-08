@@ -97,7 +97,7 @@ export default function ResultadosPage() {
   const profileName = topDimension ? DIMENSION_LABELS[topDimension] : 'Analítico';
 
   return (
-    <div className="min-h-screen bg-transparent text-[#082A4A] font-sans selection:bg-[#00C2E0] selection:text-white pb-20">
+    <div className="min-h-screen bg-[#F8FCFF] text-[#082A4A] font-sans selection:bg-[#00C2E0] selection:text-white pb-20">
       {/* Header Limpio */}
       <header className="px-6 py-4 flex items-center justify-between border-b border-[#D6E5EF] bg-white">
         <Link href="/" className="flex items-center gap-2 text-[#4F6B85] hover:text-[#082A4A] transition-colors text-sm font-medium">

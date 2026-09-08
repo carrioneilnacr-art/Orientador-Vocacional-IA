@@ -138,7 +138,7 @@ export default function CuestionarioPage() {
   const progress = Math.round(((currentStep + 1) / questions.length) * 100);
 
   return (
-    <div className="min-h-screen flex flex-col bg-transparent font-sans selection:bg-[#00C2E0] selection:text-white">
+    <div className="min-h-screen flex flex-col bg-[#F8FCFF] font-sans selection:bg-[#00C2E0] selection:text-white">
       <header className="px-6 py-4 flex items-center border-b border-[#D6E5EF] bg-white">
         <Link href="/" className="flex items-center gap-2 text-[#4F6B85] hover:text-[#082A4A] transition-colors text-sm font-medium">
           <ArrowLeft className="h-4 w-4" />
