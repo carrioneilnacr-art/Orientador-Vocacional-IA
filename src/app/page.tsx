@@ -18,41 +18,52 @@ export default function Home() {
         <div className="hidden md:block w-[100px]"></div>
       </header>
 
-      {/* Hero Section Full Screen */}
-      <main className="relative flex-1 w-full min-h-[calc(100vh-80px)] flex flex-col justify-center px-6 md:px-12 lg:px-24 pt-24 pb-12">
+      {/* Hero Section */}
+      <main className="relative flex-1 w-full min-h-[calc(100vh-80px)] flex flex-col md:flex-row items-center justify-between px-6 md:px-12 lg:px-24 pt-24 pb-12 overflow-hidden">
         
-        {/* Background Image full cover */}
-        <div className="absolute inset-0 z-0">
+        {/* Background Image constrained to left side to prevent extreme zoom */}
+        <div className="absolute inset-y-0 left-0 w-full md:w-[60%] lg:w-[55%] z-0">
           <Image 
-            src="/assets/hero_landscape.jpg" 
+            src="/assets/robot_bg.jpg" 
             alt="Robot explorador" 
             fill 
-            className="object-cover object-center -scale-x-100"
+            className="object-cover object-[center_30%] md:object-center -scale-x-100"
             priority
           />
-          {/* Gradients para legibilidad en la derecha (Fondo claro, texto oscuro) */}
-          <div className="absolute inset-0 bg-gradient-to-l from-[#F8FCFF] via-[#F8FCFF]/85 to-transparent md:w-3/4 lg:w-2/3 ml-auto z-10" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#F8FCFF] via-transparent to-transparent z-10 opacity-80" />
-          {/* Gradiente adicional sutil en móvil para asegurar lectura */}
-          <div className="absolute inset-0 bg-gradient-to-b from-[#F8FCFF]/60 via-transparent to-transparent z-10 md:hidden" />
+          {/* Gradients para difuminar el borde derecho de la imagen hacia el fondo */}
+          <div className="absolute inset-y-0 right-0 w-full sm:w-2/3 bg-gradient-to-l from-[#F8FCFF] via-[#F8FCFF]/80 to-transparent z-10" />
+          {/* Gradiente adicional en móvil para que el texto se lea encima */}
+          <div className="absolute inset-0 bg-gradient-to-t from-[#F8FCFF] via-[#F8FCFF]/80 to-transparent z-10 md:hidden" />
         </div>
 
+        {/* Empty space for flex layout to push content to the right */}
+        <div className="hidden md:block w-[45%] z-10 relative"></div>
+
         {/* Content Overlay (Right Aligned) */}
-        <div className="relative z-20 w-full max-w-[650px] mt-4 md:mt-10 ml-auto">
+        <div className="relative z-20 w-full md:w-[55%] max-w-[650px] mt-4 md:mt-0 flex flex-col items-center md:items-start text-center md:text-left">
+          
+          {/* Floating Note (Above Text) */}
+          <div className="mb-8 w-full flex justify-center md:justify-start">
+            <div className="bg-white/95 backdrop-blur-md p-5 rounded-[20px] rounded-br-none shadow-[0_10px_30px_rgb(8,42,74,0.1)] border border-[#D6E5EF] rotate-[-2deg] max-w-[280px]">
+               <p className="text-[16px] font-serif italic text-[#082A4A] leading-snug">
+                 "Grandes decisiones también empiezan con una pregunta."
+               </p>
+            </div>
+          </div>
+
           <h1 className="text-[40px] md:text-[56px] lg:text-[64px] font-extrabold tracking-tight text-[#082A4A] mb-6 leading-[1.05]">
-            Tu futuro<br />
-            también es parte de nuestra<br />
-            <span className="text-[#00C2E0]">historia.</span>
+            Tu futuro<br className="hidden md:block" />
+            también es parte de nuestra <span className="text-[#00C2E0]">historia.</span>
           </h1>
           
           <p className="text-[16px] md:text-[18px] text-[#4F6B85] mb-8 max-w-md font-medium leading-relaxed">
             Descubre tu vocación con IA y conecta tus talentos con las oportunidades del mundo real.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-12">
+          <div className="flex flex-col sm:flex-row items-center gap-4 mb-12 w-full md:w-auto justify-center md:justify-start">
             <Link 
               href="/cuestionario"
-              className="inline-flex h-[56px] items-center justify-center rounded-[16px] bg-[#00C2E0] hover:bg-[#0EA5C6] px-8 text-[16px] md:text-[18px] font-bold text-white shadow-xl shadow-[#00C2E0]/30 transition-all duration-300 hover:-translate-y-1"
+              className="inline-flex h-[56px] items-center justify-center rounded-[16px] bg-[#00C2E0] hover:bg-[#0EA5C6] px-8 text-[16px] md:text-[18px] font-bold text-white shadow-xl shadow-[#00C2E0]/30 transition-all duration-300 hover:-translate-y-1 w-full sm:w-auto"
             >
               Comenzar ahora
               <ArrowRight className="ml-3 h-5 w-5" />
@@ -60,7 +71,7 @@ export default function Home() {
           </div>
 
           {/* Stats Bar integrado */}
-          <div className="w-full max-w-[650px] bg-white/95 backdrop-blur-xl rounded-[20px] p-6 flex flex-col sm:flex-row justify-between items-center shadow-[0_10px_30px_rgb(8,42,74,0.06)] border border-[#D6E5EF]/50 gap-4 sm:gap-0">
+          <div className="w-full bg-white/95 backdrop-blur-xl rounded-[20px] p-6 flex flex-col sm:flex-row justify-between items-center shadow-[0_10px_30px_rgb(8,42,74,0.06)] border border-[#D6E5EF]/50 gap-4 sm:gap-0">
             <div className="flex flex-col items-center sm:items-start w-full sm:w-auto">
               <div className="flex items-center gap-2 mb-1">
                 <Users className="h-5 w-5 text-[#00C2E0]" />
@@ -88,15 +99,6 @@ export default function Home() {
               </div>
               <div className="text-[#4F6B85] text-[13px] font-medium sm:ml-7">carreras analizadas</div>
             </div>
-          </div>
-        </div>
-
-        {/* Floating Note (Moved to Left) */}
-        <div className="hidden lg:block absolute top-32 left-16 xl:left-24 z-20 max-w-[250px]">
-          <div className="bg-white/95 backdrop-blur-md p-5 rounded-[20px] rounded-bl-none shadow-[0_10px_30px_rgb(8,42,74,0.1)] border border-[#D6E5EF] rotate-[3deg] hover:rotate-0 transition-transform duration-300">
-             <p className="text-[16px] font-serif italic text-[#082A4A] leading-snug">
-               "Grandes decisiones también empiezan con una pregunta."
-             </p>
           </div>
         </div>
       </main>
