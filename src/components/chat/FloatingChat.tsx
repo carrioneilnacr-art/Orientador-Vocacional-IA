@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useRef, useEffect, FormEvent } from "react";
-import { MessageCircle, X, Send, Bot, Loader2 } from "lucide-react";
+import Image from "next/image";
+import { X, Send, Loader2, MessageSquare } from "lucide-react";
 
 interface Message {
   id: string;
@@ -15,7 +16,7 @@ export default function FloatingChat() {
     {
       id: "0",
       role: "assistant",
-      content: "Soy el asistente de la UPC. Puedo ayudarte con carreras, pensiones y sedes. ¿Qué deseas saber?",
+      content: "¡Hola! Estoy aquí para ayudarte a entender tus resultados y resolver tus dudas.\n\nPuedes preguntarme sobre:\n- Las carreras recomendadas\n- Tus habilidades\n- El mercado laboral\n- Consejos para tu futuro",
     },
   ]);
   const [input, setInput] = useState("");
@@ -23,7 +24,6 @@ export default function FloatingChat() {
   const [profileContext, setProfileContext] = useState<string>("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Load user's vocational profile from localStorage when the chat opens
   useEffect(() => {
     const saved = localStorage.getItem('vocational_profile_context');
     if (saved) {
@@ -34,15 +34,7 @@ export default function FloatingChat() {
         const careersText = topCareers.map((c: any) => `- ${c.name} (${c.match}% match, ${c.faculty})`).join('\n');
         const ctx = `\n\n=== PERFIL VOCACIONAL DEL USUARIO ===\nDimensiones RIASEC:\n${dimensions}\n\nCarreras recomendadas para este usuario:\n${careersText}\n=====================================\n`;
         setProfileContext(ctx);
-        // Update welcome message
-        setMessages([{
-          id: "0",
-          role: "assistant",
-          content: `Ya veo tu perfil vocacional. Tienes alta afinidad con ${topCareers[0]?.name || 'las carreras recomendadas'}. ¿Quieres que te explique más sobre alguna de ellas?`,
-        }]);
-      } catch {
-        // ignore parse errors
-      }
+      } catch {}
     }
   }, []);
 
@@ -84,7 +76,7 @@ export default function FloatingChat() {
             role: m.role,
             content: m.content,
           })),
-          profileContext, // send the user's vocational profile
+          profileContext,
         }),
       });
 
@@ -103,7 +95,6 @@ export default function FloatingChat() {
 
         buffer += decoder.decode(value, { stream: true });
         const lines = buffer.split("\n");
-        // Keep the last (possibly incomplete) line in the buffer
         buffer = lines.pop() ?? "";
 
         for (const line of lines) {
@@ -121,9 +112,7 @@ export default function FloatingChat() {
                 )
               );
             }
-          } catch {
-            // skip non-JSON lines
-          }
+          } catch {}
         }
       }
 
@@ -140,7 +129,7 @@ export default function FloatingChat() {
       setMessages((prev) =>
         prev.map((m) =>
           m.id === assistantId
-            ? { ...m, content: "Ocurrio un error de conexion. Verifica tu internet e intenta de nuevo." }
+            ? { ...m, content: "Ocurrió un error de conexión." }
             : m
         )
       );
@@ -158,66 +147,72 @@ export default function FloatingChat() {
 
   return (
     <>
-      {/* Chat Button */}
       <button
         onClick={() => setIsOpen(true)}
-        className={`fixed bottom-6 right-6 h-14 w-14 bg-black text-white rounded-full flex items-center justify-center shadow-md hover:bg-zinc-800 transition-all z-50 ${
+        className={`fixed bottom-6 right-6 h-14 w-14 bg-[#082A4A] text-white rounded-full flex items-center justify-center shadow-lg hover:bg-[#00C2E0] transition-all z-50 ${
           isOpen ? "scale-0 opacity-0" : "scale-100 opacity-100"
         }`}
         aria-label="Abrir chat"
       >
-        <Bot className="h-6 w-6" />
+        <MessageSquare className="h-6 w-6" />
       </button>
 
-      {/* Chat Window */}
       <div
-        className={`fixed bottom-6 right-6 w-[350px] sm:w-[400px] h-[520px] max-h-[calc(100vh-2rem)] bg-white border border-zinc-200 rounded-xl shadow-xl flex flex-col transition-all duration-300 z-50 origin-bottom-right ${
+        className={`fixed bottom-6 right-6 w-[350px] sm:w-[400px] h-[520px] max-h-[calc(100vh-2rem)] bg-white border border-[#D6E5EF] rounded-[20px] shadow-xl flex flex-col transition-all duration-300 z-50 origin-bottom-right ${
           isOpen ? "scale-100 opacity-100" : "scale-0 opacity-0 pointer-events-none"
         }`}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-100 bg-white rounded-t-xl">
-          <div className="flex items-center gap-2">
-            <div className="h-7 w-7 rounded-full bg-black flex items-center justify-center">
-              <Bot className="h-3.5 w-3.5 text-white" />
+        <div className="flex items-center justify-between px-5 py-4 border-b border-[#D6E5EF] bg-white rounded-t-[20px]">
+          <div className="flex items-center gap-3">
+            <div className="relative h-10 w-10 rounded-full bg-[#EAF6FF] overflow-hidden flex items-center justify-center border border-[#00C2E0]/30">
+              <Image 
+                src="/assets/analizando_perfil.png" 
+                alt="Robot asistente" 
+                width={30} 
+                height={30} 
+                className="object-contain translate-y-1" 
+              />
             </div>
             <div>
-              <h3 className="font-semibold text-sm text-zinc-900 leading-none">Asistente UPC</h3>
-              <span className="text-[10px] text-zinc-400">En linea</span>
+              <h3 className="font-bold text-[16px] text-[#082A4A] leading-none mb-1">Asistente IA</h3>
+              <span className="text-[12px] text-[#00C2E0] font-medium flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#00C2E0]"></span> En línea
+              </span>
             </div>
           </div>
           <button
             onClick={() => setIsOpen(false)}
-            className="text-zinc-400 hover:text-zinc-900 transition-colors p-1 rounded-md hover:bg-zinc-100"
+            className="text-[#4F6B85] hover:text-[#082A4A] transition-colors p-2 rounded-full hover:bg-[#F8FCFF]"
             aria-label="Cerrar chat"
           >
-            <X className="h-4 w-4" />
+            <X className="h-5 w-5" />
           </button>
         </div>
 
         {/* Messages */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-zinc-50">
+        <div className="flex-1 overflow-y-auto p-5 space-y-4 bg-[#F8FCFF]">
           {messages.map((m) => (
             <div
               key={m.id}
-              className={`flex gap-2 ${m.role === "user" ? "justify-end" : "justify-start"}`}
+              className={`flex gap-3 ${m.role === "user" ? "justify-end" : "justify-start"}`}
             >
               {m.role === "assistant" && (
-                <div className="h-6 w-6 rounded-full bg-black flex items-center justify-center flex-shrink-0 mt-1">
-                  <Bot className="h-3 w-3 text-white" />
+                <div className="relative h-8 w-8 rounded-full bg-white flex items-center justify-center flex-shrink-0 mt-1 border border-[#D6E5EF] overflow-hidden">
+                  <Image src="/assets/analizando_perfil.png" alt="Robot" width={24} height={24} className="object-contain" />
                 </div>
               )}
               <div
-                className={`px-3.5 py-2.5 rounded-2xl max-w-[82%] text-sm leading-relaxed ${
+                className={`px-4 py-3 rounded-[16px] max-w-[82%] text-[14px] leading-relaxed shadow-sm ${
                   m.role === "user"
-                    ? "bg-black text-white rounded-br-sm"
-                    : "bg-white border border-zinc-200 text-zinc-900 rounded-bl-sm shadow-sm whitespace-pre-wrap"
+                    ? "bg-[#082A4A] text-white rounded-br-sm"
+                    : "bg-white border border-[#D6E5EF] text-[#082A4A] rounded-bl-sm whitespace-pre-wrap"
                 }`}
               >
                 {m.content || (
-                  <span className="flex items-center gap-1.5 text-zinc-400">
-                    <Loader2 className="h-3 w-3 animate-spin" />
-                    Pensando...
+                  <span className="flex items-center gap-2 text-[#4F6B85]">
+                    <Loader2 className="h-4 w-4 animate-spin text-[#00C2E0]" />
+                    Escribiendo...
                   </span>
                 )}
               </div>
@@ -229,36 +224,34 @@ export default function FloatingChat() {
         {/* Input */}
         <form
           onSubmit={sendMessage}
-          className="p-3 border-t border-zinc-100 bg-white rounded-b-xl"
+          className="p-4 border-t border-[#D6E5EF] bg-white rounded-b-[20px]"
         >
-          <div className="flex gap-2 items-center bg-zinc-100 border border-transparent focus-within:border-zinc-300 focus-within:bg-white transition-all rounded-full pr-1.5 pl-4">
+          <div className="flex gap-2 items-center bg-[#F8FCFF] border border-[#D6E5EF] focus-within:border-[#00C2E0] transition-colors rounded-full pr-2 pl-4">
             <input
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Escribe tu consulta..."
-              className="flex-1 bg-transparent border-none focus:outline-none text-sm h-10 text-zinc-900 placeholder-zinc-400"
+              placeholder="Escribe tu pregunta..."
+              className="flex-1 bg-transparent border-none focus:outline-none text-[14px] h-12 text-[#082A4A] placeholder-[#4F6B85]"
               disabled={isLoading}
               autoComplete="off"
             />
             <button
               type="submit"
               disabled={!input.trim() || isLoading}
-              className="h-8 w-8 bg-black text-white rounded-full flex items-center justify-center disabled:opacity-25 hover:bg-zinc-800 transition-colors flex-shrink-0"
+              className="h-9 w-9 bg-[#00C2E0] text-white rounded-full flex items-center justify-center disabled:opacity-50 hover:bg-[#0EA5C6] transition-colors flex-shrink-0"
             >
               {isLoading ? (
-                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
-                <Send className="h-3.5 w-3.5" />
+                <Send className="h-4 w-4 ml-0.5" />
               )}
             </button>
           </div>
-          <p className="text-[10px] text-center text-zinc-400 mt-2">
-            La informacion es referencial. Verifica con la UPC.
-          </p>
         </form>
       </div>
     </>
   );
 }
+

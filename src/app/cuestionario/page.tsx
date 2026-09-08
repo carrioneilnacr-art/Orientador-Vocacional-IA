@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, BrainCircuit } from "lucide-react";
+import { ArrowLeft, ArrowRight, BrainCircuit } from "lucide-react";
 import Link from "next/link";
+import { ChaskiAnalysis } from "@/components/chaski/ChaskiAnalysis";
 
 interface Question {
   id: number;
@@ -23,44 +24,64 @@ interface Option {
 export default function CuestionarioPage() {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(0);
-  const [answers, setAnswers] = useState<Record<number, number>>({}); // questionId -> optionId
+  const [answers, setAnswers] = useState<Record<number, number>>({});
+  const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [options, setOptions] = useState<Option[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Load questions from API
     fetch("/api/vocacional")
-      .then((r) => r.json())
+      .then((r) => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}: ${r.statusText}`);
+        return r.json();
+      })
       .then((data) => {
-        setQuestions(data.questions || []);
-        setOptions(data.options || []);
-
-        // Restore saved answers
-        const saved = localStorage.getItem("vocational_answers_v2");
-        if (saved) {
-          try {
-            setAnswers(JSON.parse(saved));
-          } catch {}
-        }
+        if (data.error) throw new Error(data.error);
+        const qs = data.questions || [];
+        const opts = data.options || [];
+        setQuestions(qs);
+        setOptions(opts);
+        localStorage.removeItem("vocational_answers_v2");
         setIsLoaded(true);
       })
-      .catch(() => setIsLoaded(true));
+      .catch((err) => {
+        console.error('[Cuestionario] Error loading questions:', err);
+        setFetchError(err?.message || 'Error desconocido');
+        setIsLoaded(true);
+      });
   }, []);
+
+  useEffect(() => {
+    if (questions.length > 0) {
+      const q = questions[currentStep];
+      if (answers[q.id] !== undefined) {
+        setSelectedOption(answers[q.id]);
+      } else {
+        setSelectedOption(null);
+      }
+    }
+  }, [currentStep, questions, answers]);
 
   const currentQuestion = questions[currentStep];
   const currentOptions = options.filter((o) => o.questionId === currentQuestion?.id);
 
-  const handleAnswer = async (optionId: number) => {
-    const newAnswers = { ...answers, [currentQuestion.id]: optionId };
+  const handleSelectOption = (optionId: number) => {
+    setSelectedOption(optionId);
+  };
+
+  const handleContinue = async () => {
+    if (selectedOption === null) return;
+
+    const newAnswers = { ...answers, [currentQuestion.id]: selectedOption };
     setAnswers(newAnswers);
     localStorage.setItem("vocational_answers_v2", JSON.stringify(newAnswers));
 
     if (currentStep < questions.length - 1) {
-      setTimeout(() => setCurrentStep(currentStep + 1), 300);
+      setCurrentStep(currentStep + 1);
     } else {
-      // Last question answered - calculate results
       setIsSubmitting(true);
       try {
         const res = await fetch("/api/vocacional", {
@@ -78,92 +99,131 @@ export default function CuestionarioPage() {
   };
 
   const handleBack = () => {
-    if (currentStep > 0) setCurrentStep(currentStep - 1);
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
+    }
   };
 
   if (!isLoaded) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <p className="text-slate-500">Cargando cuestionario...</p>
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-transparent">
+        <div className="w-10 h-10 border-4 border-[#00C2E0] border-t-transparent rounded-full animate-spin" />
+        <p className="text-[#4F6B85] font-medium">Cargando cuestionario...</p>
       </div>
     );
   }
 
   if (isSubmitting) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 gap-4">
-        <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
-        <p className="text-slate-600 font-medium">Analizando tu perfil vocacional...</p>
+      <div className="min-h-screen flex items-center justify-center bg-transparent">
+        <ChaskiAnalysis />
       </div>
     );
   }
 
-  if (questions.length === 0) {
+  if (fetchError || questions.length === 0) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-red-500">Error al cargar el cuestionario. Intenta más tarde.</p>
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-transparent">
+        <p className="text-[#082A4A] font-bold text-xl">Error al cargar el cuestionario</p>
+        <button
+          onClick={() => window.location.reload()}
+          className="px-6 py-3 bg-[#00C2E0] text-white rounded-[12px] font-semibold hover:bg-[#0EA5C6] transition-colors"
+        >
+          Reintentar
+        </button>
       </div>
     );
   }
 
-  const progress = (currentStep / questions.length) * 100;
+  const progress = Math.round(((currentStep + 1) / questions.length) * 100);
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50">
-      <header className="px-6 py-4 flex items-center justify-between border-b bg-white">
-        <Link href="/" className="flex items-center gap-2 text-slate-600 hover:text-slate-900 transition-colors">
-          <BrainCircuit className="h-5 w-5" />
-          <span className="font-semibold">Orientador IA</span>
+    <div className="min-h-screen flex flex-col bg-transparent font-sans selection:bg-[#00C2E0] selection:text-white">
+      <header className="px-6 py-4 flex items-center border-b border-[#D6E5EF] bg-white">
+        <Link href="/" className="flex items-center gap-2 text-[#4F6B85] hover:text-[#082A4A] transition-colors text-sm font-medium">
+          <ArrowLeft className="h-4 w-4" />
+          Salir
         </Link>
-        <div className="text-sm font-medium text-slate-500">
-          Pregunta {currentStep + 1} de {questions.length}
-        </div>
       </header>
 
-      {/* Progress bar */}
-      <div className="w-full bg-slate-200 h-1.5">
-        <div
-          className="bg-blue-600 h-1.5 transition-all duration-300 ease-out"
-          style={{ width: `${progress}%` }}
-        />
-      </div>
+      <main className="flex-1 flex flex-col items-center justify-center p-4 md:p-8">
+        <div className="w-full max-w-[800px] flex flex-col">
+          
+          <div className="flex justify-between items-end mb-4 px-2">
+            <span className="text-[14px] font-medium text-[#4F6B85]">
+              Pregunta {currentStep + 1} de {questions.length}
+            </span>
+            <span className="text-[14px] font-bold text-[#00C2E0]">
+              {progress}%
+            </span>
+          </div>
+          
+          <div className="w-full bg-[#DCEAF2] h-[8px] rounded-full overflow-hidden mb-10">
+            <div
+              className="bg-[#00C2E0] h-full transition-all duration-300 ease-out"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
 
-      <main className="flex-1 flex flex-col items-center justify-center p-6">
-        <div className="w-full max-w-2xl bg-white rounded-2xl shadow-sm border border-slate-100 p-8 md:p-12">
-          <p className="text-xs font-semibold uppercase tracking-widest text-blue-500 mb-4">
-            Dimensión: {currentQuestion?.dimension}
-          </p>
+          <div className="bg-white rounded-[20px] shadow-sm border border-[#D6E5EF] p-8 md:p-12">
+            <h2 className="text-[32px] md:text-[40px] font-bold text-[#082A4A] mb-2 leading-tight">
+              {currentQuestion?.questionText}
+            </h2>
+            <p className="text-[16px] text-[#4F6B85] mb-10">
+              Selecciona la opción que más se acerque a ti.
+            </p>
 
-          <h2 className="text-xl md:text-2xl font-semibold text-center text-slate-900 mb-10 min-h-[4rem]">
-            {currentQuestion?.questionText}
-          </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {currentOptions.map((option) => (
+                <button
+                  key={option.id}
+                  onClick={() => handleSelectOption(option.id)}
+                  className={`p-6 rounded-[16px] text-left border-[2px] transition-all duration-200 min-h-[100px] flex items-center ${
+                    selectedOption === option.id
+                      ? "border-[#00C2E0] bg-[#DEEEFF] shadow-sm"
+                      : "border-[#D6E5EF] bg-white hover:border-[#0EA5C6] hover:bg-[#EAF6FF]"
+                  }`}
+                >
+                  <span className={`text-[16px] font-medium ${selectedOption === option.id ? "text-[#082A4A]" : "text-[#4F6B85]"}`}>
+                    {option.optionText}
+                  </span>
+                </button>
+              ))}
+            </div>
 
-          <div className="space-y-3">
-            {currentOptions.map((option) => (
-              <button
-                key={option.id}
-                onClick={() => handleAnswer(option.id)}
-                className={`w-full p-4 rounded-xl text-left border-2 transition-all text-sm ${
-                  answers[currentQuestion?.id] === option.id
-                    ? "border-blue-600 bg-blue-50 text-blue-700 font-medium"
-                    : "border-slate-100 hover:border-slate-300 hover:bg-slate-50 text-slate-700"
-                }`}
+            <div className="mt-12 mb-8 text-center">
+              <p className="text-[14px] text-[#4F6B85]">
+                No hay respuestas correctas o incorrectas.<br className="hidden md:block"/>
+                Solo opciones que te acercan a tu mejor versión.
+              </p>
+            </div>
+
+            <div className="flex items-center justify-between mt-8 border-t border-[#D6E5EF] pt-8">
+              <div>
+                {currentStep > 0 ? (
+                  <button
+                    onClick={handleBack}
+                    className="flex items-center gap-2 h-[48px] px-6 rounded-[12px] border border-[#00C2E0] bg-white text-[#082A4A] font-semibold text-[14px] hover:bg-[#EAF6FF] transition-colors"
+                  >
+                    <ArrowLeft className="h-4 w-4" />
+                    Anterior
+                  </button>
+                ) : (
+                  <div></div>
+                )}
+              </div>
+              
+              <button 
+                onClick={handleContinue}
+                disabled={selectedOption === null}
+                className="flex items-center gap-2 h-[48px] px-8 bg-[#00C2E0] hover:bg-[#0EA5C6] disabled:opacity-50 disabled:hover:bg-[#00C2E0] text-white rounded-[12px] font-semibold text-[16px] transition-colors"
               >
-                {option.optionText}
+                Siguiente
+                <ArrowRight className="h-4 w-4" />
               </button>
-            ))}
+            </div>
           </div>
 
-          <div className="mt-10 flex justify-between">
-            <button
-              onClick={handleBack}
-              disabled={currentStep === 0}
-              className="flex items-center gap-2 text-slate-500 hover:text-slate-900 font-medium transition-colors disabled:opacity-50 disabled:pointer-events-none"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              Anterior
-            </button>
-          </div>
         </div>
       </main>
     </div>

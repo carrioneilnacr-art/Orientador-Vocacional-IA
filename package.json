@@ -16,17 +16,22 @@
     "@ai-sdk/google": "^4.0.63",
     "@ai-sdk/openai": "^4.0.57",
     "@ai-sdk/react": "^4.0.94",
+    "@google/genai": "^2.21.0",
     "@supabase/supabase-js": "^2.49.1",
     "ai": "^7.0.91",
+    "clsx": "^2.1.1",
     "dotenv": "^16.4.7",
     "drizzle-orm": "^0.39.3",
     "drizzle-zod": "^0.7.0",
+    "framer-motion": "^13.2.0",
     "lucide-react": "^1.39.0",
     "next": "15.2.1",
     "postgres": "^3.4.5",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-is": "^19.2.8",
     "recharts": "^3.10.1",
+    "tailwind-merge": "^3.6.0",
     "zod": "^3.24.2"
   },
   "devDependencies": {
@@ -38,7 +43,8 @@
     "eslint": "^9",
     "eslint-config-next": "15.2.1",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^5.0.0"
   },
   "description": "Plataforma web de orientación vocacional asistida por IA con datos verificados de la UPC.",
   "repository": {

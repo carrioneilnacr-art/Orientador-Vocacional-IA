@@ -1,76 +1,138 @@
 import Link from "next/link";
-import { ArrowRight, BrainCircuit, Compass, GraduationCap } from "lucide-react";
+import Image from "next/image";
+import { ArrowRight, Compass, Shield, Map, Star, Users, CheckCircle } from "lucide-react";
 
 export default function Home() {
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-transparent font-sans selection:bg-[#00C2E0] selection:text-white transition-colors duration-500">
       {/* Header */}
-      <header className="px-6 py-4 flex items-center justify-between border-b">
-        <div className="flex items-center gap-2">
-          <BrainCircuit className="h-6 w-6 text-blue-600" />
-          <span className="font-bold text-xl tracking-tight">Orientador IA</span>
+      <header className="px-6 md:px-12 py-6 flex items-center justify-between w-full max-w-[1400px] mx-auto z-10 relative">
+        <div className="flex items-center gap-3">
+          {/* Espacio en blanco limpio sin nombre CHASKI ni logotipo */}
         </div>
-        <nav className="hidden md:flex gap-6">
-          <Link href="#como-funciona" className="text-sm font-medium text-slate-600 hover:text-slate-900">
-            Cómo funciona
-          </Link>
-          <Link href="#carreras" className="text-sm font-medium text-slate-600 hover:text-slate-900">
-            Carreras UPC
-          </Link>
+        
+        {/* Desktop Navigation */}
+        <nav className="hidden md:flex items-center gap-8">
+          <Link href="/" className="text-[14px] font-medium text-[#082A4A] hover:text-[#00C2E0] transition-colors">Inicio</Link>
+          <Link href="/como-funciona" className="text-[14px] font-medium text-[#4F6B85] hover:text-[#082A4A] transition-colors">Cómo funciona</Link>
         </nav>
+        
+        {/* Placeholder to keep flex-between balanced if needed */}
+        <div className="hidden md:block w-[100px]"></div>
       </header>
 
       {/* Hero Section */}
-      <main className="flex-1 flex flex-col items-center justify-center px-6 py-20 text-center bg-gradient-to-b from-white to-slate-50">
-        <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-blue-100 text-blue-800 mb-6">
-          Desarrollado con Inteligencia Artificial
-        </div>
-        <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-slate-900 max-w-4xl mb-6">
-          Descubre la carrera ideal para tu <span className="text-blue-600 text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500">futuro profesional</span>
-        </h1>
-        <p className="text-lg md:text-xl text-slate-600 max-w-2xl mb-10">
-          Nuestro orientador vocacional analiza tu personalidad, intereses y habilidades para recomendarte las mejores opciones académicas en la UPC.
-        </p>
-        
-        <Link 
-          href="/cuestionario"
-          className="inline-flex h-14 items-center justify-center rounded-full bg-blue-600 px-8 text-base font-medium text-white shadow transition-colors hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 group"
-        >
-          Empieza a conocer tu futuro
-          <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
-        </Link>
+      <main className="flex-1 w-full max-w-[1400px] mx-auto grid lg:grid-cols-2 gap-8 px-6 md:px-12 pb-12 pt-4">
+        {/* Left Column (Text Content) */}
+        <div className="flex flex-col justify-center py-8 lg:pr-8">
+          <h1 className="text-[48px] md:text-[56px] font-bold tracking-tight text-[#082A4A] mb-6 leading-tight">
+            Tu futuro<br />
+            también es parte de nuestra<br />
+            <span className="text-[#00C2E0]">historia.</span>
+          </h1>
+          
+          <p className="text-[16px] text-[#4F6B85] mb-10 max-w-lg font-normal leading-relaxed">
+            Descubre tu vocación con IA y conecta tus talentos con las oportunidades del mundo real.
+          </p>
 
-        {/* Features */}
-        <div className="grid md:grid-cols-3 gap-8 max-w-5xl w-full mt-24 text-left">
-          <div className="flex flex-col items-start p-6 bg-white rounded-2xl shadow-sm border border-slate-100">
-            <div className="p-3 bg-blue-50 text-blue-600 rounded-xl mb-4">
-              <BrainCircuit className="h-6 w-6" />
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-12 max-w-lg">
+            <div className="flex flex-col items-start gap-3">
+              <div className="text-[#082A4A]">
+                <Compass className="h-6 w-6" strokeWidth={1.5} />
+              </div>
+              <div>
+                <h3 className="font-semibold text-[#082A4A] text-[16px]">Explora</h3>
+                <p className="text-[13px] text-[#4F6B85] font-normal">Tus intereses</p>
+              </div>
             </div>
-            <h3 className="text-xl font-semibold mb-2">Evaluación Psicométrica</h3>
-            <p className="text-slate-600">Basado en el modelo Holland (RIASEC) adaptado para perfiles tecnológicos y de innovación.</p>
+            <div className="flex flex-col items-start gap-3">
+              <div className="text-[#082A4A]">
+                <Shield className="h-6 w-6" strokeWidth={1.5} />
+              </div>
+              <div>
+                <h3 className="font-semibold text-[#082A4A] text-[16px]">Conoce</h3>
+                <p className="text-[13px] text-[#4F6B85] font-normal">Tus fortalezas</p>
+              </div>
+            </div>
+            <div className="flex flex-col items-start gap-3">
+              <div className="text-[#082A4A]">
+                <Map className="h-6 w-6" strokeWidth={1.5} />
+              </div>
+              <div>
+                <h3 className="font-semibold text-[#082A4A] text-[16px]">Decide</h3>
+                <p className="text-[13px] text-[#4F6B85] font-normal">Tu próximo paso</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center">
+            <Link 
+              href="/cuestionario"
+              className="inline-flex h-[56px] items-center justify-center rounded-[16px] bg-[#00C2E0] hover:bg-[#0EA5C6] px-8 text-[18px] font-bold text-white shadow-lg shadow-[#00C2E0]/20 transition-all duration-300 hover:-translate-y-1"
+            >
+              Comenzar ahora
+              <ArrowRight className="ml-3 h-5 w-5" />
+            </Link>
+          </div>
+        </div>
+
+        {/* Right Column (Image/Visuals) */}
+        <div className="relative min-h-[500px] lg:min-h-[600px] rounded-[24px] overflow-hidden flex flex-col justify-end p-6 md:p-10 border border-[#D6E5EF] bg-white shadow-xl shadow-[#082A4A]/5">
+          {/* Background Image */}
+          <div className="absolute inset-0 z-0">
+             <Image 
+                src="/assets/robot_bg.jpg" 
+                alt="Robot explorador en montañas" 
+                fill 
+                className="object-cover"
+                priority
+             />
+             {/* Gradient Overlay for better text legibility */}
+             <div className="absolute inset-0 bg-gradient-to-t from-[#082A4A]/60 via-[#082A4A]/20 to-transparent"></div>
           </div>
           
-          <div className="flex flex-col items-start p-6 bg-white rounded-2xl shadow-sm border border-slate-100">
-            <div className="p-3 bg-emerald-50 text-emerald-600 rounded-xl mb-4">
-              <Compass className="h-6 w-6" />
-            </div>
-            <h3 className="text-xl font-semibold mb-2">Resultados Precisos</h3>
-            <p className="text-slate-600">Obtén un radar de tu personalidad y un Top 3 de carreras recomendadas con justificación detallada.</p>
+          {/* Floating Handwritten Text */}
+          <div className="absolute top-12 right-12 z-10 rotate-[-4deg] max-w-[200px] hover:rotate-0 transition-transform duration-300">
+             <p className="text-[16px] font-serif italic text-[#082A4A] leading-snug bg-white/95 backdrop-blur-md p-4 rounded-[14px] shadow-lg shadow-[#082A4A]/10 border border-[#D6E5EF]">
+               Grandes decisiones también empiezan con una pregunta.
+             </p>
           </div>
           
-          <div className="flex flex-col items-start p-6 bg-white rounded-2xl shadow-sm border border-slate-100">
-            <div className="p-3 bg-purple-50 text-purple-600 rounded-xl mb-4">
-              <GraduationCap className="h-6 w-6" />
+          {/* Stats Bar */}
+          <div className="relative z-10 w-full bg-white/95 backdrop-blur-xl rounded-[20px] p-6 flex flex-col sm:flex-row justify-between items-center shadow-xl shadow-[#082A4A]/10 border border-[#D6E5EF]/50 gap-4 sm:gap-0">
+            <div className="flex flex-col items-center sm:items-start">
+              <div className="flex items-center gap-2 mb-1">
+                <Users className="h-5 w-5 text-[#00C2E0]" />
+                <div className="font-bold text-[28px] text-[#082A4A] leading-none">+10K</div>
+              </div>
+              <div className="text-[#4F6B85] text-[14px] font-medium ml-7">estudiantes</div>
             </div>
-            <h3 className="text-xl font-semibold mb-2">Asistente 24/7</h3>
-            <p className="text-slate-600">Resuelve tus dudas sobre mallas curriculares, costos y sedes conversando con nuestra IA oficial.</p>
+            
+            <div className="hidden sm:block w-px h-12 bg-[#D6E5EF]"></div>
+            
+            <div className="flex flex-col items-center sm:items-start">
+              <div className="flex items-center gap-2 mb-1">
+                <Star className="h-5 w-5 text-[#00C2E0] fill-[#00C2E0]" />
+                <div className="font-bold text-[28px] text-[#082A4A] leading-none">95%</div>
+              </div>
+              <div className="text-[#4F6B85] text-[14px] font-medium ml-7">recomiendan</div>
+            </div>
+
+            <div className="hidden sm:block w-px h-12 bg-[#D6E5EF]"></div>
+
+            <div className="flex flex-col items-center sm:items-start">
+              <div className="flex items-center gap-2 mb-1">
+                <CheckCircle className="h-5 w-5 text-[#00C2E0]" />
+                <div className="font-bold text-[28px] text-[#082A4A] leading-none">+100</div>
+              </div>
+              <div className="text-[#4F6B85] text-[14px] font-medium ml-7">carreras analizadas</div>
+            </div>
           </div>
         </div>
       </main>
-      
-      <footer className="border-t py-8 px-6 text-center text-slate-500">
-        <p>© 2026 Orientador Vocacional IA - UPC. Todos los derechos reservados.</p>
-      </footer>
     </div>
   );
 }
+
+
+

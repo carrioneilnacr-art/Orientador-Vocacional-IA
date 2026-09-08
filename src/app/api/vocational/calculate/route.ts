@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { CalculateProfileUseCase } from '../../../application/use-cases/calculateProfileUseCase';
-import { CareerProfile } from '../../../domain/vocational/scoring';
+import { CalculateProfileUseCase } from '@/application/use-cases/calculateProfileUseCase';
+import { CareerProfile } from '@/domain/vocational/scoring';
 
 // MOCK Repository para Fase 3 (luego Agente 1 inyectará Drizzle DB)
 const mockCareers: CareerProfile[] = [

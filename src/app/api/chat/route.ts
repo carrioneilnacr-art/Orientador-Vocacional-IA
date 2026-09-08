@@ -75,7 +75,7 @@ export async function POST(req: Request) {
 Tu objetivo es ayudar a los postulantes a encontrar la carrera ideal y responder sus dudas sobre sedes, mallas curriculares, costos y grado académico.
 IMPORTANTE: Usa SOLO la información del contexto oficial provisto más abajo para responder preguntas sobre carreras, pensiones y sedes. Si no tienes datos en el contexto, dilo claramente.
 Si tienes el perfil vocacional del usuario, personaliza tu respuesta destacando por qué esa carrera es adecuada para su perfil específico.
-No uses emojis ni emoticones. Responde de forma profesional y directa.${profileContext || ''}${careerContext}`;
+REGLA ESTRICTA: No uses ningún tipo de emoji, emoticon, ni signos de exclamación excesivos. Mantén un tono sumamente profesional, sobrio y directo en todas tus respuestas.${profileContext || ''}${careerContext}`;
 
     const result = streamText({
       model: google('gemini-3.6-flash'),
