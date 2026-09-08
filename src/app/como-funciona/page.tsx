@@ -55,10 +55,10 @@ export default function ComoFunciona() {
 
             <div className="bg-white rounded-[24px] p-8 shadow-[0_4px_20px_rgb(0,0,0,0.03)] border border-[#D6E5EF] relative overflow-hidden group hover:border-[#00C2E0] transition-all duration-300">
               <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-[#EAF6FF] to-transparent rounded-bl-full -z-10 opacity-50 group-hover:opacity-100 transition-opacity" />
-              <div className="text-[#00C2E0] font-black text-[56px] leading-none mb-4">#1</div>
-              <h3 className="text-[18px] font-bold text-[#082A4A] mb-3">Soluciones Obsoletas</h3>
+              <div className="text-[#00C2E0] font-black text-[56px] leading-none mb-4">S/15k</div>
+              <h3 className="text-[18px] font-bold text-[#082A4A] mb-3">Inversión Perdida</h3>
               <p className="text-[#4F6B85] text-[14px] leading-relaxed">
-                Los tests vocacionales tradicionales te encasillan en áreas rígidas. Hoy, las carreras son multidisciplinarias y los jóvenes exigen datos precisos e inmediatos.
+                Cambiar de carrera implica una pérdida promedio de S/ 15,000 y al menos 1 año de tiempo. Nuestra tecnología minimiza este riesgo drásticamente.
               </p>
             </div>
           </div>
@@ -96,17 +96,16 @@ export default function ComoFunciona() {
               {/* Step 2 */}
               <div className="flex flex-col md:flex-row-reverse items-center gap-6 md:gap-0 mt-0 md:-mt-12">
                 <div className="w-full md:w-1/2 md:pl-16 flex flex-col items-center md:items-start text-left">
-                  <div className="bg-[#082A4A] p-8 rounded-[24px] shadow-sm border border-[#082A4A] hover:shadow-lg transition-shadow relative overflow-hidden w-full">
-                    <div className="absolute top-0 right-0 w-40 h-40 bg-white/5 rounded-bl-full -z-10" />
-                    <div className="inline-flex w-12 h-12 bg-[#00C2E0]/20 text-[#00C2E0] rounded-[12px] items-center justify-center font-bold text-xl mb-6">2</div>
-                    <h3 className="text-[22px] font-bold text-white mb-3">Algoritmo de Matching</h3>
-                    <p className="text-[#D6E5EF] text-[15px] leading-relaxed">
+                  <div className="bg-white p-8 rounded-[24px] shadow-sm border border-[#D6E5EF] hover:shadow-md transition-shadow w-full">
+                    <div className="inline-flex w-12 h-12 bg-[#EAF6FF] text-[#00C2E0] rounded-[12px] items-center justify-center font-bold text-xl mb-6">2</div>
+                    <h3 className="text-[22px] font-bold text-[#082A4A] mb-3">Algoritmo de Matching</h3>
+                    <p className="text-[#4F6B85] text-[15px] leading-relaxed">
                       El sistema calcula la afinidad cruzando el puntaje del alumno contra nuestra base de datos relacional. Se aplican reglas y pesos específicos por dimensión para empatar con perfiles de egreso universitarios reales.
                     </p>
                   </div>
                 </div>
-                <div className="hidden md:flex absolute left-1/2 -translate-x-1/2 w-[48px] h-[48px] bg-[#082A4A] rounded-full border-[6px] border-[#F8FCFF] shadow-sm items-center justify-center z-20 md:mt-12">
-                  <Brain className="text-[#00C2E0] h-5 w-5" />
+                <div className="hidden md:flex absolute left-1/2 -translate-x-1/2 w-[48px] h-[48px] bg-[#00C2E0] rounded-full border-[6px] border-[#F8FCFF] shadow-sm items-center justify-center z-20 md:mt-12">
+                  <Brain className="text-white h-5 w-5" />
                 </div>
                 <div className="hidden md:block md:w-1/2 md:pr-16" />
               </div>
