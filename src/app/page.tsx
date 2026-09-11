@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, Compass, Shield, Map, Star, Users, CheckCircle } from "lucide-react";
+import { ArrowRight, BrainCircuit, ShieldCheck, Sparkles } from "lucide-react";
 
 export default function Home() {
   return (
@@ -58,34 +58,34 @@ export default function Home() {
             </Link>
           </div>
 
-          {/* Stats Bar integrado */}
+          {/* Value Highlights Bar */}
           <div className="w-full bg-white/95 backdrop-blur-xl rounded-[20px] p-6 flex flex-col sm:flex-row justify-between items-center shadow-[0_10px_30px_rgb(8,42,74,0.06)] border border-[#D6E5EF]/50 gap-4 sm:gap-0">
             <div className="flex flex-col items-center sm:items-start w-full sm:w-auto">
               <div className="flex items-center gap-2 mb-1">
-                <Users className="h-5 w-5 text-[#00C2E0]" />
-                <div className="font-bold text-[24px] md:text-[28px] text-[#082A4A] leading-none">+10K</div>
+                <BrainCircuit className="h-5 w-5 text-[#00C2E0]" />
+                <div className="font-bold text-[20px] md:text-[22px] text-[#082A4A] leading-none">8 Dimensiones</div>
               </div>
-              <div className="text-[#4F6B85] text-[13px] font-medium sm:ml-7">estudiantes</div>
+              <div className="text-[#4F6B85] text-[13px] font-medium sm:ml-7">Modelo Holland & RIASEC</div>
             </div>
             
             <div className="hidden sm:block w-px h-12 bg-[#D6E5EF]"></div>
             
             <div className="flex flex-col items-center sm:items-start w-full sm:w-auto">
               <div className="flex items-center gap-2 mb-1">
-                <Star className="h-5 w-5 text-[#00C2E0] fill-[#00C2E0]" />
-                <div className="font-bold text-[24px] md:text-[28px] text-[#082A4A] leading-none">95%</div>
+                <ShieldCheck className="h-5 w-5 text-[#00C2E0]" />
+                <div className="font-bold text-[20px] md:text-[22px] text-[#082A4A] leading-none">Datos Reales</div>
               </div>
-              <div className="text-[#4F6B85] text-[13px] font-medium sm:ml-7">recomiendan</div>
+              <div className="text-[#4F6B85] text-[13px] font-medium sm:ml-7">Universidades y mallas vigentes</div>
             </div>
 
             <div className="hidden sm:block w-px h-12 bg-[#D6E5EF]"></div>
 
             <div className="flex flex-col items-center sm:items-start w-full sm:w-auto">
               <div className="flex items-center gap-2 mb-1">
-                <CheckCircle className="h-5 w-5 text-[#00C2E0]" />
-                <div className="font-bold text-[24px] md:text-[28px] text-[#082A4A] leading-none">+100</div>
+                <Sparkles className="h-5 w-5 text-[#00C2E0]" />
+                <div className="font-bold text-[20px] md:text-[22px] text-[#082A4A] leading-none">100% Gratuito</div>
               </div>
-              <div className="text-[#4F6B85] text-[13px] font-medium sm:ml-7">carreras analizadas</div>
+              <div className="text-[#4F6B85] text-[13px] font-medium sm:ml-7">Con reporte PDF descargable</div>
             </div>
           </div>
         </div>

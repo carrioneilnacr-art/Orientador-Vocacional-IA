@@ -18,24 +18,85 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+/* ═══════════════════════════════════════════
+   PRINT / PDF STYLES
+   El navegador gestiona oklch de forma nativa,
+   no hay bugs de canvas al usar window.print()
+═══════════════════════════════════════════ */
 @media print {
-  header, aside, .no-print, .no-pdf {
+  /* Ocultar elementos de navegación e interacción */
+  header,
+  footer,
+  aside,
+  .no-print,
+  .no-pdf,
+  .copilot-column {
     display: none !important;
   }
-  body, main {
+
+  /* Mostrar el banner exclusivo de PDF */
+  .pdf-only-banner {
+    display: flex !important;
+  }
+
+  /* Reset general para impresión */
+  *,
+  *::before,
+  *::after {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  html,
+  body {
     width: 100% !important;
-    max-width: 100% !important;
     margin: 0 !important;
     padding: 0 !important;
     background: #F8FCFF !important;
+    font-size: 13px !important;
   }
+
+  /* Contenedor principal del reporte */
   #report-content {
     width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 16px 24px !important;
     display: block !important;
+    background: #F8FCFF !important;
   }
+
+  /* Cada sección nunca se corta por la mitad */
+  section {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    margin-bottom: 24px !important;
+  }
+
+  /* Las tarjetas de carrera tampoco se parten */
+  .career-card,
+  [class*="rounded-[20px]"],
+  [class*="rounded-[24px]"] {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  /* El hero grid pasa a 2 columnas (sin copilot) */
+  .hero-grid {
+    grid-template-columns: 1.2fr 1fr !important;
+    gap: 20px !important;
+  }
+
+  /* Ajustar tipografía para A4 */
+  h1 { font-size: 36px !important; }
+  h2 { font-size: 22px !important; }
+  h3 { font-size: 17px !important; }
 }
 
-/* Modo de exportación a PDF para html2canvas */
+/* ═══════════════════════════════════════════
+   MODO PDF EXPORT (html2canvas — legacy,
+   mantenido para compatibilidad)
+═══════════════════════════════════════════ */
 #report-content.pdf-export-mode {
   width: 1200px !important;
   max-width: 1200px !important;
@@ -58,4 +119,3 @@ body {
 #report-content.pdf-export-mode .pdf-only-banner {
   display: flex !important;
 }
-
