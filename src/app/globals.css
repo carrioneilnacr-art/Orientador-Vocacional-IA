@@ -24,6 +24,11 @@ body {
    no hay bugs de canvas al usar window.print()
 ═══════════════════════════════════════════ */
 @media print {
+  @page {
+    size: landscape; /* Orientación horizontal forzada para Chromium/Safari/Firefox */
+    margin: 0;       /* Elimina los encabezados y pies de página nativos del navegador (localhost:3000, fechas, URLs) */
+  }
+
   /* Ocultar elementos de navegación e interacción */
   header,
   footer,
@@ -39,7 +44,7 @@ body {
     display: flex !important;
   }
 
-  /* Reset general para impresión */
+  /* Reset general para impresión con colores exactos */
   *,
   *::before,
   *::after {
@@ -50,18 +55,23 @@ body {
   html,
   body {
     width: 100% !important;
+    max-width: 100% !important;
+    min-width: 100% !important;
     margin: 0 !important;
     padding: 0 !important;
     background: #F8FCFF !important;
     font-size: 13px !important;
+    -webkit-font-smoothing: antialiased;
   }
 
-  /* Contenedor principal del reporte */
-  #report-content {
+  /* Contenedor principal del reporte ajustado a landscape */
+  #report-content,
+  #report-content.pdf-export-mode {
     width: 100% !important;
     max-width: 100% !important;
     margin: 0 !important;
-    padding: 16px 24px !important;
+    padding: 12mm 18mm !important; /* Margen estético para que el contenido respete los bordes de la hoja */
+    box-sizing: border-box !important;
     display: block !important;
     background: #F8FCFF !important;
   }
@@ -87,25 +97,15 @@ body {
     gap: 20px !important;
   }
 
-  /* Ajustar tipografía para A4 */
-  h1 { font-size: 36px !important; }
+  /* Ajustar tipografía para landscape */
+  h1 { font-size: 32px !important; }
   h2 { font-size: 22px !important; }
   h3 { font-size: 17px !important; }
 }
 
 /* ═══════════════════════════════════════════
-   MODO PDF EXPORT (html2canvas — legacy,
-   mantenido para compatibilidad)
+   MODO PDF EXPORT (preparación del DOM)
 ═══════════════════════════════════════════ */
-#report-content.pdf-export-mode {
-  width: 1200px !important;
-  max-width: 1200px !important;
-  margin: 0 auto !important;
-  padding: 32px !important;
-  background-color: #F8FCFF !important;
-  box-sizing: border-box !important;
-}
-
 #report-content.pdf-export-mode .copilot-column,
 #report-content.pdf-export-mode .no-pdf {
   display: none !important;
@@ -113,9 +113,10 @@ body {
 
 #report-content.pdf-export-mode .hero-grid {
   grid-template-columns: 1.2fr 1fr !important;
-  gap: 28px !important;
+  gap: 24px !important;
 }
 
 #report-content.pdf-export-mode .pdf-only-banner {
   display: flex !important;
 }
+

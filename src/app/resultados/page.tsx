@@ -13,7 +13,7 @@ import WhyCareerSection from "@/components/resultados/WhyCareerSection";
 import NextStepsSection from "@/components/resultados/NextStepsSection";
 
 export default function ResultadosPage() {
-  const { results, isLoaded, profileName } = useVocationalResults();
+  const { results, isLoaded, profileName, testId } = useVocationalResults();
   const [isDownloading, setIsDownloading] = useState(false);
 
   const handleDownload = () => {
@@ -21,11 +21,13 @@ export default function ResultadosPage() {
       profileName,
       () => setIsDownloading(true),
       () => setIsDownloading(false),
+      testId,
     );
   };
 
   const handleRestart = () => {
     localStorage.removeItem("vocational_answers_v2");
+    localStorage.removeItem("vocational_answers_v3");
     localStorage.removeItem("vocational_results");
     localStorage.removeItem("vocational_profile_context");
     window.location.href = "/cuestionario";
@@ -75,6 +77,7 @@ export default function ResultadosPage() {
           </div>
           <div className="text-right text-xs text-[#4F6B85]">
             <p className="font-semibold text-[#082A4A]">Perfil: {profileName}</p>
+            {testId && <p className="font-mono text-[11px] font-bold text-[#00C2E0]">ID: {testId}</p>}
             <p>Generado el {new Date().toLocaleDateString("es-PE")}</p>
           </div>
         </div>

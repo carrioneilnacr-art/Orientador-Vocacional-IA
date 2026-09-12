@@ -1,61 +1,69 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { ArrowLeft, ArrowRight, BrainCircuit } from "lucide-react";
-import Link from "next/link";
-import { ChaskiAnalysis } from "@/components/chaski/ChaskiAnalysis";
+import React, { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { ChaskiAnalysis } from '@/components/chaski/ChaskiAnalysis';
+import { RandomTestController } from '@/components/questionnaire/RandomTestController';
+import { AdventureIntro } from '@/components/questionnaire/AdventureIntro';
+import { MissionHeader } from '@/components/questionnaire/MissionHeader';
+import { MissionInterlude } from '@/components/questionnaire/MissionInterlude';
+import { ChoiceCard } from '@/components/questionnaire/ChoiceCard';
+import type { QuestionItem, OptionItem } from '@/data/questionnaireData';
 
-interface Question {
-  id: number;
-  code: string;
-  dimension: string;
-  questionText: string;
-  orderNumber: number;
-}
-
-interface Option {
-  id: number;
-  questionId: number;
-  optionText: string;
-  scorePayload: Record<string, number>;
-}
+type ViewMode = 'INTRO' | 'QUESTIONS' | 'INTERLUDE' | 'SUBMITTING';
 
 export default function CuestionarioPage() {
   const router = useRouter();
+
+  const [viewMode, setViewMode] = useState<ViewMode>('INTRO');
   const [currentStep, setCurrentStep] = useState(0);
   const [answers, setAnswers] = useState<Record<number, number>>({});
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
-  const [questions, setQuestions] = useState<Question[]>([]);
-  const [options, setOptions] = useState<Option[]>([]);
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [fetchError, setFetchError] = useState<string | null>(null);
 
+  const [questions, setQuestions] = useState<QuestionItem[]>([]);
+  const [options, setOptions] = useState<OptionItem[]>([]);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [completedInterludeMission, setCompletedInterludeMission] = useState<number>(1);
+
+  // Cargar preguntas y opciones desde el endpoint
   useEffect(() => {
-    fetch("/api/vocacional")
+    fetch('/api/vocacional')
       .then((r) => {
-        if (!r.ok) throw new Error(`HTTP ${r.status}: ${r.statusText}`);
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
         return r.json();
       })
       .then((data) => {
-        if (data.error) throw new Error(data.error);
-        const qs = data.questions || [];
-        const opts = data.options || [];
+        const qs: QuestionItem[] = data.questions || [];
+        const opts: OptionItem[] = data.options || [];
         setQuestions(qs);
         setOptions(opts);
-        localStorage.removeItem("vocational_answers_v2");
+
+        // Restaurar respuestas previas si existen
+        try {
+          const saved = localStorage.getItem('vocational_answers_v3');
+          if (saved) {
+            const parsed = JSON.parse(saved);
+            if (parsed && typeof parsed === 'object') {
+              setAnswers(parsed);
+            }
+          }
+        } catch {
+          // ignore corrupted local storage
+        }
+
         setIsLoaded(true);
       })
       .catch((err) => {
-        console.error('[Cuestionario] Error loading questions:', err);
-        setFetchError(err?.message || 'Error desconocido');
+        console.error('[Cuestionario] Error al cargar preguntas:', err);
         setIsLoaded(true);
       });
   }, []);
 
+  // Actualizar la opción seleccionada al cambiar de paso
   useEffect(() => {
-    if (questions.length > 0) {
+    if (questions.length > 0 && questions[currentStep]) {
       const q = questions[currentStep];
       if (answers[q.id] !== undefined) {
         setSelectedOption(answers[q.id]);
@@ -65,166 +73,218 @@ export default function CuestionarioPage() {
     }
   }, [currentStep, questions, answers]);
 
-  const currentQuestion = questions[currentStep];
-  const currentOptions = options.filter((o) => o.questionId === currentQuestion?.id);
+  const currentQuestion = questions[currentStep] || null;
+  const currentOptions = currentQuestion
+    ? options.filter((o) => o.questionId === currentQuestion.id)
+    : [];
 
+  const currentMissionNumber = currentQuestion ? currentQuestion.missionNumber : 1;
+
+  // Seleccionar opción
   const handleSelectOption = (optionId: number) => {
     setSelectedOption(optionId);
   };
 
-  const handleContinue = async () => {
-    if (selectedOption === null) return;
+  // Enviar respuestas a la API
+  const submitAnswers = useCallback(
+    async (finalAnswers: Record<number, number>) => {
+      setViewMode('SUBMITTING');
+      try {
+        const res = await fetch('/api/vocacional', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ answers: finalAnswers }),
+        });
+        const result = await res.json();
+        localStorage.setItem('vocational_results', JSON.stringify(result));
+        localStorage.setItem('vocational_answers_v3', JSON.stringify(finalAnswers));
+
+        // Breve pausa para que el usuario disfrute la animación de Chaski
+        setTimeout(() => {
+          router.push('/resultados');
+        }, 1800);
+      } catch (err) {
+        console.error('[Cuestionario] Error enviando respuestas:', err);
+        router.push('/resultados');
+      }
+    },
+    [router]
+  );
+
+  // Avanzar a la siguiente pregunta o mostrar interludio entre misiones
+  const handleContinue = () => {
+    if (selectedOption === null || !currentQuestion) return;
 
     const newAnswers = { ...answers, [currentQuestion.id]: selectedOption };
     setAnswers(newAnswers);
-    localStorage.setItem("vocational_answers_v2", JSON.stringify(newAnswers));
+    localStorage.setItem('vocational_answers_v3', JSON.stringify(newAnswers));
 
-    if (currentStep < questions.length - 1) {
-      setCurrentStep(currentStep + 1);
+    // Si terminó la Misión 1 (paso 3), Misión 2 (paso 7) o Misión 3 (paso 11) -> Mostrar interludio
+    if (currentStep === 3) {
+      setCompletedInterludeMission(1);
+      setViewMode('INTERLUDE');
+      return;
+    }
+    if (currentStep === 7) {
+      setCompletedInterludeMission(2);
+      setViewMode('INTERLUDE');
+      return;
+    }
+    if (currentStep === 11) {
+      setCompletedInterludeMission(3);
+      setViewMode('INTERLUDE');
+      return;
+    }
+
+    // Si es la última pregunta (15) -> Enviar cuestionario
+    if (currentStep >= questions.length - 1) {
+      submitAnswers(newAnswers);
     } else {
-      setIsSubmitting(true);
-      try {
-        const res = await fetch("/api/vocacional", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ answers: newAnswers }),
-        });
-        const result = await res.json();
-        localStorage.setItem("vocational_results", JSON.stringify(result));
-        router.push("/resultados");
-      } catch {
-        router.push("/resultados");
-      }
+      setCurrentStep((prev) => prev + 1);
     }
   };
 
+  // Regresar a la pregunta anterior
   const handleBack = () => {
     if (currentStep > 0) {
-      setCurrentStep(currentStep - 1);
+      setCurrentStep((prev) => prev - 1);
+    } else {
+      setViewMode('INTRO');
     }
+  };
+
+  // Continuar tras el interludio de Chaski
+  const handleResumeAfterInterlude = () => {
+    setViewMode('QUESTIONS');
+    setCurrentStep((prev) => prev + 1);
+  };
+
+  // Función de pruebas rápidas: auto-completar todo al azar y finalizar
+  const handleAutoSubmitAllRandom = (randomAnswers: Record<number, number>) => {
+    setAnswers(randomAnswers);
+    submitAnswers(randomAnswers);
   };
 
   if (!isLoaded) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-transparent">
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-[#F8FCFF]">
         <div className="w-10 h-10 border-4 border-[#00C2E0] border-t-transparent rounded-full animate-spin" />
-        <p className="text-[#4F6B85] font-medium">Cargando cuestionario...</p>
+        <p className="text-[#4F6B85] font-medium text-sm">Cargando la aventura de Chaski...</p>
       </div>
     );
   }
 
-  if (isSubmitting) {
+  if (viewMode === 'SUBMITTING') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-transparent">
-        <ChaskiAnalysis />
+      <div className="min-h-screen flex items-center justify-center bg-[#F8FCFF]">
+        <ChaskiAnalysis message="Chaski está analizando tus 16 decisiones y encontrando los caminos universitarios más afines con tu perfil." />
       </div>
     );
   }
-
-  if (fetchError || questions.length === 0) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-transparent">
-        <p className="text-[#082A4A] font-bold text-xl">Error al cargar el cuestionario</p>
-        <button
-          onClick={() => window.location.reload()}
-          className="px-6 py-3 bg-[#00C2E0] text-white rounded-[12px] font-semibold hover:bg-[#0EA5C6] transition-colors"
-        >
-          Reintentar
-        </button>
-      </div>
-    );
-  }
-
-  const progress = Math.round(((currentStep + 1) / questions.length) * 100);
 
   return (
     <div className="min-h-screen flex flex-col bg-[#F8FCFF] font-sans selection:bg-[#00C2E0] selection:text-white">
-      <header className="px-6 py-4 flex items-center border-b border-[#D6E5EF] bg-white">
-        <Link href="/" className="flex items-center gap-2 text-[#4F6B85] hover:text-[#082A4A] transition-colors text-sm font-medium">
-          <ArrowLeft className="h-4 w-4" />
-          Salir
-        </Link>
-      </header>
+      {/* Botón flotante para pruebas rápidas / QA */}
+      <RandomTestController
+        questions={questions}
+        options={options}
+        currentQuestion={currentQuestion}
+        onSelectOption={handleSelectOption}
+        onAutoSubmitAllRandom={handleAutoSubmitAllRandom}
+        onAdvanceToNext={handleContinue}
+      />
 
-      <main className="flex-1 flex flex-col items-center justify-center p-4 md:p-8">
-        <div className="w-full max-w-[800px] flex flex-col">
-          
-          <div className="flex justify-between items-end mb-4 px-2">
-            <span className="text-[14px] font-medium text-[#4F6B85]">
-              Pregunta {currentStep + 1} de {questions.length}
-            </span>
-            <span className="text-[14px] font-bold text-[#00C2E0]">
-              {progress}%
-            </span>
-          </div>
-          
-          <div className="w-full bg-[#DCEAF2] h-[8px] rounded-full overflow-hidden mb-10">
-            <div
-              className="bg-[#00C2E0] h-full transition-all duration-300 ease-out"
-              style={{ width: `${progress}%` }}
+      <main className="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 md:p-10">
+        <AnimatePresence mode="wait">
+          {viewMode === 'INTRO' && (
+            <AdventureIntro
+              key="intro"
+              onStart={() => setViewMode('QUESTIONS')}
             />
-          </div>
+          )}
 
-          <div className="bg-white rounded-[20px] shadow-sm border border-[#D6E5EF] p-8 md:p-12">
-            <h2 className="text-[32px] md:text-[40px] font-bold text-[#082A4A] mb-2 leading-tight">
-              {currentQuestion?.questionText}
-            </h2>
-            <p className="text-[16px] text-[#4F6B85] mb-10">
-              Selecciona la opción que más se acerque a ti.
-            </p>
+          {viewMode === 'INTERLUDE' && (
+            <MissionInterlude
+              key="interlude"
+              completedMissionNumber={completedInterludeMission}
+              onContinue={handleResumeAfterInterlude}
+            />
+          )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {currentOptions.map((option) => (
-                <button
-                  key={option.id}
-                  onClick={() => handleSelectOption(option.id)}
-                  className={`p-6 rounded-[16px] text-left border-[2px] transition-all duration-200 min-h-[100px] flex items-center ${
-                    selectedOption === option.id
-                      ? "border-[#00C2E0] bg-[#DEEEFF] shadow-sm"
-                      : "border-[#D6E5EF] bg-white hover:border-[#0EA5C6] hover:bg-[#EAF6FF]"
-                  }`}
-                >
-                  <span className={`text-[16px] font-medium ${selectedOption === option.id ? "text-[#082A4A]" : "text-[#4F6B85]"}`}>
-                    {option.optionText}
-                  </span>
-                </button>
-              ))}
-            </div>
+          {viewMode === 'QUESTIONS' && currentQuestion && (
+            <motion.div
+              key={`q-${currentQuestion.id}`}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.25 }}
+              className="w-full max-w-[820px] flex flex-col"
+            >
+              {/* Encabezado y barra segmentada */}
+              <MissionHeader
+                currentStep={currentStep}
+                totalQuestions={questions.length}
+                currentMissionNumber={currentMissionNumber}
+              />
 
-            <div className="mt-12 mb-8 text-center">
-              <p className="text-[14px] text-[#4F6B85]">
-                No hay respuestas correctas o incorrectas.<br className="hidden md:block"/>
-                Solo opciones que te acercan a tu mejor versión.
-              </p>
-            </div>
+              {/* Tarjeta Principal de la Pregunta */}
+              <div className="bg-white rounded-[24px] shadow-sm border border-[#D6E5EF] p-6 sm:p-10 md:p-12">
+                <div className="mb-8">
+                  <div className="inline-block px-3 py-1 bg-[#F0F5F9] rounded-lg text-xs font-bold text-[#00C2E0] uppercase tracking-wider mb-3">
+                    Decisión #{currentQuestion.orderNumber}
+                  </div>
 
-            <div className="flex items-center justify-between mt-8 border-t border-[#D6E5EF] pt-8">
-              <div>
-                {currentStep > 0 ? (
+                  <h2 className="text-2xl sm:text-3xl md:text-[34px] font-bold text-[#082A4A] leading-snug tracking-tight">
+                    {currentQuestion.questionText}
+                  </h2>
+
+                  {currentQuestion.helperText && (
+                    <p className="text-sm sm:text-base text-[#4F6B85] mt-2">
+                      {currentQuestion.helperText}
+                    </p>
+                  )}
+                </div>
+
+                {/* Lista de Opciones */}
+                <div className="grid grid-cols-1 gap-3.5 mb-8">
+                  {currentOptions.map((option, idx) => (
+                    <ChoiceCard
+                      key={option.id}
+                      option={option}
+                      index={idx}
+                      isSelected={selectedOption === option.id}
+                      onSelect={() => handleSelectOption(option.id)}
+                    />
+                  ))}
+                </div>
+
+                {/* Footer de Navegación */}
+                <div className="flex items-center justify-between pt-6 border-t border-[#EAF2F8]">
                   <button
+                    type="button"
                     onClick={handleBack}
-                    className="flex items-center gap-2 h-[48px] px-6 rounded-[12px] border border-[#00C2E0] bg-white text-[#082A4A] font-semibold text-[14px] hover:bg-[#EAF6FF] transition-colors"
+                    className="flex items-center gap-2 h-[46px] px-5 rounded-xl border border-[#D6E5EF] bg-white text-[#4F6B85] hover:text-[#082A4A] hover:bg-[#F8FCFF] font-semibold text-sm transition-colors"
                   >
-                    <ArrowLeft className="h-4 w-4" />
-                    Anterior
+                    <ArrowLeft className="w-4 h-4" />
+                    <span>Anterior</span>
                   </button>
-                ) : (
-                  <div></div>
-                )}
-              </div>
-              
-              <button 
-                onClick={handleContinue}
-                disabled={selectedOption === null}
-                className="flex items-center gap-2 h-[48px] px-8 bg-[#00C2E0] hover:bg-[#0EA5C6] disabled:opacity-50 disabled:hover:bg-[#00C2E0] text-white rounded-[12px] font-semibold text-[16px] transition-colors"
-              >
-                Siguiente
-                <ArrowRight className="h-4 w-4" />
-              </button>
-            </div>
-          </div>
 
-        </div>
+                  <button
+                    type="button"
+                    onClick={handleContinue}
+                    disabled={selectedOption === null}
+                    className="flex items-center gap-2.5 h-[48px] px-8 bg-gradient-to-r from-[#00C2E0] to-[#0EA5C6] hover:from-[#0EA5C6] hover:to-[#0284C7] disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-xl font-bold text-base shadow-sm hover:shadow transition-all active:scale-98"
+                  >
+                    <span>
+                      {currentStep === questions.length - 1 ? 'Finalizar y analizar' : 'Siguiente'}
+                    </span>
+                    <ArrowRight className="w-4 h-4 stroke-[2.5]" />
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </main>
     </div>
   );

@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { Quote } from "lucide-react";
 import CopilotChat from "@/components/chat/CopilotChat";
-import { DIMENSION_LABELS } from "@/constants/dimensions";
+import { DIMENSION_LABELS, DIMENSION_DESCRIPTIONS } from "@/constants/dimensions";
 import type { VocationalResults } from "@/types/vocacional";
 
 interface HeroSectionProps {
@@ -12,6 +12,13 @@ interface HeroSectionProps {
 }
 
 export default function HeroSection({ profileName, results }: HeroSectionProps) {
+  const topDimEntry = Object.entries(results.dimensionScores ?? {})
+    .sort(([, a], [, b]) => (b as number) - (a as number))[0];
+  const topDimKey = topDimEntry?.[0] || "LOGIC";
+  const profileDescription =
+    DIMENSION_DESCRIPTIONS[topDimKey] ||
+    "Te motiva entender cómo funcionan las cosas, resolver problemas y encontrar soluciones con lógica. Destacas en entornos donde puedes analizar y construir ideas estructuradas.";
+
   return (
     <section className="hero-grid grid grid-cols-1 lg:grid-cols-[1.15fr_1fr_1.1fr] gap-8 items-stretch">
 
@@ -23,8 +30,7 @@ export default function HeroSection({ profileName, results }: HeroSectionProps) 
             {profileName}
           </h1>
           <p className="text-[#4F6B85] text-[14.5px] leading-relaxed mb-6">
-            Te motiva entender cómo funcionan las cosas, resolver problemas y encontrar soluciones
-            con lógica. Destacas en entornos donde puedes analizar y construir ideas estructuradas.
+            {profileDescription}
           </p>
 
           {/* Barras de progreso */}

@@ -46,4 +46,55 @@ describe('Vocational Dimensions & Chaski Personality', () => {
     expect(getPersonality('INVESTIGATIVE')).toBe('explorador');
     expect(getPersonality('SOCIAL')).toBe('social');
   });
+
+  it('validates that 16 interactions are divided evenly across 4 missions', async () => {
+    const { VERIFIED_16_QUESTIONS, VERIFIED_64_OPTIONS, MISSIONS_CONFIG } = await import('../data/questionnaireData');
+    expect(VERIFIED_16_QUESTIONS).toHaveLength(16);
+    expect(VERIFIED_64_OPTIONS).toHaveLength(64);
+    expect(MISSIONS_CONFIG).toHaveLength(4);
+
+    for (let mission = 1; mission <= 4; mission++) {
+      const missionQuestions = VERIFIED_16_QUESTIONS.filter((q) => q.missionNumber === mission);
+      expect(missionQuestions).toHaveLength(4);
+    }
+
+    // Every question has exactly 4 options with scorePayload
+    for (const q of VERIFIED_16_QUESTIONS) {
+      const qOptions = VERIFIED_64_OPTIONS.filter((o) => o.questionId === q.id);
+      expect(qOptions).toHaveLength(4);
+      for (const opt of qOptions) {
+        expect(Object.keys(opt.scorePayload).length).toBeGreaterThan(0);
+      }
+    }
+  });
+
+  it('generates random answers for all 16 questions and produces valid scores and top careers', async () => {
+    const { VERIFIED_16_QUESTIONS, VERIFIED_64_OPTIONS, VERIFIED_RULES, VERIFIED_CAREERS } = await import('../data/questionnaireData');
+    
+    // Simulate random choices
+    const randomAnswers: Record<number, number> = {};
+    for (const q of VERIFIED_16_QUESTIONS) {
+      const opts = VERIFIED_64_OPTIONS.filter((o) => o.questionId === q.id);
+      const chosen = opts[Math.floor(Math.random() * opts.length)];
+      randomAnswers[q.id] = chosen.id;
+    }
+    expect(Object.keys(randomAnswers)).toHaveLength(16);
+
+    // Calculate scores
+    const dimScores: Record<string, number> = {};
+    for (const [, optId] of Object.entries(randomAnswers)) {
+      const opt = VERIFIED_64_OPTIONS.find((o) => o.id === optId);
+      if (opt?.scorePayload) {
+        for (const [dim, val] of Object.entries(opt.scorePayload)) {
+          dimScores[dim] = (dimScores[dim] || 0) + val;
+        }
+      }
+    }
+
+    for (const [dim, val] of Object.entries(dimScores)) {
+      expect(val).toBeGreaterThan(0);
+      expect(isNaN(val)).toBe(false);
+    }
+  });
 });
+

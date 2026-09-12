@@ -16,6 +16,9 @@ export interface CareerResult {
 }
 
 export interface VocationalResults {
+  testId?: string;
+  createdAt?: string;
   dimensionScores: Record<string, number>;
   topCareers: CareerResult[];
 }
+

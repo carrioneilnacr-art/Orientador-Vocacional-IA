@@ -303,11 +303,15 @@ export const questionnaireQuestions = pgTable(
     questionText: text('question_text').notNull(),
     questionType: text('question_type').notNull().default('SINGLE_CHOICE'),
     orderNumber: integer('order_number').notNull(),
+    missionNumber: integer('mission_number').default(1),
+    interactionType: text('interaction_type').default('CHOICE'),
+    helperText: text('helper_text'),
     isActive: boolean('is_active').notNull().default(true),
   },
   (table) => [
     index('idx_questions_dimension').on(table.dimension),
     index('idx_questions_order').on(table.orderNumber),
+    index('idx_questions_mission').on(table.missionNumber),
   ]
 );
 

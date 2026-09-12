@@ -9,6 +9,7 @@ interface UseVocationalResultsReturn {
   isLoaded: boolean;
   profileName: string;
   topDimension: string | null;
+  testId: string | null;
 }
 
 /**
@@ -37,6 +38,8 @@ export function useVocationalResults(): UseVocationalResultsReturn {
     )[0]?.[0] ?? null;
 
   const profileName = topDimension ? (DIMENSION_LABELS[topDimension] ?? "Lógico") : "Lógico";
+  const testId = results?.testId ?? null;
 
-  return { results, isLoaded, profileName, topDimension };
+  return { results, isLoaded, profileName, topDimension, testId };
 }
+

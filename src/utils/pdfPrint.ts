@@ -22,16 +22,17 @@ export function triggerPrintAsPDF(
   profileName: string,
   onStart?: () => void,
   onEnd?: () => void,
+  testId?: string | null,
 ): void {
   const reportElement = document.getElementById('report-content');
   if (!reportElement) return;
 
   onStart?.();
 
-  // Sugerir el nombre del archivo via document.title (Chrome lo usa como nombre del PDF)
-  const fecha = new Date().toLocaleDateString("es-PE").replace(/\//g, "-");
+  // Sugerir el nombre predefinido del archivo: ej. Resultados_TEST_Vocacional_Investigador_TEST-XXXX
+  const cleanId = testId ? `_${testId}` : '';
   const originalTitle = document.title;
-  document.title = `Orientador_Vocacional_${profileName}_${fecha}`;
+  document.title = `Resultados_TEST_Vocacional_${profileName}${cleanId}`;
 
   // Mostrar el banner de PDF y ocultar el copilot antes de imprimir
   reportElement.classList.add('pdf-export-mode');
