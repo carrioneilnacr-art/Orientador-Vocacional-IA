@@ -48,7 +48,7 @@ export function AdventureIntro({ onStart }: AdventureIntroProps) {
           <p className="text-sm sm:text-base text-[#4F6B85] max-w-xl leading-relaxed">
             No es un examen ni un cuestionario tradicional. Vivirás una travesía de{' '}
             <strong className="text-[#082A4A]">16 decisiones</strong> para encontrar los patrones de
-            tus intereses y sugerirte carreras compatibles de la UPC.
+            tus intereses y sugerirte carreras compatibles en las principales universidades del país.
           </p>
         </div>
       </div>

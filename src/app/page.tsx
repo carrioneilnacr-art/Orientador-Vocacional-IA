@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, BrainCircuit, ShieldCheck, Sparkles } from "lucide-react";
+import { ArrowRight, BrainCircuit, GraduationCap, ShieldCheck, Sparkles } from "lucide-react";
 
 export default function Home() {
   return (
@@ -58,35 +58,69 @@ export default function Home() {
             </Link>
           </div>
 
-          {/* Value Highlights Bar */}
-          <div className="w-full bg-white/95 backdrop-blur-xl rounded-[20px] p-6 flex flex-col sm:flex-row justify-between items-center shadow-[0_10px_30px_rgb(8,42,74,0.06)] border border-[#D6E5EF]/50 gap-4 sm:gap-0">
-            <div className="flex flex-col items-center sm:items-start w-full sm:w-auto">
-              <div className="flex items-center gap-2 mb-1">
-                <BrainCircuit className="h-5 w-5 text-[#00C2E0]" />
-                <div className="font-bold text-[20px] md:text-[22px] text-[#082A4A] leading-none">8 Dimensiones</div>
-              </div>
-              <div className="text-[#4F6B85] text-[13px] font-medium sm:ml-7">Modelo Holland & RIASEC</div>
-            </div>
+          {/* Dynamic Value Highlights Dock */}
+          <div className="w-full grid grid-cols-1 sm:grid-cols-3 gap-3 p-2 sm:p-2.5 bg-white/70 backdrop-blur-xl rounded-[24px] border border-white/80 shadow-[0_20px_50px_rgba(8,42,74,0.07)]">
             
-            <div className="hidden sm:block w-px h-12 bg-[#D6E5EF]"></div>
-            
-            <div className="flex flex-col items-center sm:items-start w-full sm:w-auto">
-              <div className="flex items-center gap-2 mb-1">
-                <ShieldCheck className="h-5 w-5 text-[#00C2E0]" />
-                <div className="font-bold text-[20px] md:text-[22px] text-[#082A4A] leading-none">Datos Reales</div>
+            {/* Card 1: 8 Dimensiones */}
+            <div className="group relative bg-white/90 hover:bg-white rounded-[18px] p-4 sm:p-5 border border-[#D6E5EF]/70 hover:border-[#00C2E0]/50 shadow-xs hover:shadow-[0_12px_28px_rgba(0,194,224,0.14)] transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between text-left">
+              <div className="flex items-center justify-between mb-3">
+                <div className="w-10 h-10 rounded-[12px] bg-[#EAF6FF] text-[#00C2E0] flex items-center justify-center transition-all duration-300 group-hover:bg-[#00C2E0] group-hover:text-white group-hover:rotate-3 shrink-0">
+                  <BrainCircuit className="h-5 w-5" />
+                </div>
+                <span className="text-[11px] font-bold text-[#00C2E0] bg-[#EAF6FF] px-2.5 py-0.5 rounded-full tracking-wide">
+                  Psicometría IA
+                </span>
               </div>
-              <div className="text-[#4F6B85] text-[13px] font-medium sm:ml-7">Universidades y mallas vigentes</div>
+              <div>
+                <div className="font-extrabold text-[18px] md:text-[20px] text-[#082A4A] leading-tight group-hover:text-[#00C2E0] transition-colors">
+                  8 Dimensiones
+                </div>
+                <p className="text-[#4F6B85] text-[12.5px] font-medium mt-1 leading-snug">
+                  Modelo Holland RIASEC calibrado para decisiones vocacionales.
+                </p>
+              </div>
             </div>
 
-            <div className="hidden sm:block w-px h-12 bg-[#D6E5EF]"></div>
-
-            <div className="flex flex-col items-center sm:items-start w-full sm:w-auto">
-              <div className="flex items-center gap-2 mb-1">
-                <Sparkles className="h-5 w-5 text-[#00C2E0]" />
-                <div className="font-bold text-[20px] md:text-[22px] text-[#082A4A] leading-none">100% Gratuito</div>
+            {/* Card 2: Multi-Universidad */}
+            <div className="group relative bg-white/90 hover:bg-white rounded-[18px] p-4 sm:p-5 border border-[#D6E5EF]/70 hover:border-[#00C2E0]/50 shadow-xs hover:shadow-[0_12px_28px_rgba(0,194,224,0.14)] transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between text-left">
+              <div className="flex items-center justify-between mb-3">
+                <div className="w-10 h-10 rounded-[12px] bg-[#EAF6FF] text-[#00C2E0] flex items-center justify-center transition-all duration-300 group-hover:bg-[#00C2E0] group-hover:text-white group-hover:rotate-3 shrink-0">
+                  <GraduationCap className="h-5 w-5" />
+                </div>
+                <span className="text-[11px] font-bold text-[#0EA5C6] bg-[#F0FDFA] px-2.5 py-0.5 rounded-full tracking-wide">
+                  Perú 2026
+                </span>
               </div>
-              <div className="text-[#4F6B85] text-[13px] font-medium sm:ml-7">Con reporte PDF descargable</div>
+              <div>
+                <div className="font-extrabold text-[18px] md:text-[20px] text-[#082A4A] leading-tight group-hover:text-[#00C2E0] transition-colors">
+                  Multi-Universidad
+                </div>
+                <p className="text-[#4F6B85] text-[12.5px] font-medium mt-1 leading-snug">
+                  Mallas curriculares y sedes contrastadas de todo el país.
+                </p>
+              </div>
             </div>
+
+            {/* Card 3: 100% Gratuito / Reporte */}
+            <div className="group relative bg-white/90 hover:bg-white rounded-[18px] p-4 sm:p-5 border border-[#D6E5EF]/70 hover:border-[#00C2E0]/50 shadow-xs hover:shadow-[0_12px_28px_rgba(0,194,224,0.14)] transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between text-left">
+              <div className="flex items-center justify-between mb-3">
+                <div className="w-10 h-10 rounded-[12px] bg-[#EAF6FF] text-[#00C2E0] flex items-center justify-center transition-all duration-300 group-hover:bg-[#00C2E0] group-hover:text-white group-hover:rotate-3 shrink-0">
+                  <Sparkles className="h-5 w-5" />
+                </div>
+                <span className="text-[11px] font-bold text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-full tracking-wide">
+                  100% Libre
+                </span>
+              </div>
+              <div>
+                <div className="font-extrabold text-[18px] md:text-[20px] text-[#082A4A] leading-tight group-hover:text-[#00C2E0] transition-colors">
+                  Reporte Oficial
+                </div>
+                <p className="text-[#4F6B85] text-[12.5px] font-medium mt-1 leading-snug">
+                  Descarga inmediata de tus resultados y afinidades en PDF.
+                </p>
+              </div>
+            </div>
+
           </div>
         </div>
       </main>

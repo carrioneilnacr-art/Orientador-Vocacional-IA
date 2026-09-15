@@ -508,13 +508,13 @@ export interface VerifiedRule {
 }
 
 export const VERIFIED_RULES: VerifiedRule[] = [
-  { careerId: 1, dimension: 'TECH', weight: 1.0, minScore: 10, explanationTemplate: 'Tu alta afinidad tecnológica coincide con el diseño y construcción de sistemas de software avanzados en la UPC.' },
+  { careerId: 1, dimension: 'TECH', weight: 1.0, minScore: 10, explanationTemplate: 'Tu alta afinidad tecnológica coincide con el diseño y construcción de sistemas de software avanzados en las mejores universidades del país.' },
   { careerId: 1, dimension: 'LOGIC', weight: 0.85, minScore: 8, explanationTemplate: 'Tu pensamiento analítico y estructurado te permitirá dominar algoritmos complejos y arquitectura de datos.' },
   { careerId: 2, dimension: 'TECH', weight: 0.90, minScore: 8, explanationTemplate: 'Tu interés en tecnología aplicada a procesos te posiciona idealmente para liderar la transformación digital empresarial.' },
   { careerId: 2, dimension: 'ENTERPRISING', weight: 0.80, minScore: 7, explanationTemplate: 'Tu visión de negocio te permitirá alinear los sistemas informáticos con los objetivos estratégicos corporativos.' },
   { careerId: 3, dimension: 'INVESTIGATIVE', weight: 1.00, minScore: 10, explanationTemplate: 'Tu perfil investigador te impulsa a comprender los fundamentos matemáticos y desarrollar algoritmos innovadores de IA.' },
   { careerId: 3, dimension: 'LOGIC', weight: 0.95, minScore: 9, explanationTemplate: 'Tu rigurosidad lógica es esencial para resolver problemas complejos de computación científica.' },
-  { careerId: 4, dimension: 'ENTERPRISING', weight: 1.00, minScore: 10, explanationTemplate: 'Tu liderazgo natural y visión estratégica encajan con la dirección de organizaciones competitivas en la UPC.' },
+  { careerId: 4, dimension: 'ENTERPRISING', weight: 1.00, minScore: 10, explanationTemplate: 'Tu liderazgo natural y visión estratégica encajan con la dirección de organizaciones competitivas en las principales universidades.' },
   { careerId: 4, dimension: 'CONVENTIONAL', weight: 0.70, minScore: 6, explanationTemplate: 'Tu capacidad de orden y organización respalda la gestión eficiente de recursos y proyectos.' },
   { careerId: 5, dimension: 'ARTISTIC', weight: 0.90, minScore: 8, explanationTemplate: 'Tu creatividad e imaginación te permitirán diseñar experiencias de marca y campañas de marketing de alto impacto.' },
   { careerId: 5, dimension: 'ENTERPRISING', weight: 0.85, minScore: 8, explanationTemplate: 'Tu visión comercial y estratégica potencia la toma de decisiones en mercados competitivos.' },

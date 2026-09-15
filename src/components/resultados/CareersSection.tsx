@@ -79,7 +79,7 @@ export default function CareersSection({ topCareers }: CareersSectionProps) {
             </h3>
           </div>
           <div className="relative z-10 text-[12.5px] text-white/80 font-medium">
-            Orientador Vocacional UPC
+            Orientador Vocacional con IA • Universidades del Perú
           </div>
         </div>
       </div>

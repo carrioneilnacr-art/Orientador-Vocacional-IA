@@ -33,9 +33,11 @@
 - [x] **UI-03:** Cuestionario interactivo de 16 preguntas en 4 misiones con Chaski, barra segmentada, interludios y persistencia en cliente.
 - [x] **UI-04:** Pantalla de resultados (radar vocacional + top 3 carreras + descripciones dinámicas por perfil + exportación PDF horizontal nativo sin localhost).
 - [x] **UI-06:** Visor de respuestas marcadas al azar (modal estrictamente de solo lectura y no editable para QA/auditoría antes de enviar).
+- [x] **UI-07:** Rediseño dinámico del dock de valores en Landing Page y desvinculación a plataforma multi-universitaria.
+- [x] **GIT-01:** Sincronizar repositorio local con GitHub `carrioneilnacr-art/Orientador-Vocacional-IA` y realizar commit atómico.
 
 ### 🟡 En Curso (IN PROGRESS)
-- [ ] **GIT-01:** Sincronizar repositorio local con GitHub `carrioneilnacr-art/Orientador-Vocacional-IA` y realizar commit atómico.
+- [ ] **DATA-02:** Ingesta y extracción estructurada de mallas curriculares y datos oficiales desde PDFs.
 
 ### ⚪ Por Hacer (BACKLOG - Agente 2 & Agente 3)
 - [ ] **DOM-02:** Use cases para recomendación de carreras y generación de explicaciones avanzadas.

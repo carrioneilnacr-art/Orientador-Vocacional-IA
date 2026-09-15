@@ -85,7 +85,7 @@ export default function HeroSection({ profileName, results }: HeroSectionProps) 
       </div>
 
       {/* Columna 3: Copiloto Vocacional */}
-      <div className="copilot-column h-full min-h-[560px] flex flex-col">
+      <div className="copilot-column h-[560px] lg:h-[640px] flex flex-col min-h-0 overflow-hidden">
         <CopilotChat profileName={profileName} />
       </div>
     </section>

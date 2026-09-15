@@ -69,7 +69,7 @@ export default function CopilotChat({ profileName = 'Vocacional' }: CopilotChatP
   }, []);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
   };
 
   useEffect(() => {
