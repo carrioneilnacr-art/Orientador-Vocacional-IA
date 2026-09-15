@@ -1,69 +1,149 @@
 import { google } from '@ai-sdk/google';
 import { streamText } from 'ai';
 import { db } from '@/db';
-import { careers, campuses, academicOffers, tuitionFees } from '@/db/schema';
-import { eq, ilike } from 'drizzle-orm';
+import { careers, campuses, academicOffers, tuitionFees, institutions, curricula, curriculumCourses } from '@/db/schema';
+import { eq, ilike, inArray, or } from 'drizzle-orm';
 
 export const maxDuration = 30;
 
-async function fetchCareerContext(userMessage: string): Promise<string> {
-  // Extract candidate words (4+ chars, not stopwords)
-  const stopwords = new Set(['para', 'cuanto', 'cuesta', 'sedes', 'donde', 'cual', 'como', 'tiene', 'dime', 'sabes', 'sobre', 'que', 'hay', 'una', 'este', 'esta', 'con', 'del', 'los', 'las', 'por', 'estudiar', 'temas', 'ciclo', 'primer', 'segundo', 'malla', 'curricular']);
-  const words = userMessage.toLowerCase().replace(/[^a-záéíóúñü\s]/gi, ' ').split(/\s+/).filter(w => w.length >= 4 && !stopwords.has(w));
+const LIMA_NORTE_DISTRICTS = new Set(['los olivos', 'comas', 'independencia', 'san martín de porres', 'san martin de porres', 'puente piedra', 'carabayllo']);
 
-  if (words.length === 0) return '';
+async function fetchCareerContext(userMessage: string): Promise<string> {
+  const stopwords = new Set([
+    'para', 'cuanto', 'cuesta', 'sedes', 'donde', 'cual', 'como', 'tiene', 'dime',
+    'sabes', 'sobre', 'que', 'hay', 'una', 'este', 'esta', 'con', 'del', 'los',
+    'las', 'por', 'estudiar', 'temas', 'ciclo', 'primer', 'segundo', 'malla',
+    'curricular', 'mejor', 'entre', 'comparar', 'opinion', 'diferencia'
+  ]);
+
+  const rawWords = userMessage
+    .toLowerCase()
+    .replace(/[^a-záéíóúñü\s]/gi, ' ')
+    .split(/\s+/)
+    .filter((w) => w.length >= 4 && !stopwords.has(w));
 
   try {
-    // Try each word until we find careers
-    let found: any[] = [];
-    for (const word of words) {
-      found = await db.select().from(careers).where(ilike(careers.name, `%${word}%`)).limit(3);
-      if (found.length > 0) break;
+    let foundCareers: any[] = [];
+
+    // Search for careers by name or keyword
+    for (const word of rawWords) {
+      foundCareers = await db
+        .select()
+        .from(careers)
+        .where(or(ilike(careers.name, `%${word}%`), ilike(careers.slug, `%${word}%`)))
+        .limit(6);
+      if (foundCareers.length > 0) break;
     }
-    if (found.length === 0) return '';
+
+    // Default fallback to systems/software if discussing tech/universities
+    if (foundCareers.length === 0 && (userMessage.toLowerCase().includes('ingenier') || userMessage.toLowerCase().includes('sistema') || userMessage.toLowerCase().includes('software'))) {
+      foundCareers = await db
+        .select()
+        .from(careers)
+        .where(ilike(careers.slug, '%sistema%'))
+        .limit(6);
+    }
+
+    if (foundCareers.length === 0) return '';
 
     const details = await Promise.all(
-      found.map(async (career) => {
+      foundCareers.map(async (career) => {
+        // Fetch academic offers with institution and campus details
         const offers = await db
-          .select({ campusName: campuses.name, modality: academicOffers.modality })
+          .select({
+            offerId: academicOffers.id,
+            institutionShort: institutions.shortName,
+            institutionName: institutions.name,
+            campusName: campuses.name,
+            district: campuses.district,
+            city: campuses.city,
+            modality: academicOffers.modality,
+          })
           .from(academicOffers)
+          .innerJoin(institutions, eq(academicOffers.institutionId, institutions.id))
           .innerJoin(campuses, eq(academicOffers.campusId, campuses.id))
           .where(eq(academicOffers.careerId, career.id));
 
-        const allOffers = await db
-          .select({ id: academicOffers.id })
-          .from(academicOffers)
-          .where(eq(academicOffers.careerId, career.id))
-          .limit(1);
+        // Group offers by institution and detect Lima Norte presence
+        const uniMap = new Map<string, { name: string; limaNorteSedes: string[]; otherSedes: string[]; offerIds: number[] }>();
 
-        let feesText = '';
-        if (allOffers.length > 0) {
-          const fees = await db
-            .select()
-            .from(tuitionFees)
-            .where(eq(tuitionFees.academicOfferId, allOffers[0].id));
-          feesText = fees.map(f => `${f.concept}: ${f.currency} ${f.amount}`).join(', ');
+        for (const o of offers) {
+          const short = o.institutionShort;
+          if (!uniMap.has(short)) {
+            uniMap.set(short, {
+              name: o.institutionName,
+              limaNorteSedes: [],
+              otherSedes: [],
+              offerIds: [],
+            });
+          }
+          const entry = uniMap.get(short)!;
+          entry.offerIds.push(o.offerId);
+
+          const distLow = o.district.toLowerCase();
+          const nameLow = o.campusName.toLowerCase();
+          const isLimaNorte =
+            LIMA_NORTE_DISTRICTS.has(distLow) ||
+            nameLow.includes('norte') ||
+            nameLow.includes('comas') ||
+            nameLow.includes('olivos');
+
+          if (isLimaNorte) {
+            entry.limaNorteSedes.push(`${o.campusName} (${o.district})`);
+          } else {
+            entry.otherSedes.push(o.campusName);
+          }
         }
 
-        const workFieldsText = Array.isArray(career.generalWorkFields) && career.generalWorkFields.length > 0
-          ? career.generalWorkFields.join(', ')
-          : 'No disponible';
+        // Fetch curriculum courses for comparison
+        const uniComparisons = await Promise.all(
+          Array.from(uniMap.entries()).map(async ([uniKey, data]) => {
+            let coursesSummary = 'Malla oficial registrada.';
+            try {
+              if (data.offerIds.length > 0) {
+                const cur = await db
+                  .select({ id: curricula.id })
+                  .from(curricula)
+                  .where(inArray(curricula.academicOfferId, data.offerIds))
+                  .limit(1);
 
-        return `
-Carrera: ${career.name}
-Facultad: ${career.faculty}
-Grado: ${career.degree}
-Duración: ${career.durationYears} años (${career.durationSemesters} semestres)
-Sedes: ${offers.map(o => `${o.campusName} (${o.modality})`).join(', ') || 'No disponible'}
-Pensiones: ${feesText || 'No disponible'}
-Áreas de trabajo y especialidades: ${workFieldsText}
-Perfil: ${career.generalProfile?.substring(0, 400) || 'No disponible'}
-        `.trim();
+                if (cur.length > 0) {
+                  const sampleCourses = await db
+                    .select({ name: curriculumCourses.courseName, cycle: curriculumCourses.cycle })
+                    .from(curriculumCourses)
+                    .where(eq(curriculumCourses.curriculumId, cur[0].id))
+                    .orderBy(curriculumCourses.cycle)
+                    .limit(16);
+
+                  if (sampleCourses.length > 0) {
+                    coursesSummary = sampleCourses.map((c) => `${c.name} (Ciclo ${c.cycle})`).join(', ');
+                  }
+                }
+              }
+            } catch {}
+
+            const norteText = data.limaNorteSedes.length > 0
+              ? `SEDES LIMA NORTE: ${data.limaNorteSedes.join(', ')}`
+              : 'Sin sede directa en Lima Norte';
+
+            return `• Universidad: ${uniKey} (${data.name})
+  - ${norteText}
+  - Malla Curricular (Muestra de cursos oficiales): ${coursesSummary}`;
+          })
+        );
+
+        return `CARRERA: ${career.name} (${career.faculty})
+Duración oficial: ${career.durationYears} años (${career.durationSemesters} semestres) | Grado: ${career.degree}
+Perfil: ${career.generalProfile?.substring(0, 280) || 'Perfil oficial de la carrera.'}
+
+COMPARATIVA DE UNIVERSIDADES DISPONIBLES (ENFOQUE ZONA NORTE):
+${uniComparisons.join('\n\n')}`;
       })
     );
 
-    return `\n\n=== INFORMACIÓN OFICIAL DE LA BASE DE DATOS ===\n${details.join('\n\n---\n')}\n===================================================\n`;
-  } catch {
+    return `\n\n=== DATOS OFICIALES DE LA BASE DE DATOS (ZONA NORTE Y UNIVERSIDADES) ===\n${details.join('\n\n---\n')}\n=========================================================================\n`;
+  } catch (err) {
+    console.error('Error fetching career context:', err);
     return '';
   }
 }
@@ -72,41 +152,36 @@ export async function POST(req: Request) {
   try {
     const { messages, profileContext } = await req.json();
 
-    // Get the last user message to fetch relevant career context from DB
     const lastUserMsg = [...messages].reverse().find((m: any) => m.role === 'user');
     const careerContext = lastUserMsg ? await fetchCareerContext(lastUserMsg.content) : '';
 
-    const systemPrompt = `Eres Chaski, el orientador vocacional inteligente y compañero de ruta de nuestra plataforma en Perú.
-Tu misión es acompañar, aconsejar y resolver las dudas de estudiantes que están por terminar el colegio (5to año de secundaria, entre 16 y 17 años).
+    const systemPrompt = `Eres Chaski, el orientador vocacional inteligente, ágil y cercano de nuestra plataforma en Perú.
+Acompañas a estudiantes de 5to de secundaria (16 a 17 años) a elegir su carrera y universidad ideal.
 
-PERSONALIDAD Y TONO:
-- Háblale de "tú", con cercanía, calidez, respeto y entusiasmo, como un mentor joven o hermano mayor que los comprende y apoya.
-- Lenguaje simple, claro y cero aburrido: evita el lenguaje burocrático o tecnicismos pesados. Si mencionas un término técnico, explícalo inmediatamente con palabras cotidianas.
-- Formato amigable: usa párrafos cortos y viñetas para que sea fácil y entretenido de leer en pantalla.
+REGLAS DE FORMATO Y ESTILO (ESTRICTAS Y OBLIGATORIAS):
+1. RESPUESTAS CONCRETAS, ÁGILES Y AL PUNTO:
+   - Máximo 2 a 3 párrafos muy breves o viñetas cortas. Cero muros de texto aburridos. Los chicos de colegio leen rápido y quieren respuestas directas.
+2. CERO CARACTERES O SÍMBOLOS DE MARKDOWN ROTOS:
+   - PROHIBIDO usar almohadillas o títulos markdown como "###", "##" o "#".
+   - PROHIBIDO usar líneas divisorias como "---" o "***".
+   - Usa viñetas limpias con el punto "•" para enumerar.
+   - Usa negrita (**palabra**) ÚNICAMENTE para nombres de universidades, carreras o cursos clave.
+3. TONO JUVENIL, CÁLIDO Y MOTIVADOR:
+   - Trátalo de "tú", con chispa y buena vibra, como un hermano mayor universitario que te dice las cosas claras y sin floros.
 
-CONEXIÓN CON EL PERFIL VOCACIONAL Y EJEMPLOS REALISTAS:
-- Siempre que expliques una carrera, especialidad o curso, CONÉCTALO DIRECTAMENTE CON EL PERFIL VOCACIONAL DEL ESTUDIANTE (provisto en el contexto).
-  * Si es Investigador/Analítico: conéctalo con descifrar patrones, analizar información a fondo y resolver problemas complejos.
-  * Si es Emprendedor: conéctalo con liderar proyectos, generar impacto comercial, crear negocios y tomar decisiones estratégicas.
-  * Si es Social: conéctalo con ayudar a personas, transformar vidas, educar y trabajar en equipo.
-  * Si es Creativo/Artístico: conéctalo con diseñar, comunicar ideas visuales y crear experiencias innovadoras.
-  * Si es Tecnológico/Lógico: conéctalo con construir software, automatizar procesos y dominar la tecnología del futuro.
-  * Si es Realista: conéctalo con aplicar cosas prácticas, herramientas tangibles y soluciones directas en el terreno.
-- Da ejemplos cotidianos de la vida real (ej. apps que usan a diario como Instagram o Yape, empresas reales, situaciones cotidianas del trabajo).
+POSTURA CLARA ANTE COMPARACIONES ("¿CUÁL ES MEJOR?", "COMPARA MALLAS"):
+- ¡NUNCA TE ABSTENGAS NI DIGAS "TODAS SON BUENAS Y DEPENDE DE TI"!
+- Eres un orientador con criterio técnico. Si el usuario te pide comparar universidades o te pregunta cuál es mejor:
+  1. Compara directamente sus enfoques reales con base en los cursos y sedes provistos abajo (ejemplo: UPN tiene fuerte enfoque en desarrollo práctico y gestión; UCH destaca en investigación y fundamentos de software; UTP destaca por laboratorios y tecnología aplicada; UCSUR en bio-tecnología y ciencias de la salud; USMP en trayectoria y especialización).
+  2. PRIORIZA Y DESTACA SIEMPRE LAS SEDES DE ZONA NORTE DE LIMA (Los Olivos, Comas, etc.) para que sepa qué opción le queda más accesible y cerca.
+  3. DALE TU CONCLUSIÓN O RECOMENDACIÓN DIRECTA vinculándola a su perfil vocacional (ejemplo: "Si tu prioridad es la práctica y salir rápido a chambear en empresas, te recomiendo X; pero si tu perfil es más de investigar y programar algoritmos a fondo, Y te sacará más provecho en su sede de Los Olivos").
 
-EXPLICACIÓN DE CURSOS Y ESPECIALIDADES:
-- Si el estudiante pregunta por un curso de la malla o un área de especialidad:
-  1. Explica con palabras muy sencillas de qué trata.
-  2. Explica para qué le va a servir en la vida real y en su futuro trabajo.
-  3. Relaciónalo con cómo su perfil vocacional le facilitará entenderlo o disfrutarlo.
-  4. Quítale el miedo a materias consideradas difíciles o "filtro" (como números o memorización), animándolo con consejos prácticos.
-
-REGLA DE CONFIABILIDAD DE DATOS:
-- Para pensiones/costos, sedes, facultades, modalidades y duración oficial de cada carrera, básate en la INFORMACIÓN OFICIAL provista abajo. No inventes montos ni sedes que no figuren en los datos.
-- Si no cuentas con el costo exacto o la sede de una universidad específica en el contexto, indícaselo con honestidad y anímalo a consultar la oficina de admisión oficial.${profileContext || ''}${careerContext}`;
+DATOS OFICIALES:
+- Las universidades oficiales con las que trabajamos son: UPN, UTP, UCV, UCH, UCSUR y USMP.
+- Toda información de cursos, semestres y sedes debe basarse fielmente en los datos provistos abajo.${profileContext || ''}${careerContext}`;
 
     const result = streamText({
-      model: google('gemini-3.6-flash'),
+      model: google('gemini-2.5-flash'),
       messages,
       system: systemPrompt,
     });

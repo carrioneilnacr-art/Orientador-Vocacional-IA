@@ -6,6 +6,7 @@ import {
   careers,
   academicOffers,
   campuses,
+  institutions,
   tuitionFees,
   userSessions,
 } from '@/db/schema';
@@ -188,10 +189,36 @@ export async function POST(req: Request) {
           if (careerData && careerData.length > 0) {
             const c = careerData[0];
             const offers = await db
-              .select({ campusName: campuses.name, modality: academicOffers.modality })
+              .select({
+                institutionShort: institutions.shortName,
+                campusName: campuses.name,
+                district: campuses.district,
+                modality: academicOffers.modality,
+              })
               .from(academicOffers)
               .innerJoin(campuses, eq(academicOffers.campusId, campuses.id))
+              .innerJoin(institutions, eq(academicOffers.institutionId, institutions.id))
               .where(eq(academicOffers.careerId, c.id));
+
+            const limaNorteDistricts = new Set(['los olivos', 'comas', 'independencia', 'san martín de porres', 'san martin de porres', 'puente piedra']);
+            
+            // Format and sort: Lima Norte sedes first
+            const formattedCampuses: string[] = [];
+            const otherCampuses: string[] = [];
+
+            offers.forEach((o) => {
+              const distLow = o.district.toLowerCase();
+              const nameLow = o.campusName.toLowerCase();
+              const isNorte = limaNorteDistricts.has(distLow) || nameLow.includes('norte') || nameLow.includes('comas') || nameLow.includes('olivos');
+              const label = `${o.institutionShort} (${o.campusName})`;
+              if (isNorte) {
+                if (!formattedCampuses.includes(label)) formattedCampuses.push(label);
+              } else {
+                if (!otherCampuses.includes(label)) otherCampuses.push(label);
+              }
+            });
+
+            const finalCampuses = [...formattedCampuses, ...otherCampuses].slice(0, 8);
 
             const firstOffer = await db
               .select({ id: academicOffers.id })
@@ -219,7 +246,7 @@ export async function POST(req: Request) {
               degree: c.degree,
               match: result.match,
               justification: result.explanations.slice(0, 2).join(' '),
-              campuses: offers.map((o) => o.campusName),
+              campuses: finalCampuses.length > 0 ? finalCampuses : offers.map((o) => o.campusName),
               cost: costText,
             };
           }

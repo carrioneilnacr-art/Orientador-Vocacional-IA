@@ -50,17 +50,21 @@
     "typescript": "^5",
     "vitest": "^5.0.0"
   },
-  "description": "Plataforma web de orientación vocacional asistida por IA con datos verificados de la UPC.",
+  "description": "Plataforma web de orientación vocacional asistida por IA con datos oficiales verificados de universidades peruanas (UPC, UPN, UTP, etc.).",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/carrioneilnacr-art/Orientador-Vocacional-IA.git"
   },
   "keywords": [
     "orientador-vocacional",
-    "upc",
+    "riasec",
     "ai",
+    "gemini",
     "nextjs",
-    "supabase"
+    "supabase",
+    "drizzle-orm",
+    "peru",
+    "universidades"
   ],
   "author": "",
   "license": "ISC"

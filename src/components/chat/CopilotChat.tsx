@@ -17,11 +17,93 @@ interface CopilotChatProps {
 }
 
 const QUICK_QUESTIONS = [
-  { text: "¿Por qué esta carrera?", icon: ShieldCheck },
-  { text: "¿Cuánto podría ganar?", icon: Banknote },
-  { text: "¿Dónde puedo estudiarla?", icon: MapPin },
-  { text: "¿Qué otras carreras se parecen?", icon: Sparkles },
+  { text: "¿Qué universidad es mejor en Lima Norte?", icon: MapPin },
+  { text: "¿Cómo son las mallas curriculares?", icon: Sparkles },
+  { text: "¿Por qué esta carrera encaja conmigo?", icon: ShieldCheck },
+  { text: "¿Qué campo laboral y sueldo tiene?", icon: Banknote },
 ];
+
+function renderInlineContent(text: string) {
+  const parts = text.split(/(\*\*.*?\*\*|\*.*?\*)/g);
+  return parts.map((part, idx) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      return (
+        <strong key={idx} className="font-bold text-[#082A4A]">
+          {part.slice(2, -2)}
+        </strong>
+      );
+    }
+    if (part.startsWith('*') && part.endsWith('*')) {
+      return (
+        <em key={idx} className="italic text-[#2C4964]">
+          {part.slice(1, -1)}
+        </em>
+      );
+    }
+    return <span key={idx}>{part}</span>;
+  });
+}
+
+function FormattedChatMessage({ content }: { content: string }) {
+  const lines = content.split('\n');
+  return (
+    <div className="space-y-1 text-[13.5px] leading-relaxed">
+      {lines.map((line, i) => {
+        const trimmed = line.trim();
+        if (!trimmed) {
+          return <div key={i} className="h-0.5" />;
+        }
+
+        // Horizontal dividers
+        if (/^[-*_]{3,}$/.test(trimmed)) {
+          return <hr key={i} className="border-t border-[#D6E5EF]/70 my-1.5" />;
+        }
+
+        // Markdown Headers (###, ##, #)
+        const headerMatch = trimmed.match(/^#{1,4}\s+(.*)/);
+        if (headerMatch) {
+          return (
+            <div key={i} className="font-bold text-[#082A4A] text-[13px] mt-1.5 mb-0.5 flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#00C2E0]"></span>
+              <span>{renderInlineContent(headerMatch[1])}</span>
+            </div>
+          );
+        }
+
+        // Bullet list item
+        const bulletMatch = trimmed.match(/^[•\-\*]\s+(.*)/);
+        if (bulletMatch) {
+          return (
+            <div key={i} className="flex items-start gap-2 my-0.5 pl-0.5">
+              <span className="text-[#00C2E0] font-bold shrink-0 mt-0.5">•</span>
+              <div className="min-w-0 flex-1">{renderInlineContent(bulletMatch[1])}</div>
+            </div>
+          );
+        }
+
+        // Numbered list item
+        const numberMatch = trimmed.match(/^(\d+)[.)]\s+(.*)/);
+        if (numberMatch) {
+          return (
+            <div key={i} className="flex items-start gap-2 my-0.5 pl-0.5">
+              <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-[#E0F7FA] text-[#00838F] text-[10px] font-bold shrink-0 mt-0.5">
+                {numberMatch[1]}
+              </span>
+              <div className="min-w-0 flex-1">{renderInlineContent(numberMatch[2])}</div>
+            </div>
+          );
+        }
+
+        // Regular line
+        return (
+          <div key={i} className="min-h-[1.1em]">
+            {renderInlineContent(line)}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
 
 export default function CopilotChat({ profileName = 'Vocacional' }: CopilotChatProps) {
   const [messages, setMessages] = useState<Message[]>([
@@ -285,19 +367,7 @@ export default function CopilotChat({ profileName = 'Vocacional' }: CopilotChatP
                         <span>Chaski está analizando...</span>
                       </div>
                     ) : (
-                      m.content.split('\n').map((line, i) => {
-                        const parts = line.split(/(\*\*.*?\*\*)/g);
-                        return (
-                          <div key={i} className="min-h-[1em]">
-                            {parts.map((part, j) => {
-                              if (part.startsWith('**') && part.endsWith('**')) {
-                                return <strong key={j} className="font-bold text-[#082A4A]">{part.slice(2, -2)}</strong>;
-                              }
-                              return <span key={j}>{part}</span>;
-                            })}
-                          </div>
-                        );
-                      })
+                      <FormattedChatMessage content={m.content} />
                     )}
                   </div>
                 </motion.div>
