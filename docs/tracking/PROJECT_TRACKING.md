@@ -35,9 +35,10 @@
 - [x] **UI-06:** Visor de respuestas marcadas al azar (modal estrictamente de solo lectura y no editable para QA/auditoría antes de enviar).
 - [x] **UI-07:** Rediseño dinámico del dock de valores en Landing Page y desvinculación a plataforma multi-universitaria.
 - [x] **GIT-01:** Sincronizar repositorio local con GitHub `carrioneilnacr-art/Orientador-Vocacional-IA` y realizar commit atómico.
+- [x] **DATA-02:** Ingesta y extracción estructurada en Supabase de la malla de Ingeniería de Sistemas Computacionales UPN (74 cursos, 10 ciclos, 200 créditos, ICACIT/ACM-IEEE, 6 campus).
 
 ### 🟡 En Curso (IN PROGRESS)
-- [ ] **DATA-02:** Ingesta y extracción estructurada de mallas curriculares y datos oficiales desde PDFs.
+- [ ] **UI-08:** Implementación de la vista de carrera y visor interactivo de mallas curriculares (`/carreras/[slug]`).
 
 ### ⚪ Por Hacer (BACKLOG - Agente 2 & Agente 3)
 - [ ] **DOM-02:** Use cases para recomendación de carreras y generación de explicaciones avanzadas.
