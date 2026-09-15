@@ -28,7 +28,7 @@ export function ChoiceCard({ option, index, isSelected, onSelect }: ChoiceCardPr
       transition={{ duration: 0.25, delay: index * 0.05 }}
       className={`group relative w-full text-left p-5 sm:p-6 rounded-[20px] border-2 transition-all duration-200 flex items-start gap-4 min-h-[96px] cursor-pointer ${
         isSelected
-          ? 'border-[#00C2E0] bg-[#EAF6FF] shadow-[0_8px_24px_rgba(0,194,224,0.18)] ring-2 ring-[#00C2E0]/20'
+          ? 'border-[#00C2E0] bg-[#F0FAFF] shadow-sm'
           : 'border-[#D6E5EF] bg-white hover:border-[#00C2E0]/60 hover:bg-[#F8FCFF] shadow-sm'
       }`}
     >

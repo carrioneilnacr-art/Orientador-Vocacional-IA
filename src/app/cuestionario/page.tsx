@@ -40,18 +40,8 @@ export default function CuestionarioPage() {
         setQuestions(qs);
         setOptions(opts);
 
-        // Restaurar respuestas previas si existen
-        try {
-          const saved = localStorage.getItem('vocational_answers_v3');
-          if (saved) {
-            const parsed = JSON.parse(saved);
-            if (parsed && typeof parsed === 'object') {
-              setAnswers(parsed);
-            }
-          }
-        } catch {
-          // ignore corrupted local storage
-        }
+        // Siempre empezar limpio — sin respuestas pre-seleccionadas
+        localStorage.removeItem('vocational_answers_v3');
 
         setIsLoaded(true);
       })
