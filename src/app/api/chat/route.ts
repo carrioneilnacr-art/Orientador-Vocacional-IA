@@ -1,4 +1,4 @@
-import { google } from '@ai-sdk/google';
+import { openai } from '@ai-sdk/openai';
 import { streamText } from 'ai';
 import { db } from '@/db';
 import { careers, campuses, academicOffers, tuitionFees, institutions, curricula, curriculumCourses } from '@/db/schema';
@@ -181,7 +181,7 @@ DATOS OFICIALES:
 - Toda información de cursos, semestres y sedes debe basarse fielmente en los datos provistos abajo.${profileContext || ''}${careerContext}`;
 
     const result = streamText({
-      model: google('gemini-2.5-flash'),
+      model: openai('gpt-4o-mini'),
       messages,
       system: systemPrompt,
     });

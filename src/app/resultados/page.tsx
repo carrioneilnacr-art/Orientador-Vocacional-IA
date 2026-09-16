@@ -84,7 +84,7 @@ export default function ResultadosPage() {
 
         <HeroSection     profileName={profileName} results={results} />
         <RadarSection    results={results} />
-        <CareersSection  topCareers={topCareers} />
+        {/* <CareersSection  topCareers={topCareers} /> */}
         {primaryCareer && (
           <WhyCareerSection career={primaryCareer} profileName={profileName} />
         )}

@@ -1,7 +1,7 @@
 "use client";
 
-import Image from "next/image";
-import { Quote } from "lucide-react";
+import Link from "next/link";
+import { Quote, ArrowRight } from "lucide-react";
 import CopilotChat from "@/components/chat/CopilotChat";
 import { DIMENSION_LABELS, DIMENSION_DESCRIPTIONS } from "@/constants/dimensions";
 import type { VocationalResults } from "@/types/vocacional";
@@ -18,6 +18,8 @@ export default function HeroSection({ profileName, results }: HeroSectionProps) 
   const profileDescription =
     DIMENSION_DESCRIPTIONS[topDimKey] ||
     "Te motiva entender cómo funcionan las cosas, resolver problemas y encontrar soluciones con lógica. Destacas en entornos donde puedes analizar y construir ideas estructuradas.";
+
+  const topCareers = (results.topCareers || []).slice(0, 3);
 
   return (
     <section className="hero-grid grid grid-cols-1 lg:grid-cols-[1.15fr_1fr_1.1fr] gap-8 items-stretch">
@@ -65,23 +67,36 @@ export default function HeroSection({ profileName, results }: HeroSectionProps) 
         </div>
       </div>
 
-      {/* Columna 2: Imagen inspiracional */}
-      <div className="relative rounded-[24px] overflow-hidden shadow-sm border border-[#D6E5EF] min-h-[560px] flex flex-col justify-between group">
-        <Image
-          src="/assets/robot_bg.jpg"
-          alt="Grandes decisiones, mejores futuros"
-          fill
-          unoptimized
-          className="object-cover object-center transition-transform duration-1000 group-hover:scale-105"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/25 via-transparent to-black/60" />
-        <div className="relative z-10 p-7 text-right">
-          <p className="text-white drop-shadow-[0_4px_8px_rgba(0,0,0,0.7)] font-serif text-[32px] xl:text-[36px] leading-[1.1] italic -rotate-2">
-            <span className="text-[#00C2E0]">Grandes</span><br />
-            decisiones,<br />
-            mejores futuros
-          </p>
-        </div>
+      {/* Columna 2: Carreras Recomendadas (Reemplazo de la Imagen) */}
+      <div className="flex flex-col min-h-[560px] gap-4">
+        <h3 className="text-[#082A4A] font-bold text-[18px] mb-1">Top Carreras Recomendadas</h3>
+        {topCareers.map((career) => (
+          <div
+            key={career.id}
+            className="bg-white rounded-[20px] p-5 shadow-sm border border-[#D6E5EF] flex flex-col justify-between hover:shadow-md transition-shadow group flex-1"
+          >
+            <div>
+              <div className="flex justify-between items-start gap-2 mb-2">
+                <h4 className="text-[16px] font-bold text-[#082A4A] leading-tight group-hover:text-[#00C2E0] transition-colors">
+                  {career.name}
+                </h4>
+                <span className="bg-[#EAF6FF] text-[#00C2E0] font-bold px-2 py-1 rounded-[8px] text-[11px] shrink-0">
+                  {career.match}%
+                </span>
+              </div>
+              <p className="text-[12.5px] text-[#4F6B85] mb-4 line-clamp-3">
+                {career.justification}
+              </p>
+            </div>
+            <Link
+              href={`/carreras/${career.slug}`}
+              className="inline-flex h-[36px] items-center justify-center rounded-[10px] bg-[#00C2E0]/10 hover:bg-[#00C2E0] text-[#00C2E0] hover:text-white text-[12px] font-bold transition-colors w-full shrink-0"
+            >
+              <span>Ver detalle</span>
+              <ArrowRight className="ml-2 h-3.5 w-3.5 shrink-0" />
+            </Link>
+          </div>
+        ))}
       </div>
 
       {/* Columna 3: Copiloto Vocacional */}

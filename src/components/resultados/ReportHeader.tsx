@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { BrainCircuit, RefreshCcw, Download } from "lucide-react";
+import { Compass, RefreshCcw, Download } from "lucide-react";
 
 interface ReportHeaderProps {
   isDownloading: boolean;
@@ -15,7 +15,7 @@ export default function ReportHeader({ isDownloading, onDownload, onRestart }: R
       <div className="max-w-[1400px] mx-auto px-6 md:px-10 lg:px-12 h-18 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-3 group">
           <div className="w-9 h-9 rounded-[10px] bg-[#EAF6FF] flex items-center justify-center text-[#00C2E0] group-hover:bg-[#00C2E0] group-hover:text-white transition-colors">
-            <BrainCircuit className="h-5 w-5" />
+            <Compass className="h-5 w-5" />
           </div>
           <span className="font-bold text-[17px] text-[#082A4A] tracking-tight">Inicio</span>
         </Link>
