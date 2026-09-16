@@ -1,129 +1,141 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, BrainCircuit, GraduationCap, ShieldCheck, Sparkles } from "lucide-react";
+import { ArrowRight, Map, ShieldCheck, GraduationCap, FileText } from "lucide-react";
 
 export default function Home() {
   return (
-    <div className="flex flex-col min-h-screen bg-[#F8FCFF] font-sans selection:bg-[#00C2E0] selection:text-white transition-colors duration-500">
-      {/* Header flotante transparente */}
-      <header className="absolute top-0 left-0 right-0 z-50 px-6 md:px-12 py-6 flex items-center justify-between w-full max-w-[1400px] mx-auto">
-        <div className="flex items-center gap-3"></div>
-        
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-8 bg-white/80 backdrop-blur-md px-6 py-3 rounded-full border border-white/50 shadow-sm">
-          <Link href="/" className="text-[14px] font-bold text-[#082A4A] hover:text-[#00C2E0] transition-colors">Inicio</Link>
-          <Link href="/como-funciona" className="text-[14px] font-medium text-[#4F6B85] hover:text-[#082A4A] transition-colors">Cómo funciona</Link>
+    <div className="flex flex-col min-h-screen bg-white font-sans selection:bg-[#00C2E0] selection:text-white overflow-hidden relative">
+      
+      {/* Background Image Container (Right Side) */}
+      <div className="absolute inset-y-0 right-0 w-[100%] md:w-[70%] lg:w-[65%] z-0">
+        <Image 
+          src="/assets/bg-inicio.png" 
+          alt="Robot explorador" 
+          fill 
+          className="object-cover object-[center_60%] md:object-right"
+          priority
+        />
+        {/* Soft gradient to blend the left side into white */}
+        <div className="absolute inset-y-0 left-[-2px] w-[50%] md:w-[60%] bg-gradient-to-r from-white via-white/90 to-transparent z-10" />
+        {/* Gradient for mobile to ensure text readability */}
+        <div className="absolute inset-0 bg-gradient-to-t from-white via-white/95 to-transparent z-10 md:hidden" />
+      </div>
+
+      {/* Floating Header */}
+      <header className="relative z-50 pt-6 pb-3 w-full flex justify-center px-4">
+        <nav className="flex items-center gap-5 sm:gap-8 bg-white shadow-[0_4px_30px_rgba(0,0,0,0.06)] px-6 py-2.5 rounded-full border border-gray-50">
+          <Link href="/" className="text-[13px] font-bold text-[#082A4A]">Inicio</Link>
+          <Link href="/como-funciona" className="text-[13px] font-medium text-[#4F6B85] hover:text-[#082A4A] transition-colors">Cómo funciona</Link>
+          <Link href="#" className="hidden sm:block text-[13px] font-medium text-[#4F6B85] hover:text-[#082A4A] transition-colors">Sobre el proyecto</Link>
         </nav>
-        
-        <div className="hidden md:block w-[100px]"></div>
       </header>
 
-      {/* Hero Section */}
-      <main className="relative flex-1 w-full min-h-[calc(100vh-80px)] flex flex-col justify-center px-6 md:px-12 lg:px-24 pt-24 pb-12 overflow-hidden bg-[#F8FCFF]">
+      {/* Main Content */}
+      <main className="relative z-20 flex-1 w-full max-w-[1300px] mx-auto px-6 md:px-10 lg:px-16 pt-6 md:pt-10 pb-10 flex flex-col justify-center">
         
-        {/* Background Image constrained to RIGHT side */}
-        <div className="absolute inset-y-0 right-0 w-full md:w-[60%] z-0">
-          <Image 
-            src="/assets/robot_bg.jpg" 
-            alt="Robot explorador" 
-            fill 
-            className="object-cover object-[center_60%] md:object-[center_80%] -scale-x-100"
-            priority
-          />
-          {/* Gradients para borrar cualquier línea dura en el centro (fusión perfecta con el fondo) */}
-          <div className="absolute inset-y-0 left-[-2px] w-[50%] bg-gradient-to-r from-[#F8FCFF] via-[#F8FCFF] to-transparent z-10" />
-          {/* Gradiente adicional en móvil */}
-          <div className="absolute inset-0 bg-gradient-to-t from-[#F8FCFF] via-[#F8FCFF]/90 to-transparent z-10 md:hidden" />
-        </div>
-
-        {/* Content Overlay (Strictly Left Aligned) */}
-        <div className="relative z-20 w-full md:w-[50%] lg:w-[45%] max-w-[650px] mr-auto mt-20 md:mt-0 flex flex-col items-center md:items-start text-center md:text-left">
+        <div className="w-full md:w-[60%] lg:w-[50%] max-w-[550px] flex flex-col items-center md:items-start text-center md:text-left mt-2 md:mt-0">
           
-          <h1 className="text-[40px] md:text-[56px] lg:text-[64px] font-extrabold tracking-tight text-[#082A4A] mb-6 leading-[1.05]">
+          <h1 className="text-[36px] md:text-[46px] lg:text-[56px] font-extrabold tracking-tight text-[#082A4A] mb-4 leading-[1.05]">
             Tu futuro<br className="hidden md:block" />
-            también es parte de nuestra <span className="text-[#00C2E0]">historia.</span>
+            también es parte de<br className="hidden md:block" />
+            nuestra <span className="text-[#00C2E0]">historia.</span>
           </h1>
           
-          <p className="text-[16px] md:text-[18px] text-[#4F6B85] mb-8 max-w-md font-medium leading-relaxed">
-            Descubre tu vocación con IA y conecta tus talentos con las oportunidades del mundo real.
+          <p className="text-[14px] md:text-[15.5px] text-[#4F6B85] mb-8 max-w-[440px] font-medium leading-relaxed">
+            Descubre hacia dónde puede llevarte tu curiosidad. 
+            Conoce tus intereses, descubre carreras que conectan 
+            contigo y explora dónde podrías estudiar.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center gap-4 mb-12 w-full md:w-auto justify-center md:justify-start">
-            <Link 
-              href="/cuestionario"
-              className="inline-flex h-[56px] items-center justify-center rounded-[16px] bg-[#00C2E0] hover:bg-[#0EA5C6] px-8 text-[16px] md:text-[18px] font-bold text-white shadow-xl shadow-[#00C2E0]/30 transition-all duration-300 hover:-translate-y-1 w-full sm:w-auto"
-            >
-              Comenzar ahora
-              <ArrowRight className="ml-3 h-5 w-5" />
-            </Link>
-          </div>
+          <Link 
+            href="/cuestionario"
+            className="inline-flex h-[48px] items-center justify-center rounded-full bg-[#00C2E0] hover:bg-[#0EA5C6] px-7 text-[15px] font-bold text-white shadow-[0_8px_25px_rgba(0,194,224,0.35)] transition-all duration-300 hover:-translate-y-1 mb-10 w-full sm:w-auto"
+          >
+            Comenzar aventura
+            <ArrowRight className="ml-2.5 h-4 w-4" />
+          </Link>
 
-          {/* Dynamic Value Highlights Dock */}
-          <div className="w-full grid grid-cols-1 sm:grid-cols-3 gap-3 p-2 sm:p-2.5 bg-white/70 backdrop-blur-xl rounded-[24px] border border-white/80 shadow-[0_20px_50px_rgba(8,42,74,0.07)]">
+          {/* Features Pill Dock */}
+          <div className="w-full max-w-[600px] flex flex-wrap md:flex-nowrap items-center justify-center md:justify-between gap-3 md:gap-2 bg-white/95 backdrop-blur-md px-5 py-3 rounded-3xl md:rounded-full border border-gray-100 shadow-[0_12px_40px_rgba(0,0,0,0.08)]">
             
-            {/* Card 1: 8 Dimensiones */}
-            <div className="group relative bg-white/90 hover:bg-white rounded-[18px] p-4 sm:p-5 border border-[#D6E5EF]/70 hover:border-[#00C2E0]/50 shadow-xs hover:shadow-[0_12px_28px_rgba(0,194,224,0.14)] transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between text-left">
-              <div className="flex items-center justify-between mb-3">
-                <div className="w-10 h-10 rounded-[12px] bg-[#EAF6FF] text-[#00C2E0] flex items-center justify-center transition-all duration-300 group-hover:bg-[#00C2E0] group-hover:text-white group-hover:rotate-3 shrink-0">
-                  <BrainCircuit className="h-5 w-5" />
-                </div>
-                <span className="text-[11px] font-bold text-[#00C2E0] bg-[#EAF6FF] px-2.5 py-0.5 rounded-full tracking-wide">
-                  Psicometría IA
-                </span>
+            <div className="flex items-center gap-2.5">
+              <div className="text-[#00C2E0]">
+                <Map className="w-5 h-5 md:w-6 md:h-6 stroke-[2]" />
               </div>
-              <div>
-                <div className="font-extrabold text-[18px] md:text-[20px] text-[#082A4A] leading-tight group-hover:text-[#00C2E0] transition-colors">
-                  8 Dimensiones
-                </div>
-                <p className="text-[#4F6B85] text-[12.5px] font-medium mt-1 leading-snug">
-                  Modelo Holland RIASEC calibrado para decisiones vocacionales.
-                </p>
+              <div className="text-left">
+                <p className="text-[13px] md:text-[14px] font-extrabold text-[#082A4A] leading-none">16</p>
+                <p className="text-[10px] md:text-[11px] font-medium text-[#4F6B85]">decisiones</p>
               </div>
             </div>
 
-            {/* Card 2: Multi-Universidad */}
-            <div className="group relative bg-white/90 hover:bg-white rounded-[18px] p-4 sm:p-5 border border-[#D6E5EF]/70 hover:border-[#00C2E0]/50 shadow-xs hover:shadow-[0_12px_28px_rgba(0,194,224,0.14)] transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between text-left">
-              <div className="flex items-center justify-between mb-3">
-                <div className="w-10 h-10 rounded-[12px] bg-[#EAF6FF] text-[#00C2E0] flex items-center justify-center transition-all duration-300 group-hover:bg-[#00C2E0] group-hover:text-white group-hover:rotate-3 shrink-0">
-                  <GraduationCap className="h-5 w-5" />
-                </div>
-                <span className="text-[11px] font-bold text-[#0EA5C6] bg-[#F0FDFA] px-2.5 py-0.5 rounded-full tracking-wide">
-                  Perú 2026
-                </span>
+            <div className="hidden md:block w-px h-7 bg-gray-200"></div>
+
+            <div className="flex items-center gap-2.5">
+              <div className="text-[#00C2E0]">
+                <ShieldCheck className="w-5 h-5 md:w-6 md:h-6 stroke-[2]" />
               </div>
-              <div>
-                <div className="font-extrabold text-[18px] md:text-[20px] text-[#082A4A] leading-tight group-hover:text-[#00C2E0] transition-colors">
-                  Multi-Universidad
-                </div>
-                <p className="text-[#4F6B85] text-[12.5px] font-medium mt-1 leading-snug">
-                  Mallas curriculares y sedes contrastadas de todo el país.
-                </p>
+              <div className="text-left">
+                <p className="text-[13px] md:text-[14px] font-extrabold text-[#082A4A] leading-none">8</p>
+                <p className="text-[10px] md:text-[11px] font-medium text-[#4F6B85]">dimensiones</p>
               </div>
             </div>
 
-            {/* Card 3: 100% Gratuito / Reporte */}
-            <div className="group relative bg-white/90 hover:bg-white rounded-[18px] p-4 sm:p-5 border border-[#D6E5EF]/70 hover:border-[#00C2E0]/50 shadow-xs hover:shadow-[0_12px_28px_rgba(0,194,224,0.14)] transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between text-left">
-              <div className="flex items-center justify-between mb-3">
-                <div className="w-10 h-10 rounded-[12px] bg-[#EAF6FF] text-[#00C2E0] flex items-center justify-center transition-all duration-300 group-hover:bg-[#00C2E0] group-hover:text-white group-hover:rotate-3 shrink-0">
-                  <Sparkles className="h-5 w-5" />
-                </div>
-                <span className="text-[11px] font-bold text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-full tracking-wide">
-                  100% Libre
-                </span>
+            <div className="hidden md:block w-px h-7 bg-gray-200"></div>
+
+            <div className="flex items-center gap-2.5">
+              <div className="text-[#00C2E0]">
+                <GraduationCap className="w-5 h-5 md:w-6 md:h-6 stroke-[2]" />
               </div>
-              <div>
-                <div className="font-extrabold text-[18px] md:text-[20px] text-[#082A4A] leading-tight group-hover:text-[#00C2E0] transition-colors">
-                  Reporte Oficial
-                </div>
-                <p className="text-[#4F6B85] text-[12.5px] font-medium mt-1 leading-snug">
-                  Descarga inmediata de tus resultados y afinidades en PDF.
-                </p>
+              <div className="text-left">
+                <p className="text-[13px] md:text-[14px] font-extrabold text-[#082A4A] leading-none">Universidades</p>
+                <p className="text-[10px] md:text-[11px] font-medium text-[#4F6B85]">del Perú</p>
+              </div>
+            </div>
+
+            <div className="hidden md:block w-px h-7 bg-gray-200"></div>
+
+            <div className="flex items-center gap-2.5">
+              <div className="text-[#00C2E0]">
+                <FileText className="w-5 h-5 md:w-6 md:h-6 stroke-[2]" />
+              </div>
+              <div className="text-left">
+                <p className="text-[13px] md:text-[14px] font-extrabold text-[#082A4A] leading-none">Reporte</p>
+                <p className="text-[10px] md:text-[11px] font-medium text-[#4F6B85]">en PDF</p>
               </div>
             </div>
 
           </div>
         </div>
       </main>
+
+      {/* Floating Speech Bubble (Desktop Only) */}
+      <div className="hidden lg:block absolute top-[45%] right-[25%] z-20">
+        <div className="relative animate-bounce" style={{ animationDuration: '4s' }}>
+          <div className="bg-white px-4 py-3 rounded-[20px] rounded-br-sm shadow-xl font-medium text-[#082A4A] text-[13px] leading-snug transform -rotate-2 border border-gray-50 italic">
+            ¡Hola!<br/>
+            Soy Chaski,<br/>
+            tu compañero en<br/>
+            esta aventura.
+          </div>
+          {/* Arrow pointing to the robot */}
+          <div className="absolute -bottom-6 right-5 text-[#082A4A]">
+             <svg width="32" height="32" viewBox="0 0 40 40" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="-rotate-12">
+               <path d="M5 5 Q 10 25 30 35" />
+               <path d="M22 35 L 30 35 L 28 27" />
+             </svg>
+          </div>
+        </div>
+      </div>
+
+      {/* Floating Bottom Right Text (Desktop Only) */}
+      <div className="hidden lg:block absolute bottom-8 right-10 z-20">
+        <p className="text-white text-[20px] font-serif italic drop-shadow-[0_4px_8px_rgba(0,0,0,0.8)] -rotate-3 text-right font-medium">
+          Grandes<br/>
+          historias comienzan<br/>
+          con una decisión
+        </p>
+      </div>
+
     </div>
   );
 }
