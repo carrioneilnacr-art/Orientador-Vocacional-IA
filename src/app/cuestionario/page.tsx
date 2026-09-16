@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { ChaskiAnalysis } from '@/components/chaski/ChaskiAnalysis';
-import { RandomTestController } from '@/components/questionnaire/RandomTestController';
+// import { RandomTestController } from '@/components/questionnaire/RandomTestController';
 import { AdventureIntro } from '@/components/questionnaire/AdventureIntro';
 import { MissionHeader } from '@/components/questionnaire/MissionHeader';
 import { MissionInterlude } from '@/components/questionnaire/MissionInterlude';
@@ -149,11 +149,11 @@ export default function CuestionarioPage() {
     setCurrentStep((prev) => prev + 1);
   };
 
-  // Función de pruebas rápidas: auto-completar todo al azar y finalizar
-  const handleAutoSubmitAllRandom = (randomAnswers: Record<number, number>) => {
-    setAnswers(randomAnswers);
-    submitAnswers(randomAnswers);
-  };
+  // Función de pruebas rápidas: auto-completar todo al azar y finalizar (Inhabilitado temporalmente para producción)
+  // const handleAutoSubmitAllRandom = (randomAnswers: Record<number, number>) => {
+  //   setAnswers(randomAnswers);
+  //   submitAnswers(randomAnswers);
+  // };
 
   if (!isLoaded) {
     return (
@@ -174,7 +174,7 @@ export default function CuestionarioPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#F8FCFF] font-sans selection:bg-[#00C2E0] selection:text-white">
-      {/* Botón flotante para pruebas rápidas / QA */}
+      {/* Botón flotante para pruebas rápidas / QA (Inhabilitado temporalmente para producción)
       <RandomTestController
         questions={questions}
         options={options}
@@ -183,6 +183,7 @@ export default function CuestionarioPage() {
         onAutoSubmitAllRandom={handleAutoSubmitAllRandom}
         onAdvanceToNext={handleContinue}
       />
+      */}
 
       <main className="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 md:p-10">
         <AnimatePresence mode="wait">
