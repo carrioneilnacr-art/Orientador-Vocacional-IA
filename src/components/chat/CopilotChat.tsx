@@ -274,11 +274,13 @@ export default function CopilotChat({ profileName = 'Vocacional' }: CopilotChatP
   const isInitialState = messages.length === 1;
 
   return (
-    <div className="flex flex-col h-full bg-white rounded-[24px] border border-[#D6E5EF] shadow-sm overflow-hidden font-sans">
+    <div className="flex flex-col h-full bg-white rounded-[24px] border-2 border-[#00C2E0]/50 shadow-[0_0_25px_rgba(0,194,224,0.15)] overflow-hidden font-sans transition-all hover:border-[#00C2E0] hover:shadow-[0_0_35px_rgba(0,194,224,0.25)]">
       {/* Header del Copiloto */}
-      <div className="flex items-center justify-between px-6 py-4 border-b border-[#D6E5EF]/70 bg-white shrink-0">
+      <div className="flex items-center justify-between px-6 py-4 border-b border-[#D6E5EF]/70 bg-gradient-to-r from-white to-[#F0F9FF] shrink-0">
         <div>
-          <h3 className="font-bold text-[18px] text-[#082A4A] tracking-tight">Copiloto Vocacional</h3>
+          <h3 className="font-bold text-[18px] text-[#082A4A] tracking-tight flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-[#00C2E0]" /> Copiloto Vocacional
+          </h3>
           <div className="flex items-center gap-2 text-[13px] font-medium text-[#4F6B85] mt-0.5">
             <span className="relative flex h-2.5 w-2.5">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#10B981] opacity-75"></span>
@@ -395,8 +397,11 @@ export default function CopilotChat({ profileName = 'Vocacional' }: CopilotChatP
       )}
 
       {/* Input de Preguntas */}
-      <div className="p-4 border-t border-[#D6E5EF]/70 bg-white shrink-0">
-        <div className="relative">
+      <div className="p-4 border-t border-[#D6E5EF]/70 bg-gradient-to-b from-white to-[#F0F9FF] shrink-0 relative">
+        <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#00C2E0] text-white text-[10px] font-bold px-3 py-0.5 rounded-full shadow-sm animate-bounce">
+          ¡Pregúntale a Chaski!
+        </div>
+        <div className="relative mt-2">
           <input
             type="text"
             value={input}
@@ -405,18 +410,18 @@ export default function CopilotChat({ profileName = 'Vocacional' }: CopilotChatP
             placeholder={isLoading ? "Chaski está respondiendo..." : "Escribe tu pregunta aquí..."}
             disabled={isLoading}
             autoComplete="off"
-            className="w-full h-11 pl-4 pr-12 bg-[#F8FCFF] border border-[#D6E5EF] focus:border-[#00C2E0] rounded-[14px] text-[13.5px] text-[#082A4A] placeholder-[#4F6B85] focus:outline-none transition-all shadow-xs disabled:opacity-60"
+            className="w-full h-12 pl-4 pr-12 bg-white border-2 border-[#00C2E0]/40 focus:border-[#00C2E0] focus:ring-4 focus:ring-[#00C2E0]/20 rounded-[14px] text-[13.5px] text-[#082A4A] placeholder-[#4F6B85] focus:outline-none transition-all shadow-sm disabled:opacity-60"
           />
           <button
             onClick={() => sendMessage()}
             disabled={!input.trim() || isLoading}
-            className="absolute right-1.5 top-1.5 h-8 w-8 bg-[#00C2E0] hover:bg-[#0EA5C6] disabled:bg-[#D6E5EF] text-white rounded-[10px] flex items-center justify-center transition-colors cursor-pointer disabled:cursor-not-allowed shadow-xs"
+            className="absolute right-1.5 top-1.5 h-9 w-9 bg-[#00C2E0] hover:bg-[#0EA5C6] disabled:bg-[#D6E5EF] text-white rounded-[10px] flex items-center justify-center transition-colors cursor-pointer disabled:cursor-not-allowed shadow-md"
             aria-label="Enviar"
           >
             {isLoading ? (
-              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
-              <Send className="h-3.5 w-3.5 ml-0.5" />
+              <Send className="h-4 w-4 ml-0.5" />
             )}
           </button>
         </div>
