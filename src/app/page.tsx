@@ -315,10 +315,10 @@ export default function Home() {
         </h2>
         <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16 opacity-80">
           <div className="relative w-24 h-12 md:w-32 md:h-16 grayscale hover:grayscale-0 transition-all duration-300">
-            <Image src="/assets/logo_uch.jfif" alt="UCH" fill className="object-contain" />
+            <Image src="/assets/logo_uch.jpg" alt="UCH" fill className="object-contain" />
           </div>
           <div className="relative w-24 h-12 md:w-32 md:h-16 grayscale hover:grayscale-0 transition-all duration-300">
-            <Image src="/assets/logo_ucsur.jfif" alt="UCSUR" fill className="object-contain" />
+            <Image src="/assets/logo_ucsur.jpg" alt="UCSUR" fill className="object-contain" />
           </div>
           <div className="relative w-24 h-12 md:w-32 md:h-16 grayscale hover:grayscale-0 transition-all duration-300">
             <Image src="/assets/logo_utp.jpg" alt="UTP" fill className="object-contain" />
