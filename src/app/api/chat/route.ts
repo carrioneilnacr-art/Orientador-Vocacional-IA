@@ -1,5 +1,4 @@
 import { openai } from '@ai-sdk/openai';
-import { google } from '@ai-sdk/google';
 import { streamText } from 'ai';
 import { db } from '@/db';
 import { careers, campuses, academicOffers, tuitionFees, institutions, curricula, curriculumCourses } from '@/db/schema';
