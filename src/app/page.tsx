@@ -52,11 +52,21 @@ export default function Home() {
     >
 
       {/* ── NAVBAR FLOTANTE ── */}
-      <header className="relative z-50 pt-5 pb-3 w-full flex justify-between items-center px-5 md:px-10 lg:px-16">
-        {/* Logo */}
-        <span className="text-[13px] font-bold tracking-wide text-[#0B2D4D] opacity-70 hidden md:block">
-          ORIENTADOR VOCACIONAL IA
-        </span>
+      <header className="relative z-50 pt-5 pb-3 w-full flex items-center justify-between px-5 md:px-10 lg:px-16">
+        {/* Logo (Ocupa 1/3 del espacio para centrar el Nav) */}
+        <div className="flex-1 flex items-center gap-3 hidden md:flex">
+          <div className="w-8 h-8 rounded-full overflow-hidden border border-[#E1EDF3] bg-[#F5FAFD] relative flex-shrink-0">
+            <Image
+              src="/assets/chaski/chaski-10.png"
+              alt="Logo Chaski"
+              fill
+              className="object-cover object-top"
+            />
+          </div>
+          <span className="text-[13px] font-bold tracking-wide text-[#0B2D4D] opacity-70">
+            ORIENTADOR VOCACIONAL IA
+          </span>
+        </div>
 
         {/* Nav cápsula centrada */}
         <nav
@@ -83,14 +93,14 @@ export default function Home() {
             Cómo funciona
           </Link>
           <Link
-            href="#"
+            href="/universidades"
             className="hidden sm:block text-[13px] font-medium px-3 py-1.5 rounded-full hover:bg-[#F0F8FF] transition-colors"
             style={{ color: "#355B78" }}
           >
             Universidades
           </Link>
           <Link
-            href="#"
+            href="/sobre-el-proyecto"
             className="hidden md:block text-[13px] font-medium px-3 py-1.5 rounded-full hover:bg-[#F0F8FF] transition-colors"
             style={{ color: "#355B78" }}
           >
@@ -98,13 +108,15 @@ export default function Home() {
           </Link>
         </nav>
 
-        {/* Hamburguesa mobile */}
-        <button
-          className="md:hidden p-2 rounded-full border border-[#E1EDF3] bg-white/90"
-          aria-label="Menú"
-        >
-          <Menu className="w-4 h-4 text-[#0B2D4D]" />
-        </button>
+        {/* Contenedor derecho (Hamburguesa en mobile, vacío en desktop para equilibrar) */}
+        <div className="flex-1 flex justify-end">
+          <button
+            className="md:hidden p-2 rounded-full border border-[#E1EDF3] bg-white/90"
+            aria-label="Menú"
+          >
+            <Menu className="w-4 h-4 text-[#0B2D4D]" />
+          </button>
+        </div>
       </header>
 
       {/* ── HERO ── */}
@@ -176,7 +188,7 @@ export default function Home() {
           </div>
 
           {/* Stats cards */}
-          <div className="relative flex flex-wrap gap-2 md:gap-3">
+          <div className="relative flex flex-wrap justify-center md:justify-start gap-2 md:gap-3">
             {/* 16 decisiones */}
             <StatCard
               icon={<Map className="w-4 h-4" style={{ color: "#08BBD5" }} />}
@@ -222,11 +234,19 @@ export default function Home() {
             sizes="(max-width: 768px) 100vw, 55vw"
           />
 
-          {/* Máscara lateral izquierda — integra la imagen con el fondo */}
+          {/* Máscara superior — difumina el corte recto de la imagen */}
           <div
-            className="absolute inset-y-0 left-0 w-[45%] pointer-events-none z-10"
+            className="absolute top-0 left-0 right-0 h-[20%] pointer-events-none z-10"
             style={{
-              background: "linear-gradient(to right, #F5FAFD 0%, #F5FAFD 20%, rgba(245,250,253,0.7) 60%, transparent 100%)",
+              background: "linear-gradient(to bottom, #F5FAFD 0%, transparent 100%)",
+            }}
+          />
+
+          {/* Máscara lateral izquierda — integra la imagen con el fondo (suavizada) */}
+          <div
+            className="absolute inset-y-0 left-0 w-[20%] pointer-events-none z-10"
+            style={{
+              background: "linear-gradient(to right, #F5FAFD 0%, transparent 100%)",
             }}
           />
 
@@ -239,7 +259,7 @@ export default function Home() {
           {/* Anotación manuscrita de Chaski */}
           <div
             className="hidden lg:block absolute z-20"
-            style={{ top: "32%", left: "12%", transform: "rotate(-3deg)" }}
+            style={{ top: "10%", right: "50%", transform: "rotate(-3deg)" }}
           >
             <div
               className="relative animate-[float_5s_ease-in-out_infinite]"
@@ -247,11 +267,14 @@ export default function Home() {
             >
               <p
                 style={{
-                  fontFamily: "'Dancing Script', cursive, serif",
-                  fontSize: "16px",
-                  lineHeight: "1.5",
-                  color: "#0B2D4D",
-                  textShadow: "0 1px 3px rgba(255,255,255,0.9)",
+                  fontFamily: "var(--font-geist-sans), system-ui, sans-serif",
+                  fontSize: "18px",
+                  fontWeight: "800",
+                  lineHeight: "1.4",
+                  color: "#FFFFFF",
+                  textShadow: "0 2px 8px rgba(11,45,77,0.9), 0 0 5px rgba(11,45,77,0.7)",
+                  whiteSpace: "nowrap",
+                  letterSpacing: "-0.02em",
                 }}
               >
                 ¡Hola!<br />
@@ -261,43 +284,25 @@ export default function Home() {
               </p>
               {/* Flecha dibujada */}
               <svg
-                width="52" height="52" viewBox="0 0 52 52"
+                width="45" height="45" viewBox="0 0 52 52"
                 fill="none" xmlns="http://www.w3.org/2000/svg"
-                className="absolute -bottom-8 right-0"
-                style={{ transform: "rotate(15deg)" }}
+                className="absolute -bottom-10 -right-6"
+                style={{ transform: "rotate(30deg)" }}
               >
                 <path
                   d="M4 4 Q 16 32 44 42"
-                  stroke="#0B2D4D" strokeWidth="1.8"
-                  strokeLinecap="round" fill="none" opacity="0.6"
+                  stroke="#FFFFFF" strokeWidth="3"
+                  strokeLinecap="round" fill="none" opacity="0.95"
+                  style={{ filter: "drop-shadow(0 2px 4px rgba(11,45,77,0.5))" }}
                 />
                 <path
                   d="M36 42 L 44 42 L 41 34"
-                  stroke="#0B2D4D" strokeWidth="1.8"
-                  strokeLinecap="round" strokeLinejoin="round" fill="none" opacity="0.6"
+                  stroke="#FFFFFF" strokeWidth="3"
+                  strokeLinecap="round" strokeLinejoin="round" fill="none" opacity="0.95"
+                  style={{ filter: "drop-shadow(0 2px 4px rgba(11,45,77,0.5))" }}
                 />
               </svg>
             </div>
-          </div>
-
-          {/* Frase secundaria */}
-          <div
-            className="hidden lg:block absolute z-20 bottom-8 right-8"
-            style={{ transform: "rotate(-2deg)" }}
-          >
-            <p
-              style={{
-                fontFamily: "'Dancing Script', cursive, serif",
-                fontSize: "15px",
-                color: "rgba(255,255,255,0.88)",
-                textShadow: "0 2px 8px rgba(11,45,77,0.55)",
-                textAlign: "right",
-                lineHeight: "1.6",
-              }}
-            >
-              Grandes historias<br />
-              comienzan con una decisión.
-            </p>
           </div>
 
         </div>
@@ -305,8 +310,6 @@ export default function Home() {
 
       {/* Keyframe para la animación del texto de Chaski */}
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&display=swap');
-
         @keyframes float {
           0%, 100% { transform: translateY(0px) rotate(-3deg); }
           50% { transform: translateY(-8px) rotate(-3deg); }

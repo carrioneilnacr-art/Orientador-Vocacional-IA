@@ -6,13 +6,15 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { ChaskiAnalysis } from '@/components/chaski/ChaskiAnalysis';
 // import { RandomTestController } from '@/components/questionnaire/RandomTestController';
-import { AdventureIntro } from '@/components/questionnaire/AdventureIntro';
+import { TestIntro } from '@/components/test-intro/TestIntro';
 import { MissionHeader } from '@/components/questionnaire/MissionHeader';
-import { MissionInterlude } from '@/components/questionnaire/MissionInterlude';
+import { MissionProgress } from '@/components/cuestionario/MissionProgress';
 import { ChoiceCard } from '@/components/questionnaire/ChoiceCard';
 import type { QuestionItem, OptionItem } from '@/data/questionnaireData';
+import { ProfileReveal } from '@/components/cuestionario/ProfileReveal';
+import { profileData } from '@/components/cuestionario/profileData';
 
-type ViewMode = 'INTRO' | 'QUESTIONS' | 'INTERLUDE' | 'SUBMITTING';
+type ViewMode = 'INTRO' | 'QUESTIONS' | 'MISSION_PROGRESS' | 'SUBMITTING' | 'PROFILE_REVEAL';
 
 export default function CuestionarioPage() {
   const router = useRouter();
@@ -26,6 +28,7 @@ export default function CuestionarioPage() {
   const [options, setOptions] = useState<OptionItem[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
   const [completedInterludeMission, setCompletedInterludeMission] = useState<number>(1);
+  const [calculatedProfileKey, setCalculatedProfileKey] = useState<string>('LOGIC');
 
   // Cargar preguntas y opciones desde el endpoint
   useEffect(() => {
@@ -89,9 +92,16 @@ export default function CuestionarioPage() {
         localStorage.setItem('vocational_results', JSON.stringify(result));
         localStorage.setItem('vocational_answers_v3', JSON.stringify(finalAnswers));
 
-        // Breve pausa para que el usuario disfrute la animación de Chaski
+        // Calcular perfil principal
+        const topDimension = Object.entries(result.dimensionScores ?? {}).sort(
+          ([, a], [, b]) => (b as number) - (a as number)
+        )[0]?.[0] ?? 'LOGIC';
+        
+        setCalculatedProfileKey(topDimension);
+
+        // Breve pausa para que el usuario disfrute la animación de Chaski analizando
         setTimeout(() => {
-          router.push('/resultados');
+          setViewMode('PROFILE_REVEAL');
         }, 1800);
       } catch (err) {
         console.error('[Cuestionario] Error enviando respuestas:', err);
@@ -109,29 +119,29 @@ export default function CuestionarioPage() {
     setAnswers(newAnswers);
     localStorage.setItem('vocational_answers_v3', JSON.stringify(newAnswers));
 
-    // Si terminó la Misión 1 (paso 3), Misión 2 (paso 7) o Misión 3 (paso 11) -> Mostrar interludio
+    // Si terminó la Misión 1 (paso 3), Misión 2 (paso 7), Misión 3 (paso 11) o Misión 4 (paso 15) -> Mostrar progreso de misión
     if (currentStep === 3) {
       setCompletedInterludeMission(1);
-      setViewMode('INTERLUDE');
+      setViewMode('MISSION_PROGRESS');
       return;
     }
     if (currentStep === 7) {
       setCompletedInterludeMission(2);
-      setViewMode('INTERLUDE');
+      setViewMode('MISSION_PROGRESS');
       return;
     }
     if (currentStep === 11) {
       setCompletedInterludeMission(3);
-      setViewMode('INTERLUDE');
+      setViewMode('MISSION_PROGRESS');
+      return;
+    }
+    if (currentStep === 15) {
+      setCompletedInterludeMission(4);
+      setViewMode('MISSION_PROGRESS');
       return;
     }
 
-    // Si es la última pregunta (15) -> Enviar cuestionario
-    if (currentStep >= questions.length - 1) {
-      submitAnswers(newAnswers);
-    } else {
-      setCurrentStep((prev) => prev + 1);
-    }
+    setCurrentStep((prev) => prev + 1);
   };
 
   // Regresar a la pregunta anterior
@@ -143,10 +153,14 @@ export default function CuestionarioPage() {
     }
   };
 
-  // Continuar tras el interludio de Chaski
+  // Continuar tras el progreso de misiones
   const handleResumeAfterInterlude = () => {
-    setViewMode('QUESTIONS');
-    setCurrentStep((prev) => prev + 1);
+    if (completedInterludeMission === 4) {
+      submitAnswers(answers);
+    } else {
+      setViewMode('QUESTIONS');
+      setCurrentStep((prev) => prev + 1);
+    }
   };
 
   // Función de pruebas rápidas: auto-completar todo al azar y finalizar (Inhabilitado temporalmente para producción)
@@ -172,6 +186,15 @@ export default function CuestionarioPage() {
     );
   }
 
+  if (viewMode === 'PROFILE_REVEAL') {
+    return (
+      <ProfileReveal
+        profile={profileData[calculatedProfileKey] || profileData['LOGIC']}
+        onContinue={() => router.push('/resultados')}
+      />
+    );
+  }
+
   return (
     <div className="min-h-screen flex flex-col bg-[#F8FCFF] font-sans selection:bg-[#00C2E0] selection:text-white">
       {/* Botón flotante para pruebas rápidas / QA (Inhabilitado temporalmente para producción)
@@ -188,17 +211,18 @@ export default function CuestionarioPage() {
       <main className="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 md:p-10">
         <AnimatePresence mode="wait">
           {viewMode === 'INTRO' && (
-            <AdventureIntro
+            <TestIntro
               key="intro"
               onStart={() => setViewMode('QUESTIONS')}
             />
           )}
 
-          {viewMode === 'INTERLUDE' && (
-            <MissionInterlude
-              key="interlude"
-              completedMissionNumber={completedInterludeMission}
+          {viewMode === 'MISSION_PROGRESS' && (
+            <MissionProgress
+              key="mission-progress"
+              completedMission={completedInterludeMission}
               onContinue={handleResumeAfterInterlude}
+              onBack={() => setViewMode('QUESTIONS')}
             />
           )}
 
