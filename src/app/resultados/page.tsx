@@ -14,6 +14,7 @@ import WhyCareerSection from "@/components/resultados/WhyCareerSection";
 import CurriculumComparator from "@/components/resultados/CurriculumComparator";
 import LaborField from "@/components/resultados/LaborField";
 import FutureChaskiLetter from "@/components/resultados/FutureChaskiLetter";
+import ClosingSection from "@/components/resultados/ClosingSection";
 
 export default function ResultadosPage() {
   const { results, isLoaded, profileName, testId } = useVocationalResults();
@@ -85,16 +86,36 @@ export default function ResultadosPage() {
 
       <main id="report-content" className="w-full max-w-[1400px] mx-auto px-6 md:px-10 lg:px-12 py-8 space-y-12">
 
-        {/* Banner exclusivo para PDF (oculto en vista web) */}
-        <div className="hidden pdf-only-banner items-center justify-between pb-6 border-b border-[#D6E5EF]">
+        {/* ENCABEZADO INSTITUCIONAL DEL REPORTE */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-[#D6E5EF]/60">
           <div>
-            <h1 className="text-2xl font-bold text-[#082A4A]">Orientador Vocacional IA</h1>
-            <p className="text-sm text-[#4F6B85]">Reporte Oficial de Resultados y Afinidad Vocacional</p>
+            <div className="flex items-center gap-2 mb-1.5">
+              <div className="h-2 w-2 rounded-full bg-[#00C2E0]" />
+              <h1 className="text-[20px] font-bold text-[#082A4A] uppercase tracking-wide">
+                Orientador Vocacional IA
+              </h1>
+            </div>
+            <p className="text-[14px] text-[#4F6B85] font-medium">
+              Reporte Oficial de Resultados y Afinidad Vocacional
+            </p>
           </div>
-          <div className="text-right text-xs text-[#4F6B85]">
-            <p className="font-semibold text-[#082A4A]">Perfil: {profileName}</p>
-            {testId && <p className="font-mono text-[11px] font-bold text-[#00C2E0]">ID: {testId}</p>}
-            <p>Generado el {new Date().toLocaleDateString("es-PE")}</p>
+          
+          <div className="flex flex-col items-start md:items-end gap-1.5 text-right">
+            <div className="flex items-center gap-2">
+              <span className="text-[12px] text-[#4F6B85] uppercase tracking-wider font-semibold">Perfil:</span>
+              <span className="bg-[#18A86B]/10 text-[#18A86B] font-bold px-2.5 py-0.5 rounded-[6px] text-[13px] uppercase tracking-wide">
+                {profileName}
+              </span>
+            </div>
+            {testId && (
+              <div className="flex items-center gap-2 text-[12px]">
+                <span className="text-[#4F6B85]">ID:</span>
+                <span className="font-mono font-bold text-[#00C2E0]">{testId}</span>
+              </div>
+            )}
+            <p className="text-[11.5px] text-[#4F6B85]">
+              Generado el {new Date().toLocaleDateString("es-PE", { year: 'numeric', month: 'long', day: 'numeric' })}
+            </p>
           </div>
         </div>
 
@@ -123,9 +144,11 @@ export default function ResultadosPage() {
           )}
         </div>
 
+        <ClosingSection />
+
       </main>
 
-      <footer className="w-full max-w-[1400px] mx-auto px-6 md:px-10 lg:px-12 pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-[#4F6B85] border-t border-[#D6E5EF]/60 no-print no-pdf">
+      <footer className="w-full max-w-[1400px] mx-auto px-6 md:px-10 lg:px-12 pt-8 flex flex-col sm:flex-row items-center justify-between text-[13px] text-[#4F6B85] font-medium border-t border-[#D6E5EF]/60 no-print no-pdf">
         <p>Orientador Vocacional con IA - Descubre tu potencial. Construye tu futuro.</p>
         <p className="mt-2 sm:mt-0">Un mejor mañana empieza con una buena decisión.</p>
       </footer>

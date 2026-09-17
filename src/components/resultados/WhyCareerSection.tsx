@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { BrainCircuit, Zap, Lightbulb, Crosshair, Sparkles, Flame } from "lucide-react";
 import type { CareerResult } from "@/types/vocacional";
 
@@ -31,7 +32,7 @@ export default function WhyCareerSection({ career, profileName }: WhyCareerSecti
         text: "Las marcas más exitosas no venden productos, venden emociones. Aprenderás a dominar el arte de la persuasión, las tendencias virales y cómo construir imperios desde cero."
       };
     }
-    if (name.includes("diseño") || name.includes("comunicación")) {
+    if (name.includes("diseño") || name.includes("comunicación") || name.includes("publicidad")) {
       return {
         title: "¡Creador de realidades!",
         text: "El 90% de la información transmitida al cerebro es visual. Aprenderás a manipular colores, tipografías y narrativas para hacer que la gente sienta exactamente lo que tú quieres."
@@ -52,55 +53,69 @@ export default function WhyCareerSection({ career, profileName }: WhyCareerSecti
   const funFact = getFunFact(career.name);
 
   return (
-    <section>
-      <div className="flex items-center gap-3 mb-6">
-        <div className="bg-[#EAF6FF] text-[#00C2E0] p-2.5 rounded-[12px]">
-          <BrainCircuit className="h-6 w-6" />
-        </div>
-        <div>
-          <h2 className="text-[26px] font-bold text-[#082A4A] leading-tight">
-            ¿Por qué {career.name}?
-          </h2>
-          <p className="text-[#4F6B85] text-[14px]">
-            Tu perfil {profileName.toLowerCase()} se alinea con las habilidades y retos de esta carrera.
-          </p>
-        </div>
+    <section className="w-full">
+      <div className="flex flex-col gap-1 mb-6">
+        <h2 className="text-[32px] font-bold text-[#082A4A] leading-tight">
+          ¿Por qué {career.name}?
+        </h2>
+        <p className="text-[#4F6B85] text-[16px] font-medium">
+          Tu perfil <strong className="text-[#00C2E0] capitalize">{profileName.toLowerCase()}</strong> se alinea con las habilidades y retos de esta carrera.
+        </p>
       </div>
 
-      <div className="grid lg:grid-cols-[1.2fr_1fr] gap-8">
-        {/* Razones Cortas y Dinámicas */}
-        <div className="space-y-3">
+      <div className="grid lg:grid-cols-2 gap-8 items-stretch">
+        {/* Lado Izquierdo: Razones Cortas y Dinámicas */}
+        <div className="flex flex-col justify-center space-y-4">
           {[
             { Icon: Zap,      title: "Haz match con tu pasión",    desc: "Esta carrera encaja perfecto con lo que te gusta hacer y cómo piensas." },
             { Icon: Crosshair, title: "Ventaja competitiva",      desc: "Tus habilidades naturales te harán destacar súper rápido en este campo." },
-            { Icon: Lightbulb, title: "El poder de tu título en Perú",       desc: "Los universitarios en Perú ganan en promedio 70% más, acceden a networking global y tienen mayor libertad financiera." },
+            { Icon: Lightbulb, title: "El poder de tu título en Perú",       desc: "Los universitarios en Perú ganan en promedio 70% más, acceden a networking global y mayor libertad." },
           ].map(({ Icon, title, desc }) => (
-            <div key={title} className="flex gap-4 p-4 rounded-[16px] bg-white shadow-sm border border-[#D6E5EF] hover:border-[#00C2E0]/40 transition-colors group">
-              <Icon className="h-6 w-6 text-[#00C2E0] shrink-0 mt-0.5 group-hover:scale-110 transition-transform" strokeWidth={2.2} />
+            <div key={title} className="flex gap-5 p-5 rounded-[20px] bg-white shadow-sm border border-[#D6E5EF] hover:border-[#00C2E0]/40 transition-all hover:shadow-md hover:-translate-y-0.5 group">
+              <div className="bg-[#F8FCFF] w-12 h-12 rounded-full flex items-center justify-center shrink-0 border border-[#D6E5EF]/60 group-hover:bg-[#00C2E0] group-hover:border-[#00C2E0] transition-colors">
+                <Icon className="h-5 w-5 text-[#00C2E0] group-hover:text-white transition-colors" strokeWidth={2.2} />
+              </div>
               <div>
-                <h4 className="font-bold text-[#082A4A] text-[14px] mb-0.5">{title}</h4>
-                <p className="text-[12.5px] text-[#4F6B85] leading-snug">{desc}</p>
+                <h4 className="font-bold text-[#082A4A] text-[16px] mb-1">{title}</h4>
+                <p className="text-[13.5px] text-[#4F6B85] leading-relaxed font-medium">{desc}</p>
               </div>
             </div>
           ))}
         </div>
 
-        {/* Dato Curioso VIBRANTE (Reemplazo de los links aburridos) */}
-        <div className="bg-gradient-to-br from-[#00C2E0] to-[#0A85B8] rounded-[24px] p-6 text-white flex flex-col justify-center space-y-4 relative overflow-hidden shadow-sm border-2 border-white/20 transform transition-transform hover:-translate-y-1">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl pointer-events-none -mr-10 -mt-10" />
-          <div className="absolute bottom-0 left-0 w-24 h-24 bg-[#18A86B]/20 rounded-full blur-xl pointer-events-none -ml-8 -mb-8" />
-          
-          <div className="relative z-10">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-[10px] font-bold tracking-wider uppercase mb-3 border border-white/30">
+        {/* Lado Derecho: Visual y Dato Curioso */}
+        <div className="flex flex-col gap-4">
+          {/* Ilustración + Chaski */}
+          <div className="bg-[#F8FCFF] rounded-[24px] border border-[#D6E5EF] flex-1 flex items-center justify-center relative overflow-hidden min-h-[220px]">
+             {/* Decorative Background for Image Area */}
+            <div className="absolute inset-0 opacity-40">
+              <div className="absolute top-4 left-4 w-32 h-32 bg-[#00C2E0]/20 rounded-full blur-2xl" />
+              <div className="absolute bottom-4 right-4 w-40 h-40 bg-[#18A86B]/10 rounded-full blur-2xl" />
+            </div>
+            
+            <div className="relative w-[180px] h-[180px] z-10 opacity-90 hover:scale-105 transition-transform duration-500">
+              {/* Placeholder for modern abstract illustration. Since we don't have custom ones, we use a generic tech/edu icon approach or Chaski. */}
+              <Image src="/assets/chaski/chaski-5.png" alt="Creatividad y estudio" fill className="object-contain drop-shadow-md" />
+            </div>
+            
+            {/* Pequeño elemento flotante */}
+            <div className="absolute top-6 right-8 bg-white p-2 rounded-xl shadow-sm border border-[#D6E5EF] animate-pulse">
+              <Sparkles className="w-5 h-5 text-[#F4C95D]" />
+            </div>
+          </div>
+
+          {/* Dato Curioso Cyan Suave */}
+          <div className="bg-[#EAF6FF] rounded-[20px] p-6 text-[#082A4A] relative border border-[#00C2E0]/20 hover:border-[#00C2E0]/40 transition-colors">
+            
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white rounded-full text-[11px] font-bold tracking-wider uppercase mb-3 border border-[#D6E5EF] text-[#00C2E0] shadow-sm">
               <Flame className="h-3.5 w-3.5 text-[#F4C95D]" /> Dato Curioso
             </div>
             
             <h4 className="font-bold text-[18px] mb-2 leading-tight flex items-start gap-2">
               {funFact.title}
-              <Sparkles className="h-4 w-4 text-[#F4C95D] shrink-0 animate-pulse" />
             </h4>
             
-            <p className="text-[13px] text-white/90 leading-relaxed font-medium">
+            <p className="text-[13.5px] text-[#4F6B85] leading-relaxed font-medium">
               {funFact.text}
             </p>
           </div>
