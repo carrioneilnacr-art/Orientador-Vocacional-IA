@@ -8,9 +8,12 @@ import { useState } from "react";
 import ReportHeader    from "@/components/resultados/ReportHeader";
 import HeroSection     from "@/components/resultados/HeroSection";
 import RadarSection    from "@/components/resultados/RadarSection";
-import CareersSection  from "@/components/resultados/CareersSection";
 import WhyCareerSection from "@/components/resultados/WhyCareerSection";
-import NextStepsSection from "@/components/resultados/NextStepsSection";
+
+// Nuevos componentes
+import CurriculumComparator from "@/components/resultados/CurriculumComparator";
+import LaborField from "@/components/resultados/LaborField";
+import FutureChaskiLetter from "@/components/resultados/FutureChaskiLetter";
 
 export default function ResultadosPage() {
   const { results, isLoaded, profileName, testId } = useVocationalResults();
@@ -56,8 +59,7 @@ export default function ResultadosPage() {
     );
   }
 
-  const topCareers    = results.topCareers.slice(0, 3);
-  const primaryCareer = topCareers[0];
+  const primaryCareer = results.topCareers[0];
 
   return (
     <div className="min-h-screen bg-[#F8FCFF] text-[#082A4A] font-sans selection:bg-[#00C2E0] selection:text-white pb-20">
@@ -67,7 +69,7 @@ export default function ResultadosPage() {
         onRestart={handleRestart}
       />
 
-      <main id="report-content" className="w-full max-w-[1400px] mx-auto px-6 md:px-10 lg:px-12 py-8 space-y-16">
+      <main id="report-content" className="w-full max-w-[1400px] mx-auto px-6 md:px-10 lg:px-12 py-8 space-y-12">
 
         {/* Banner exclusivo para PDF (oculto en vista web) */}
         <div className="hidden pdf-only-banner items-center justify-between pb-6 border-b border-[#D6E5EF]">
@@ -82,13 +84,23 @@ export default function ResultadosPage() {
           </div>
         </div>
 
-        <HeroSection     profileName={profileName} results={results} />
-        <RadarSection    results={results} />
-        {/* <CareersSection  topCareers={topCareers} /> */}
+        <FutureChaskiLetter profileName={profileName} />
+        <HeroSection profileName={profileName} results={results} />
+        
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-12 items-start">
+          <RadarSection results={results} />
+          {primaryCareer && (
+            <WhyCareerSection career={primaryCareer} profileName={profileName} />
+          )}
+        </div>
+
         {primaryCareer && (
-          <WhyCareerSection career={primaryCareer} profileName={profileName} />
+          <>
+            <LaborField careerName={primaryCareer.name} />
+            <CurriculumComparator careerName={primaryCareer.name} />
+          </>
         )}
-        <NextStepsSection />
+
       </main>
 
       <footer className="w-full max-w-[1400px] mx-auto px-6 md:px-10 lg:px-12 pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-[#4F6B85] border-t border-[#D6E5EF]/60 no-print no-pdf">
