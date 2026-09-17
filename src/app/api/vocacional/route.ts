@@ -91,14 +91,14 @@ export async function POST(req: Request) {
     // 3. Normalizar puntajes a 0-100 de forma proporcional al rendimiento máximo por dimensión
     // En las 16 interacciones, cada dimensión tiene un techo teórico de entre 12 y 16 puntos
     const maxPossiblePerDim: Record<string, number> = {
-      REALISTIC: 16,
-      INVESTIGATIVE: 18,
-      ARTISTIC: 19,
-      SOCIAL: 18,
-      ENTERPRISING: 19,
-      CONVENTIONAL: 14,
-      TECH: 18,
-      LOGIC: 18,
+      TECH: 30,
+      LOGIC: 28,
+      ARTISTIC: 42,
+      INVESTIGATIVE: 33,
+      ENTERPRISING: 31,
+      CONVENTIONAL: 11,
+      REALISTIC: 23,
+      SOCIAL: 32,
     };
 
     const normalizedScores: Record<string, number> = {};
@@ -143,20 +143,21 @@ export async function POST(req: Request) {
     if (rulesList.length === 0) {
       rulesList = VERIFIED_RULES;
     }
-
     const careerScores: Record<
       number,
       { weightedScore: number; totalWeight: number; explanations: string[] }
     > = {};
 
     for (const rule of rulesList) {
-      const userScore = normalizedScores[rule.dimension] || 0;
+      const userRawScore = dimensionScores[rule.dimension] || 0;
+      const userNormalizedScore = normalizedScores[rule.dimension] || 0;
       if (!careerScores[rule.careerId]) {
         careerScores[rule.careerId] = { weightedScore: 0, totalWeight: 0, explanations: [] };
       }
 
-      if (userScore >= rule.minScore) {
-        careerScores[rule.careerId].weightedScore += userScore * rule.weight;
+      // Comparamos contra el puntaje bruto (raw), ya que rule.minScore está en valores de 6-10
+      if (userRawScore >= rule.minScore) {
+        careerScores[rule.careerId].weightedScore += userNormalizedScore * rule.weight;
         careerScores[rule.careerId].explanations.push(rule.explanationTemplate);
       }
       careerScores[rule.careerId].totalWeight += rule.weight * 100;
