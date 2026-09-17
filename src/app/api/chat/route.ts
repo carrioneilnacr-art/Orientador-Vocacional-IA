@@ -182,7 +182,7 @@ DATOS OFICIALES:
 - Toda información de cursos, semestres y sedes debe basarse fielmente en los datos provistos abajo.${profileContext || ''}${careerContext}`;
 
     const result = streamText({
-      model: google('gemini-1.5-flash'),
+      model: openai('gpt-4o-mini'),
       messages,
       system: systemPrompt,
     });
