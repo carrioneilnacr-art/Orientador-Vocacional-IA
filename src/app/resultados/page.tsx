@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useVocationalResults } from "@/hooks/useVocationalResults";
 import { triggerPrintAsPDF } from "@/utils/pdfPrint";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import ReportHeader    from "@/components/resultados/ReportHeader";
 import HeroSection     from "@/components/resultados/HeroSection";
@@ -18,6 +18,13 @@ import FutureChaskiLetter from "@/components/resultados/FutureChaskiLetter";
 export default function ResultadosPage() {
   const { results, isLoaded, profileName, testId } = useVocationalResults();
   const [isDownloading, setIsDownloading] = useState(false);
+  const [selectedCareer, setSelectedCareer] = useState<any>(null);
+
+  useEffect(() => {
+    if (results?.topCareers?.length && !selectedCareer) {
+      setSelectedCareer(results.topCareers[0]);
+    }
+  }, [results, selectedCareer]);
 
   const handleDownload = () => {
     triggerPrintAsPDF(
@@ -36,7 +43,16 @@ export default function ResultadosPage() {
     window.location.href = "/cuestionario";
   };
 
-  if (!isLoaded) {
+  const handleSelectCareer = (career: any) => {
+    setSelectedCareer(career);
+    // Scroll smoothly to the insights section
+    const element = document.getElementById("proyeccion-laboral");
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
+  if (!isLoaded || !selectedCareer) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#F8FCFF]">
         <div className="w-10 h-10 border-4 border-[#00C2E0] border-t-transparent rounded-full animate-spin" />
@@ -58,8 +74,6 @@ export default function ResultadosPage() {
       </div>
     );
   }
-
-  const primaryCareer = results.topCareers[0];
 
   return (
     <div className="min-h-screen bg-[#F8FCFF] text-[#082A4A] font-sans selection:bg-[#00C2E0] selection:text-white pb-20">
@@ -85,21 +99,29 @@ export default function ResultadosPage() {
         </div>
 
         <FutureChaskiLetter profileName={profileName} />
-        <HeroSection profileName={profileName} results={results} />
+        
+        <HeroSection 
+          profileName={profileName} 
+          results={results} 
+          selectedCareer={selectedCareer}
+          onSelectCareer={handleSelectCareer}
+        />
         
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-12 items-start">
           <RadarSection results={results} />
-          {primaryCareer && (
-            <WhyCareerSection career={primaryCareer} profileName={profileName} />
+          {selectedCareer && (
+            <WhyCareerSection career={selectedCareer} profileName={profileName} />
           )}
         </div>
 
-        {primaryCareer && (
-          <>
-            <LaborField careerName={primaryCareer.name} />
-            <CurriculumComparator careerName={primaryCareer.name} />
-          </>
-        )}
+        <div id="proyeccion-laboral" className="scroll-mt-8 space-y-8">
+          {selectedCareer && (
+            <>
+              <LaborField careerName={selectedCareer.name} />
+              <CurriculumComparator careerName={selectedCareer.name} />
+            </>
+          )}
+        </div>
 
       </main>
 

@@ -1,7 +1,6 @@
 "use client";
 
-import Link from "next/link";
-import { Quote, ArrowRight } from "lucide-react";
+import { Quote, ArrowRight, TrendingUp } from "lucide-react";
 import CopilotChat from "@/components/chat/CopilotChat";
 import { DIMENSION_LABELS, DIMENSION_DESCRIPTIONS } from "@/constants/dimensions";
 import type { VocationalResults } from "@/types/vocacional";
@@ -9,9 +8,11 @@ import type { VocationalResults } from "@/types/vocacional";
 interface HeroSectionProps {
   profileName: string;
   results: VocationalResults;
+  selectedCareer: any;
+  onSelectCareer: (career: any) => void;
 }
 
-export default function HeroSection({ profileName, results }: HeroSectionProps) {
+export default function HeroSection({ profileName, results, selectedCareer, onSelectCareer }: HeroSectionProps) {
   const topDimEntry = Object.entries(results.dimensionScores ?? {})
     .sort(([, a], [, b]) => (b as number) - (a as number))[0];
   const topDimKey = topDimEntry?.[0] || "LOGIC";
@@ -74,22 +75,30 @@ export default function HeroSection({ profileName, results }: HeroSectionProps) 
         </div>
       </div>
 
-      {/* Columna 2: Carreras Recomendadas (Reemplazo de la Imagen) */}
+      {/* Columna 2: Carreras Recomendadas */}
       <div className="flex flex-col min-h-[560px] gap-4">
         <h3 className="text-[#082A4A] font-bold text-[18px] mb-1">Top Carreras Recomendadas</h3>
         {topCareers.map((career, index) => {
           const isPrimary = index === 0;
           const badgeBg = isPrimary ? "bg-[#E8F8F1]" : "bg-[#EAF6FF]";
           const badgeText = isPrimary ? "text-[#18A86B]" : "text-[#00C2E0]";
+          const isSelected = selectedCareer?.id === career.id;
           
           return (
           <div
             key={career.id}
-            className="bg-white rounded-[20px] p-5 shadow-sm border border-[#D6E5EF] flex flex-col justify-between hover:shadow-md transition-shadow group flex-1"
+            onClick={() => onSelectCareer(career)}
+            className={`bg-white rounded-[20px] p-5 shadow-sm border transition-all cursor-pointer flex flex-col justify-between group flex-1 ${
+              isSelected 
+                ? "border-[#00C2E0] ring-4 ring-[#00C2E0]/10" 
+                : "border-[#D6E5EF] hover:border-[#00C2E0]/50 hover:shadow-md"
+            }`}
           >
             <div>
               <div className="flex justify-between items-start gap-2 mb-2">
-                <h4 className="text-[16px] font-bold text-[#082A4A] leading-tight group-hover:text-[#00C2E0] transition-colors">
+                <h4 className={`text-[16px] font-bold leading-tight transition-colors ${
+                  isSelected ? "text-[#00C2E0]" : "text-[#082A4A] group-hover:text-[#00C2E0]"
+                }`}>
                   {career.name}
                 </h4>
                 <span className={`${badgeBg} ${badgeText} font-bold px-2 py-1 rounded-[8px] text-[11px] shrink-0`}>
@@ -100,13 +109,17 @@ export default function HeroSection({ profileName, results }: HeroSectionProps) 
                 {career.justification}
               </p>
             </div>
-            <Link
-              href={`/carreras/${career.slug}`}
-              className="inline-flex h-[36px] items-center justify-center rounded-[10px] bg-[#00C2E0]/10 hover:bg-[#00C2E0] text-[#00C2E0] hover:text-white text-[12px] font-bold transition-colors w-full shrink-0"
+            
+            <div
+              className={`inline-flex h-[36px] items-center justify-center rounded-[10px] text-[12px] font-bold transition-colors w-full shrink-0 ${
+                isSelected
+                  ? "bg-[#00C2E0] text-white shadow-sm"
+                  : "bg-[#00C2E0]/10 group-hover:bg-[#00C2E0] text-[#00C2E0] group-hover:text-white"
+              }`}
             >
-              <span>Ver detalle</span>
-              <ArrowRight className="ml-2 h-3.5 w-3.5 shrink-0" />
-            </Link>
+              <TrendingUp className="mr-1.5 h-3.5 w-3.5 shrink-0" />
+              <span>Ver empleabilidad y malla</span>
+            </div>
           </div>
         );
         })}
