@@ -105,20 +105,14 @@ export default function HeroSection({ profileName, results, selectedCareer, onSe
                   {career.match}%
                 </span>
               </div>
-              <p className="text-[12.5px] text-[#4F6B85] mb-4 line-clamp-3">
+              <p className="text-[12.5px] text-[#4F6B85] line-clamp-2 mt-1">
                 {career.justification}
               </p>
             </div>
             
-            <div
-              className={`inline-flex h-[36px] items-center justify-center rounded-[10px] text-[12px] font-bold transition-colors w-full shrink-0 ${
-                isSelected
-                  ? "bg-[#00C2E0] text-white shadow-sm"
-                  : "bg-[#00C2E0]/10 group-hover:bg-[#00C2E0] text-[#00C2E0] group-hover:text-white"
-              }`}
-            >
-              <TrendingUp className="mr-1.5 h-3.5 w-3.5 shrink-0" />
-              <span>Ver empleabilidad y malla</span>
+            <div className="mt-4 flex items-center text-[11px] font-bold text-[#00C2E0] opacity-0 group-hover:opacity-100 transition-opacity">
+              <span>Hacer clic para ver detalles</span>
+              <ArrowRight className="ml-1 h-3 w-3" />
             </div>
           </div>
         );

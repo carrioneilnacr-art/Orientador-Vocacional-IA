@@ -68,39 +68,39 @@ export default function WhyCareerSection({ career, profileName }: WhyCareerSecti
       </div>
 
       <div className="grid lg:grid-cols-[1.2fr_1fr] gap-8">
-        {/* Razones */}
-        <div className="space-y-4">
+        {/* Razones Cortas y Dinámicas */}
+        <div className="space-y-3">
           {[
-            { Icon: Zap,      title: "Se conecta con tus pasiones",    desc: "Las áreas que te motivan son el centro del ejercicio profesional de esta especialidad." },
-            { Icon: Crosshair, title: "Aprovecha tus habilidades",      desc: "Tu forma de pensar y actuar te darán una clara ventaja para destacar rápidamente." },
-            { Icon: Lightbulb, title: "Impacto en el mundo real",       desc: "Tu trabajo no se quedará en teoría; resolverás problemas reales que cambian la vida de las personas." },
+            { Icon: Zap,      title: "Haz match con tu pasión",    desc: "Esta carrera encaja perfecto con lo que te gusta hacer y cómo piensas." },
+            { Icon: Crosshair, title: "Ventaja competitiva",      desc: "Tus habilidades naturales te harán destacar súper rápido en este campo." },
+            { Icon: Lightbulb, title: "El poder de tu título en Perú",       desc: "Los universitarios en Perú ganan en promedio 70% más, acceden a networking global y tienen mayor libertad financiera." },
           ].map(({ Icon, title, desc }) => (
-            <div key={title} className="flex gap-4 p-5 rounded-[18px] bg-white shadow-sm border border-[#D6E5EF] hover:border-[#00C2E0]/40 transition-colors group">
+            <div key={title} className="flex gap-4 p-4 rounded-[16px] bg-white shadow-sm border border-[#D6E5EF] hover:border-[#00C2E0]/40 transition-colors group">
               <Icon className="h-6 w-6 text-[#00C2E0] shrink-0 mt-0.5 group-hover:scale-110 transition-transform" strokeWidth={2.2} />
               <div>
-                <h4 className="font-bold text-[#082A4A] text-[15px] mb-1">{title}</h4>
-                <p className="text-[13px] text-[#4F6B85] leading-relaxed">{desc}</p>
+                <h4 className="font-bold text-[#082A4A] text-[14px] mb-0.5">{title}</h4>
+                <p className="text-[12.5px] text-[#4F6B85] leading-snug">{desc}</p>
               </div>
             </div>
           ))}
         </div>
 
         {/* Dato Curioso VIBRANTE (Reemplazo de los links aburridos) */}
-        <div className="bg-gradient-to-br from-[#00C2E0] to-[#0A85B8] rounded-[24px] p-6 text-white flex flex-col justify-center space-y-4 relative overflow-hidden shadow-lg border-2 border-white/20 transform transition-transform hover:-translate-y-1">
+        <div className="bg-gradient-to-br from-[#00C2E0] to-[#0A85B8] rounded-[24px] p-6 text-white flex flex-col justify-center space-y-4 relative overflow-hidden shadow-sm border-2 border-white/20 transform transition-transform hover:-translate-y-1">
           <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl pointer-events-none -mr-10 -mt-10" />
           <div className="absolute bottom-0 left-0 w-24 h-24 bg-[#18A86B]/20 rounded-full blur-xl pointer-events-none -ml-8 -mb-8" />
           
           <div className="relative z-10">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-[11px] font-bold tracking-wider uppercase mb-4 border border-white/30">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-[10px] font-bold tracking-wider uppercase mb-3 border border-white/30">
               <Flame className="h-3.5 w-3.5 text-[#F4C95D]" /> Dato Curioso
             </div>
             
-            <h4 className="font-bold text-[22px] mb-3 leading-tight flex items-start gap-2">
+            <h4 className="font-bold text-[18px] mb-2 leading-tight flex items-start gap-2">
               {funFact.title}
-              <Sparkles className="h-5 w-5 text-[#F4C95D] shrink-0 animate-pulse" />
+              <Sparkles className="h-4 w-4 text-[#F4C95D] shrink-0 animate-pulse" />
             </h4>
             
-            <p className="text-[14px] text-white/90 leading-relaxed font-medium">
+            <p className="text-[13px] text-white/90 leading-relaxed font-medium">
               {funFact.text}
             </p>
           </div>
