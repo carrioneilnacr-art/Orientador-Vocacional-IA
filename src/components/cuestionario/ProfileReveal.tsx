@@ -44,6 +44,17 @@ export function ProfileReveal({ profile, onContinue }: ProfileRevealProps) {
         <div className="absolute top-[18%] right-[38%] w-1.5 h-1.5 bg-[#0B2D4D] rounded-full opacity-40" />
         <div className="absolute top-[40%] right-[20%] w-2 h-2 bg-[#08BBD5] rounded-full opacity-60" />
         <div className="absolute top-[28%] left-[15%] w-3 h-3 border border-[#18A86B] rounded-sm rotate-12 opacity-50" />
+        
+        {/* Additional confetti to compensate for removing the baked confetti image */}
+        <div className="absolute top-[15%] right-[15%] w-2.5 h-2.5 bg-[#FF6B6B] rounded-full opacity-80" />
+        <div className="absolute top-[25%] left-[10%] w-3 h-1 bg-[#4ECDC4] rounded-sm rotate-[30deg] opacity-70" />
+        <div className="absolute top-[45%] left-[20%] w-2 h-2 bg-[#F4C95D] rounded-full opacity-90" />
+        <div className="absolute top-[5%] left-[45%] w-1.5 h-3 bg-[#08BBD5] rounded-sm rotate-[60deg] opacity-60" />
+        <div className="absolute top-[30%] right-[10%] w-2 h-2 border border-[#FF6B6B] rounded-full opacity-70" />
+        <div className="absolute top-[50%] right-[35%] w-3 h-3 bg-[#18A86B] rounded-sm rotate-[45deg] opacity-80" />
+        <div className="absolute top-[10%] right-[45%] w-2 h-2 bg-[#F4C95D] rounded-full opacity-70" />
+        <div className="absolute top-[38%] left-[5%] w-2.5 h-2.5 bg-[#0B2D4D] rounded-sm rotate-[15deg] opacity-50" />
+        <div className="absolute top-[42%] right-[8%] w-1.5 h-1.5 bg-[#FF6B6B] rounded-full opacity-60" />
       </motion.div>
 
       <div className="w-full max-w-[720px] flex flex-col items-center text-center z-10">
@@ -65,7 +76,7 @@ export function ProfileReveal({ profile, onContinue }: ProfileRevealProps) {
           className="relative w-[160px] h-[160px] md:w-[210px] md:h-[210px] mb-6"
         >
           <Image
-            src="/assets/chaski/resultado-confeti.png"
+            src="/assets/chaski/chaski-12.png"
             alt="Chaski celebrando"
             fill
             className="object-contain"
