@@ -40,20 +40,27 @@ export default function HeroSection({ profileName, results }: HeroSectionProps) 
             {Object.entries(results.dimensionScores)
               .sort(([, a], [, b]) => (b as number) - (a as number))
               .slice(0, 5)
-              .map(([dim, score]) => (
-                <div key={dim}>
-                  <div className="flex justify-between text-[13px] font-bold mb-1">
-                    <span className="text-[#082A4A]">{DIMENSION_LABELS[dim] ?? dim}</span>
-                    <span className="text-[#00C2E0]">{score as number}%</span>
+              .map(([dim, score], index) => {
+                const isPrimary = index === 0;
+                const textColor = isPrimary ? "text-[#18A86B]" : "text-[#00C2E0]";
+                const barColor = isPrimary ? "bg-[#18A86B]" : "bg-[#00C2E0]";
+                const trackColor = isPrimary ? "bg-[#E8F8F1]" : "bg-[#EAF6FF]";
+
+                return (
+                  <div key={dim}>
+                    <div className="flex justify-between text-[13px] font-bold mb-1">
+                      <span className="text-[#082A4A]">{DIMENSION_LABELS[dim] ?? dim}</span>
+                      <span className={textColor}>{score as number}%</span>
+                    </div>
+                    <div className={`w-full ${trackColor} h-[7px] rounded-full overflow-hidden`}>
+                      <div
+                        className={`${barColor} h-full rounded-full transition-all duration-700`}
+                        style={{ width: `${score}%` }}
+                      />
+                    </div>
                   </div>
-                  <div className="w-full bg-[#EAF6FF] h-[7px] rounded-full overflow-hidden">
-                    <div
-                      className="bg-[#00C2E0] h-full rounded-full transition-all duration-700"
-                      style={{ width: `${score}%` }}
-                    />
-                  </div>
-                </div>
-              ))}
+                );
+              })}
           </div>
         </div>
 
@@ -70,7 +77,12 @@ export default function HeroSection({ profileName, results }: HeroSectionProps) 
       {/* Columna 2: Carreras Recomendadas (Reemplazo de la Imagen) */}
       <div className="flex flex-col min-h-[560px] gap-4">
         <h3 className="text-[#082A4A] font-bold text-[18px] mb-1">Top Carreras Recomendadas</h3>
-        {topCareers.map((career) => (
+        {topCareers.map((career, index) => {
+          const isPrimary = index === 0;
+          const badgeBg = isPrimary ? "bg-[#E8F8F1]" : "bg-[#EAF6FF]";
+          const badgeText = isPrimary ? "text-[#18A86B]" : "text-[#00C2E0]";
+          
+          return (
           <div
             key={career.id}
             className="bg-white rounded-[20px] p-5 shadow-sm border border-[#D6E5EF] flex flex-col justify-between hover:shadow-md transition-shadow group flex-1"
@@ -80,7 +92,7 @@ export default function HeroSection({ profileName, results }: HeroSectionProps) 
                 <h4 className="text-[16px] font-bold text-[#082A4A] leading-tight group-hover:text-[#00C2E0] transition-colors">
                   {career.name}
                 </h4>
-                <span className="bg-[#EAF6FF] text-[#00C2E0] font-bold px-2 py-1 rounded-[8px] text-[11px] shrink-0">
+                <span className={`${badgeBg} ${badgeText} font-bold px-2 py-1 rounded-[8px] text-[11px] shrink-0`}>
                   {career.match}%
                 </span>
               </div>
@@ -96,7 +108,8 @@ export default function HeroSection({ profileName, results }: HeroSectionProps) 
               <ArrowRight className="ml-2 h-3.5 w-3.5 shrink-0" />
             </Link>
           </div>
-        ))}
+        );
+        })}
       </div>
 
       {/* Columna 3: Copiloto Vocacional */}
