@@ -308,33 +308,6 @@ export default function Home() {
         </div>
       </main>
 
-      {/* ── MÓDULO DE UNIVERSIDADES ── */}
-      <section className="relative z-10 w-full py-16 px-6 md:px-10 lg:px-16 flex flex-col items-center bg-white border-t border-[#E1EDF3]">
-        <h2 className="text-xl md:text-2xl font-extrabold text-[#0B2D4D] mb-8 text-center">
-          Universidades de prestigio en Perú
-        </h2>
-        <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16 opacity-80">
-          <div className="relative w-24 h-12 md:w-32 md:h-16 grayscale hover:grayscale-0 transition-all duration-300">
-            <Image src="/assets/logo_uch.jpg" alt="UCH" fill className="object-contain" />
-          </div>
-          <div className="relative w-24 h-12 md:w-32 md:h-16 grayscale hover:grayscale-0 transition-all duration-300">
-            <Image src="/assets/logo_ucsur.jpg" alt="UCSUR" fill className="object-contain" />
-          </div>
-          <div className="relative w-24 h-12 md:w-32 md:h-16 grayscale hover:grayscale-0 transition-all duration-300">
-            <Image src="/assets/logo_utp.jpg" alt="UTP" fill className="object-contain" />
-          </div>
-          <div className="relative w-24 h-12 md:w-32 md:h-16 grayscale hover:grayscale-0 transition-all duration-300">
-            <Image src="/assets/logo_ucv.png" alt="UCV" fill className="object-contain" />
-          </div>
-          <div className="relative w-24 h-12 md:w-32 md:h-16 grayscale hover:grayscale-0 transition-all duration-300">
-            <Image src="/assets/logo_upn.png" alt="UPN" fill className="object-contain" />
-          </div>
-          <div className="relative w-24 h-12 md:w-32 md:h-16 grayscale hover:grayscale-0 transition-all duration-300">
-            <Image src="/assets/logo_usmp.png" alt="USMP" fill className="object-contain" />
-          </div>
-        </div>
-      </section>
-
       {/* Keyframe para la animación del texto de Chaski */}
       <style>{`
         @keyframes float {
