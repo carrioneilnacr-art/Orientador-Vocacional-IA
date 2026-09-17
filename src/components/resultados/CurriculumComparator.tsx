@@ -8,63 +8,71 @@ interface CurriculumComparatorProps {
 }
 
 export default function CurriculumComparator({ careerName }: CurriculumComparatorProps) {
-  // Datos mock para el comparador
-  const universityData = [
-    {
-      name: 'UPN',
-      fullName: 'Universidad Privada del Norte',
-      campus: 'Los Olivos / Comas',
-      focus: 'Práctico y Corporativo',
-      keyCourses: ['Gestión de Proyectos', 'Desarrollo de Soluciones'],
-      color: '#F48225',
-      logo: '/assets/logo_upn.png'
-    },
-    {
-      name: 'UTP',
-      fullName: 'Universidad Tecnológica del Perú',
-      campus: 'Lima Norte',
-      focus: 'Tecnología Aplicada',
-      keyCourses: ['Integración Tecnológica', 'Innovación Práctica'],
-      color: '#E3003F',
-      logo: '/assets/logo_utp.jpg'
-    },
-    {
-      name: 'UCV',
-      fullName: 'Universidad César Vallejo',
-      campus: 'Lima Norte',
-      focus: 'Gestión y Emprendimiento',
-      keyCourses: ['Formación Emprendedora', 'Gestión de Calidad'],
-      color: '#00C2E0',
-      logo: '/assets/logo_ucv.png'
-    },
-    {
-      name: 'UCH',
-      fullName: 'Universidad de Ciencias y Humanidades',
-      campus: 'Los Olivos',
-      focus: 'Investigación y Humanidades',
-      keyCourses: ['Fundamentos de Software', 'Metodología Científica'],
-      color: '#18A86B',
-      logo: '/assets/logo_uch.jpg'
-    },
-    {
-      name: 'UCSUR',
-      fullName: 'Universidad Científica del Sur',
-      campus: 'Campus Norte',
-      focus: 'Innovación y Sostenibilidad',
-      keyCourses: ['Biotecnología', 'Desarrollo Sostenible'],
-      color: '#F4C95D',
-      logo: '/assets/logo_ucsur.jpg'
-    },
-    {
-      name: 'USMP',
-      fullName: 'Universidad San Martín de Porres',
-      campus: 'Lima Norte',
-      focus: 'Especialización y Prestigio',
-      keyCourses: ['Seminario de Especialidad', 'Alta Dirección'],
-      color: '#E84A5F',
-      logo: '/assets/logo_usmp.png'
+  
+  // Función para obtener información dinámica (enfoque y cursos) basada en la carrera y la universidad
+  const getDynamicUniInfo = (uniName: string, career: string) => {
+    const c = career.toLowerCase();
+    
+    // Default info
+    let focus = 'Práctico y Corporativo';
+    let courses = ['Gestión de Proyectos', 'Desarrollo de Soluciones'];
+
+    if (c.includes('software') || c.includes('sistemas') || c.includes('computación')) {
+      if (uniName === 'UPN') { focus = 'Desarrollo y Arquitectura'; courses = ['Ingeniería de Requisitos', 'Arquitectura de Software']; }
+      if (uniName === 'UTP') { focus = 'Tecnología Aplicada'; courses = ['Desarrollo de Aplicaciones', 'Inteligencia Artificial']; }
+      if (uniName === 'UCV') { focus = 'Gestión TI y Emprendimiento'; courses = ['Gestión de Proyectos TI', 'Desarrollo Web']; }
+      if (uniName === 'UCH') { focus = 'Fundamentos y Lógica'; courses = ['Algoritmia Avanzada', 'Sistemas Operativos']; }
+      if (uniName === 'UCSUR') { focus = 'Innovación Tecnológica'; courses = ['Ciencia de Datos', 'Biotecnología Aplicada']; }
+      if (uniName === 'USMP') { focus = 'Especialización y Calidad'; courses = ['Auditoría de Sistemas', 'Ingeniería de Software']; }
+    } 
+    else if (c.includes('psicología')) {
+      if (uniName === 'UPN') { focus = 'Clínico y Organizacional'; courses = ['Pruebas Psicológicas', 'Comportamiento Organizacional']; }
+      if (uniName === 'UTP') { focus = 'Psicología Experimental'; courses = ['Neuropsicología', 'Metodología de Investigación']; }
+      if (uniName === 'UCV') { focus = 'Psicología Educativa y Social'; courses = ['Psicología del Desarrollo', 'Intervención Comunitaria']; }
+      if (uniName === 'UCH') { focus = 'Investigación Psicológica'; courses = ['Bases Biológicas', 'Psicometría']; }
+      if (uniName === 'UCSUR') { focus = 'Psicología Clínica y Salud'; courses = ['Psicofarmacología', 'Terapia Cognitivo-Conductual']; }
+      if (uniName === 'USMP') { focus = 'Trayectoria y Prestigio Clínico'; courses = ['Psicopatología', 'Terapia Familiar']; }
     }
-  ];
+    else if (c.includes('negocios') || c.includes('administración') || c.includes('marketing')) {
+      if (uniName === 'UPN') { focus = 'Liderazgo Corporativo'; courses = ['Gestión Estratégica', 'Finanzas Corporativas']; }
+      if (uniName === 'UTP') { focus = 'Negocios Digitales'; courses = ['E-commerce', 'Business Intelligence']; }
+      if (uniName === 'UCV') { focus = 'Emprendimiento y MYPEs'; courses = ['Creación de Empresas', 'Marketing Operativo']; }
+      if (uniName === 'UCH') { focus = 'Economía e Investigación'; courses = ['Microeconomía', 'Investigación de Mercados']; }
+      if (uniName === 'UCSUR') { focus = 'Negocios Internacionales'; courses = ['Comercio Exterior', 'Logística Internacional']; }
+      if (uniName === 'USMP') { focus = 'Alta Dirección'; courses = ['Dirección Comercial', 'Planificación Estratégica']; }
+    }
+    else if (c.includes('diseño') || c.includes('comunicación')) {
+      if (uniName === 'UPN') { focus = 'Diseño Digital y UX'; courses = ['Experiencia de Usuario', 'Diseño de Interfaces']; }
+      if (uniName === 'UTP') { focus = 'Producción Multimedia'; courses = ['Animación 3D', 'Edición Audiovisual']; }
+      if (uniName === 'UCV') { focus = 'Comunicación Corporativa'; courses = ['Identidad Visual', 'Relaciones Públicas']; }
+      if (uniName === 'UCH') { focus = 'Diseño Editorial y Gráfico'; courses = ['Tipografía', 'Diagramación']; }
+      if (uniName === 'UCSUR') { focus = 'Publicidad e Innovación'; courses = ['Dirección de Arte', 'Campañas Publicitarias']; }
+      if (uniName === 'USMP') { focus = 'Ciencias de la Comunicación'; courses = ['Periodismo Digital', 'Producción Radial y Televisiva']; }
+    }
+    else if (c.includes('ingeniería') || c.includes('civil') || c.includes('industrial')) {
+      if (uniName === 'UPN') { focus = 'Ingeniería Aplicada'; courses = ['Mecánica de Materiales', 'Gestión de Operaciones']; }
+      if (uniName === 'UTP') { focus = 'Tecnología Industrial'; courses = ['Automatización', 'Procesos de Manufactura']; }
+      if (uniName === 'UCV') { focus = 'Gestión de Construcción'; courses = ['Tecnología de Materiales', 'Costos y Presupuestos']; }
+      if (uniName === 'UCH') { focus = 'Investigación y Desarrollo'; courses = ['Física Aplicada', 'Termodinámica']; }
+      if (uniName === 'UCSUR') { focus = 'Ingeniería Sostenible'; courses = ['Impacto Ambiental', 'Eficiencia Energética']; }
+      if (uniName === 'USMP') { focus = 'Ingeniería Civil y Estructural'; courses = ['Análisis Estructural', 'Ingeniería Antisísmica']; }
+    }
+
+    return { focus, courses };
+  };
+
+  const universityData = [
+    { name: 'UPN', fullName: 'Universidad Privada del Norte', campus: 'Los Olivos / Comas', color: '#F48225', logo: '/assets/logo_upn.png' },
+    { name: 'UTP', fullName: 'Universidad Tecnológica del Perú', campus: 'Lima Norte', color: '#E3003F', logo: '/assets/logo_utp.jpg' },
+    { name: 'UCV', fullName: 'Universidad César Vallejo', campus: 'Lima Norte', color: '#00C2E0', logo: '/assets/logo_ucv.png' },
+    { name: 'UCH', fullName: 'Universidad de Ciencias y Humanidades', campus: 'Los Olivos', color: '#18A86B', logo: '/assets/logo_uch.jpg' },
+    { name: 'UCSUR', fullName: 'Universidad Científica del Sur', campus: 'Campus Norte', color: '#F4C95D', logo: '/assets/logo_ucsur.jpg' },
+    { name: 'USMP', fullName: 'Universidad San Martín de Porres', campus: 'Lima Norte', color: '#E84A5F', logo: '/assets/logo_usmp.png' }
+  ].map(uni => ({
+    ...uni,
+    focus: getDynamicUniInfo(uni.name, careerName).focus,
+    keyCourses: getDynamicUniInfo(uni.name, careerName).courses
+  }));
 
   return (
     <section className="w-full bg-white rounded-[24px] shadow-sm border border-[#D6E5EF] p-8 xl:p-12 mb-8 relative overflow-hidden">
@@ -92,7 +100,7 @@ export default function CurriculumComparator({ careerName }: CurriculumComparato
             transition={{ delay: idx * 0.1, duration: 0.5 }}
             className="flex flex-col bg-white border border-[#D6E5EF] hover:border-[#00C2E0]/40 rounded-[20px] overflow-hidden group hover:shadow-md transition-all hover:-translate-y-1"
           >
-            {/* Cabecera / Fotografía (Simulada) */}
+            {/* Cabecera / Fotografía */}
             <div className="h-28 relative bg-white border-b border-[#D6E5EF] flex items-center justify-center overflow-hidden p-6">
               <div className="absolute inset-0 opacity-5" style={{ backgroundColor: uni.color }} />
               {uni.logo ? (
@@ -133,10 +141,6 @@ export default function CurriculumComparator({ careerName }: CurriculumComparato
                   </ul>
                 </div>
               </div>
-
-              <button className="mt-5 w-full py-2.5 rounded-[12px] border border-[#D6E5EF] text-[13px] font-bold text-[#082A4A] group-hover:bg-[#EAF6FF] group-hover:text-[#00C2E0] group-hover:border-[#00C2E0]/30 transition-colors flex items-center justify-center gap-2">
-                Ver más detalles <ChevronRight className="w-4 h-4" />
-              </button>
             </div>
           </motion.div>
         ))}
