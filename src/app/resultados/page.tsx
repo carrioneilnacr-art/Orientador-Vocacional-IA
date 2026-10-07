@@ -15,11 +15,15 @@ import CurriculumComparator from "@/components/resultados/CurriculumComparator";
 import LaborField from "@/components/resultados/LaborField";
 import FutureChaskiLetter from "@/components/resultados/FutureChaskiLetter";
 import ClosingSection from "@/components/resultados/ClosingSection";
+import CareerROICalculator from "@/components/resultados/CareerROICalculator";
+import { CareerSimulatorModal } from "@/components/resultados/CareerSimulatorModal";
+import { Gamepad2, Sparkles } from "lucide-react";
 
 export default function ResultadosPage() {
   const { results, isLoaded, profileName, testId } = useVocationalResults();
   const [isDownloading, setIsDownloading] = useState(false);
   const [selectedCareer, setSelectedCareer] = useState<any>(null);
+  const [isSimulatorOpen, setIsSimulatorOpen] = useState(false);
 
   useEffect(() => {
     if (results?.topCareers?.length && !selectedCareer) {
@@ -135,16 +139,52 @@ export default function ResultadosPage() {
           )}
         </div>
 
+        {/* BANNER INTERACTIVO DE SIMULACIÓN DE RETO PROFESIONAL (GAME CHANGER) */}
+        {selectedCareer && (
+          <div className="bg-gradient-to-r from-[#082A4A] via-[#0D3B66] to-[#082A4A] rounded-3xl p-6 sm:p-8 text-white shadow-md flex flex-col md:flex-row items-start md:items-center justify-between gap-6 border border-white/10">
+            <div className="space-y-2">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#00C2E0]/20 text-[#00C2E0] text-xs font-extrabold tracking-wide border border-[#00C2E0]/30">
+                <Gamepad2 className="w-3.5 h-3.5" />
+                <span>DESAFÍO INTERACTIVO: EN LA CANCHA</span>
+              </div>
+              <h3 className="text-xl sm:text-2xl font-black tracking-tight">
+                Simula un Caso Real de {selectedCareer.name}
+              </h3>
+              <p className="text-xs sm:text-sm text-[#C4D9EB] max-w-2xl leading-relaxed">
+                Ponte en los zapatos de un profesional en activo. Toma una decisión estratégica frente a un dilema de la vida real y comprueba tu aptitud antes de postular.
+              </p>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setIsSimulatorOpen(true)}
+              className="inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-[#00C2E0] hover:bg-[#0EA5C6] text-white text-xs sm:text-sm font-bold transition-all shadow-lg shadow-[#00C2E0]/25 active:scale-95 shrink-0"
+            >
+              <Sparkles className="w-4 h-4" />
+              <span>Iniciar Desafío Profesional</span>
+            </button>
+          </div>
+        )}
+
         <div id="proyeccion-laboral" className="scroll-mt-8 space-y-8">
           {selectedCareer && (
             <>
               <LaborField careerName={selectedCareer.name} />
               <CurriculumComparator careerName={selectedCareer.name} />
+              <CareerROICalculator careerName={selectedCareer.name} careerSlug={selectedCareer.slug} />
             </>
           )}
         </div>
 
         <ClosingSection />
+
+        {/* MODAL DEL SIMULADOR DE DESAFÍO PROFESIONAL */}
+        {isSimulatorOpen && selectedCareer && (
+          <CareerSimulatorModal
+            career={selectedCareer}
+            onClose={() => setIsSimulatorOpen(false)}
+          />
+        )}
 
       </main>
 

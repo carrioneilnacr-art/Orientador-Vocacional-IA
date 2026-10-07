@@ -42,5 +42,13 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# scratch files
+# scratch & migration scripts (one-off ETL)
 scratch/
+scripts/
+*.pdf
+!public/docs/*.pdf
+*.docx
+
+# agent local files
+skills-lock.json
+

@@ -10,7 +10,8 @@
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-38bdf8?style=for-the-badge&logo=tailwindcss)](https://tailwindcss.com/)
 [![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL-3ecf8e?style=for-the-badge&logo=supabase)](https://supabase.com/)
 [![Drizzle ORM](https://img.shields.io/badge/Drizzle_ORM-0.39-c5f74f?style=for-the-badge&logo=drizzle)](https://orm.drizzle.team/)
-[![Google Gemini](https://img.shields.io/badge/Google_Gemini-2.0_Flash-orange?style=for-the-badge&logo=google)](https://ai.google.dev/)
+[![OpenAI](https://img.shields.io/badge/OpenAI-GPT--4o_Mini-412991?style=for-the-badge&logo=openai)](https://openai.com/)
+[![Google Gemini](https://img.shields.io/badge/Google_Gemini-2.0_Flash_(Test)-orange?style=for-the-badge&logo=google)](https://ai.google.dev/)
 [![Vitest](https://img.shields.io/badge/Vitest-5.0-729b1b?style=for-the-badge&logo=vitest)](https://vitest.dev/)
 
 ---
@@ -70,7 +71,8 @@ A diferencia de los tests vocacionales convencionales o los chatbots con riesgo 
 | **Supabase (PostgreSQL 15+)** | Base de datos relacional en la nube con RLS, extensiones UUID y pooler transaccional. |
 | **Drizzle ORM & Drizzle Kit** | ORM TypeScript-first para modelado seguro de esquemas relacionales y migraciones. |
 | **Vercel AI SDK (`ai`)** | Abstracción para streaming de IA, tool calling y manejo de prompts estructurados. |
-| **Google Gemini API (@google/genai)** | Modelos Gemini 2.0 Flash / Pro para síntesis y fundamentación de resultados vocacionales. |
+| **OpenAI API (`@ai-sdk/openai`)** | **Motor principal en producción** (GPT-4o-mini / GPT-4o) para el copiloto Chaski, comparativas y síntesis vocacional. |
+| **Google Gemini API (`@google/genai`)** | Modelos Gemini 2.0 Flash / Pro para experimentación interna, testing y fallback. |
 | **Zod & drizzle-zod** | Validación declarativa de esquemas, tipos y payloads de API en runtime. |
 | **postgres.js** | Driver nativo de PostgreSQL de alto rendimiento para scripts de migración y seeding. |
 
@@ -91,8 +93,10 @@ Orientador-Vocacional-IA/
 ├── docs/
 │   ├── architecture/            # Esquemas de BD (DATABASE_SCHEMA.md) y migraciones SQL (001 a 012)
 │   ├── data/                    # Fichas maestras de fuentes verificadas (UPN, UTP, UCV, UCH, UCSUR, USMP)
+│   ├── proposals/               # Propuestas históricas fechadas y planes de evolución
 │   ├── rules/                   # Reglas de desarrollo y directivas Grounded AI
-│   └── tracking/                # Tablero Kanban y Definition of Done (PROJECT_TRACKING.md)
+│   ├── tracking/                # Tablero Kanban y Definition of Done (PROJECT_TRACKING.md)
+│   └── assets/                  # Capturas, infografías y diagramas documentales
 ├── public/                      # Assets estáticos, logos institucionales e ilustraciones de Chaski
 ├── scripts/                     # Scripts de ingesta de datos, migraciones SQL y verificación
 │   ├── apply_upn_migration.mjs

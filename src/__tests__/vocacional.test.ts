@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import { calculateFinalScore, calculateAcademicAdjustment } from '../lib/academicAdjustment';
 
 const DIMENSION_LABELS: Record<string, string> = {
   TECH: "Tecnológico",
@@ -69,7 +70,7 @@ describe('Vocational Dimensions & Chaski Personality', () => {
   });
 
   it('generates random answers for all 16 questions and produces valid scores and top careers', async () => {
-    const { VERIFIED_16_QUESTIONS, VERIFIED_64_OPTIONS, VERIFIED_RULES, VERIFIED_CAREERS } = await import('../data/questionnaireData');
+    const { VERIFIED_16_QUESTIONS, VERIFIED_64_OPTIONS } = await import('../data/questionnaireData');
     
     // Simulate random choices
     const randomAnswers: Record<number, number> = {};
@@ -96,5 +97,70 @@ describe('Vocational Dimensions & Chaski Personality', () => {
       expect(isNaN(val)).toBe(false);
     }
   });
+
+  it('validates that 64 options cover the 8 dimensions', async () => {
+    const { VERIFIED_64_OPTIONS } = await import('../data/questionnaireData');
+    const dimensionsFound = new Set<string>();
+
+    for (const opt of VERIFIED_64_OPTIONS) {
+      for (const dim of Object.keys(opt.scorePayload)) {
+        dimensionsFound.add(dim);
+      }
+    }
+    expect(dimensionsFound.size).toBe(8);
+  });
+
+  it('validates micro-reactions length and coverage', async () => {
+    const { CHASKI_MICRO_REACTIONS } = await import('../data/questionnaireData');
+    expect(Object.keys(CHASKI_MICRO_REACTIONS)).toHaveLength(8);
+
+    for (const key of Object.keys(CHASKI_MICRO_REACTIONS)) {
+      expect(CHASKI_MICRO_REACTIONS[key].text.length).toBeGreaterThan(10);
+      expect(CHASKI_MICRO_REACTIONS[key].text.length).toBeLessThanOrEqual(70);
+      expect(CHASKI_MICRO_REACTIONS[key].emoji).toBeDefined();
+    }
+  });
+
+  it('validates mission config chaski text lengths', async () => {
+    const { MISSIONS_CONFIG } = await import('../data/questionnaireData');
+    for (const mission of MISSIONS_CONFIG) {
+      expect(mission.chaskiIntro.length).toBeGreaterThan(20);
+      expect(mission.chaskiIntro.length).toBeLessThanOrEqual(160);
+      expect(mission.chaskiCompletedMessage.length).toBeGreaterThan(20);
+      expect(mission.chaskiCompletedMessage.length).toBeLessThanOrEqual(160);
+    }
+  });
 });
 
+describe('Academic Adjustment', () => {
+  it('calculateFinalScore works with default weights', () => {
+    const riasec = 100;
+    const academicAdj = 1.0;
+    const score = calculateFinalScore(riasec, academicAdj);
+    expect(score).toBe(100);
+  });
+
+  it('calculateFinalScore handles different weights', () => {
+    const score = calculateFinalScore(100, 1.0, { riasecWeight: 0.5, academicWeight: 0.5 });
+    expect(score).toBe(100);
+
+    const scoreLow = calculateFinalScore(100, 0.5, { riasecWeight: 0.5, academicWeight: 0.5 });
+    expect(scoreLow).toBe(75); // 50 + (100*0.5*0.5) = 75
+  });
+
+  it('calculateAcademicAdjustment computes perfectly with high grades', () => {
+    const grades = [{ area: 'Matemática', grade: 20 }, { area: 'Comunicación', grade: 20 }];
+    const weights = [{ area: 'Matemática', weight: 0.7 }, { area: 'Comunicación', weight: 0.3 }];
+    
+    const adj = calculateAcademicAdjustment(grades, weights);
+    expect(adj).toBeCloseTo(1.0);
+  });
+
+  it('calculateAcademicAdjustment never returns 0 with very low grades', () => {
+    const grades = [{ area: 'Matemática', grade: 0 }, { area: 'Comunicación', grade: 0 }];
+    const weights = [{ area: 'Matemática', weight: 0.7 }, { area: 'Comunicación', weight: 0.3 }];
+    
+    const adj = calculateAcademicAdjustment(grades, weights);
+    expect(adj).toBeCloseTo(0.20);
+  });
+});

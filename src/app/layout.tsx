@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
+import { StudentSessionBanner } from "@/components/auth/StudentSessionBanner";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -29,6 +30,8 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased scroll-smooth`}
     >
       <body className="min-h-full flex flex-col font-sans">
+        {/* Banner de sesión escolar: solo visible cuando el alumno se autenticó con su código */}
+        <StudentSessionBanner />
         {children}
         <Analytics />
       </body>

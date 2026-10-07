@@ -11,7 +11,8 @@
    - `docs/tracking/`: Seguimiento de sprints, backlog, tareas y DoD.
    - `docs/architecture/`: Esquemas de base de datos, arquitectura de software y diagramas.
    - `docs/data/`: Fichas técnicas de investigación y fuentes.
-   - `Archivos .MD/`: Documentos base de investigación original.
+   - `docs/proposals/`: Propuestas técnicas históricas fechadas y planes de evolución.
+   - `docs/assets/`: Capturas, infografías y diagramas documentales.
    - `.agents/`: Reglas y skills operativas de los agentes de codificación.
 
 ## 3. Estándares de Base de Datos y Supabase

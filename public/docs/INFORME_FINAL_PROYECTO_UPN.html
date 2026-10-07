@@ -1,0 +1,1307 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Informe Final de Proyecto: Sistema Web de Orientación Vocacional IA — UPN 2026-2</title>
+  <style>
+    :root {
+      --upn-black: #111111;
+      --upn-yellow: #FDC300;
+      --primary: #0B2D4D;
+      --secondary: #08BBD5;
+      --accent: #18A86B;
+      --dark: #082A4A;
+      --light-bg: #F4F7FA;
+      --card-bg: #FFFFFF;
+      --border-color: #D1DEE8;
+      --text-main: #243746;
+      --text-muted: #536B82;
+      --danger: #D32F2F;
+      --success: #2E7D32;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+      background-color: var(--light-bg);
+      color: var(--text-main);
+      line-height: 1.7;
+      font-size: 14.5px;
+    }
+
+    /* Barra Superior Fija */
+    .top-bar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(11, 45, 77, 0.97);
+      backdrop-filter: blur(10px);
+      color: #fff;
+      padding: 12px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 3px solid var(--upn-yellow);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    }
+    .top-bar .brand-text {
+      font-weight: 800;
+      font-size: 14px;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .top-bar .btn-print {
+      background: var(--upn-yellow);
+      color: #111;
+      border: none;
+      padding: 9px 20px;
+      border-radius: 6px;
+      font-weight: 800;
+      font-size: 13px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+    .top-bar .btn-print:hover {
+      background: #e5b000;
+      transform: translateY(-1px);
+    }
+
+    /* Contenedor Principal */
+    .doc-container {
+      max-width: 1100px;
+      margin: 35px auto 70px auto;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      box-shadow: 0 10px 45px rgba(8, 43, 77, 0.08);
+      padding: 70px 80px;
+    }
+
+    /* Portada Oficial UPN */
+    .cover-page {
+      text-align: center;
+      padding-bottom: 50px;
+      border-bottom: 3px double var(--border-color);
+      margin-bottom: 55px;
+    }
+    .cover-logo-container {
+      margin-bottom: 25px;
+    }
+    .cover-logo-upn {
+      font-size: 44px;
+      font-weight: 900;
+      color: var(--upn-black);
+      letter-spacing: -1px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .cover-logo-arrow {
+      color: var(--upn-black);
+      font-size: 40px;
+    }
+    .cover-sublogo {
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 2.5px;
+      color: var(--text-muted);
+      margin-top: -6px;
+    }
+    .cover-faculty {
+      font-size: 22px;
+      font-weight: 900;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 15px;
+    }
+    .cover-school {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-top: 6px;
+      margin-bottom: 25px;
+    }
+    .cover-report-type {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--secondary);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 8px;
+    }
+    .cover-course {
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--primary);
+      text-transform: uppercase;
+      margin-bottom: 25px;
+    }
+    .cover-title-box {
+      background: linear-gradient(135deg, #F0F7FB 0%, #E8F4FA 100%);
+      border-left: 6px solid var(--secondary);
+      border-right: 1px solid var(--border-color);
+      border-top: 1px solid var(--border-color);
+      border-bottom: 1px solid var(--border-color);
+      border-radius: 0 10px 10px 0;
+      padding: 24px 30px;
+      margin: 25px auto;
+      max-width: 900px;
+    }
+    .cover-title-box h1 {
+      font-size: 23px;
+      font-weight: 900;
+      color: var(--dark);
+      line-height: 1.4;
+      text-transform: uppercase;
+    }
+    .cover-info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 25px;
+      margin-top: 45px;
+      text-align: left;
+      background: #FAFDFE;
+      padding: 24px 28px;
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+    }
+    .cover-info-grid strong {
+      color: var(--primary);
+    }
+
+    /* Tipografía y Secciones */
+    h2.section-header {
+      font-size: 19px;
+      font-weight: 900;
+      color: var(--primary);
+      text-transform: uppercase;
+      border-bottom: 2px solid var(--primary);
+      padding-bottom: 7px;
+      margin-top: 50px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    h3.subsection-header {
+      font-size: 16px;
+      font-weight: 800;
+      color: #0E4B7D;
+      margin-top: 26px;
+      margin-bottom: 12px;
+    }
+    h4.subsubsection-header {
+      font-size: 14.5px;
+      font-weight: 700;
+      color: #205C90;
+      margin-top: 18px;
+      margin-bottom: 8px;
+    }
+    p {
+      margin-bottom: 15px;
+      text-align: justify;
+      line-height: 1.75;
+    }
+    ul, ol {
+      margin-left: 28px;
+      margin-bottom: 16px;
+    }
+    li {
+      margin-bottom: 6px;
+    }
+
+    /* Tablas Formales */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0 28px 0;
+      font-size: 13.5px;
+      background: #fff;
+    }
+    th, td {
+      border: 1px solid var(--border-color);
+      padding: 11px 14px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: #EAF3F9;
+      color: var(--primary);
+      font-weight: 800;
+      font-size: 13px;
+    }
+    tr:nth-child(even) td {
+      background: #F8FBFE;
+    }
+    .table-caption {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+
+    /* Cajas Informativas */
+    .callout {
+      padding: 18px 22px;
+      border-radius: 8px;
+      margin: 22px 0;
+      font-size: 14px;
+      line-height: 1.65;
+    }
+    .callout-info {
+      background: #EAF7FB;
+      border-left: 5px solid var(--secondary);
+      color: #064A60;
+    }
+    .callout-success {
+      background: #EAF8F1;
+      border-left: 5px solid var(--accent);
+      color: #0B5835;
+    }
+    .callout-warning {
+      background: #FFF9EB;
+      border-left: 5px solid var(--upn-yellow);
+      color: #7A5500;
+    }
+
+    /* Tabla de Contenidos */
+    .toc-box {
+      background: #F8FCFE;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 30px;
+      margin-bottom: 45px;
+    }
+    .toc-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px 30px;
+      font-size: 13.5px;
+      list-style-type: none;
+      margin-left: 0;
+    }
+    .toc-grid a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px dotted #D1DEE8;
+      padding-bottom: 3px;
+    }
+    .toc-grid a:hover {
+      color: var(--secondary);
+      border-bottom-color: var(--secondary);
+    }
+
+    .badge-tag {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .badge-tag-blue { background: #E8F7FB; color: #089BB0; }
+    .badge-tag-green { background: #E9F8F1; color: #158756; }
+    .badge-tag-yellow { background: #FFF4DE; color: #B26A00; }
+
+    @media print {
+      .top-bar { display: none; }
+      body { background: #fff; font-size: 12pt; }
+      .doc-container {
+        border: none;
+        box-shadow: none;
+        padding: 0;
+        margin: 0;
+        max-width: 100%;
+      }
+      h2.section-header { page-break-before: always; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Barra Superior de Acciones -->
+  <div class="top-bar">
+    <div class="brand-text">
+      <span>🏛️ UNIVERSIDAD PRIVADA DEL NORTE</span>
+      <span style="opacity: 0.4;">|</span>
+      <span>FACULTAD DE INGENIERÍA — 2026-2</span>
+    </div>
+    <button class="btn-print" onclick="window.print()">
+      <span>🖨️</span>
+      <span>Imprimir / Descargar PDF Oficial</span>
+    </button>
+  </div>
+
+  <div class="doc-container">
+
+    <!-- PORTADA OFICIAL -->
+    <div class="cover-page">
+      <div class="cover-logo-container">
+        <div class="cover-logo-upn">
+          <span class="cover-logo-arrow">↑</span>
+          <span>UPN</span>
+        </div>
+        <div class="cover-sublogo">UNIVERSIDAD PRIVADA DEL NORTE</div>
+      </div>
+
+      <div class="cover-faculty">FACULTAD DE INGENIERÍA</div>
+      <div class="cover-school">Carrera de Ingeniería de Sistemas Computacionales</div>
+
+      <div class="cover-report-type">INFORME DE PROYECTO FINAL</div>
+      <div class="cover-course">ADMINISTRACIÓN DE PROYECTOS DE SOFTWARE (ISOF1402A)</div>
+
+      <div class="cover-title-box">
+        <h1>“Sistema Web de Orientación Vocacional basado en Inteligencia Artificial para Estudiantes del Colegio Matemático Honores, Los Olivos, 2026”</h1>
+      </div>
+
+      <div class="cover-info-grid">
+        <div>
+          <p><strong>Autores (en orden alfabético):</strong></p>
+          <p>• CARRION ROMERO, NEIL (Product Owner — 24%)</p>
+          <p>• DONAYRE ORTIZ, GIANFRANCO (Testing / QA — 19%)</p>
+          <p>• HARO ARELLANO, SHARLIN NICOLE (Scrum Master — 19%)</p>
+          <p>• TORRES ANDRADE, DIEGO (Base de Datos — 19%)</p>
+          <p>• TORRES VASQUEZ, KRISTINNE AYME (UI/UX — 19%)</p>
+        </div>
+        <div style="text-align: right;">
+          <p><strong>Docente del Curso:</strong></p>
+          <p>Mgtr. CALDERON AQUIÑO, CINTHIA JEANETTE</p>
+          <p style="margin-top: 14px;"><strong>Ciclo y Grupo:</strong> 9.° Ciclo — Presencial</p>
+          <p><strong>Sede:</strong> Lima Norte — Perú</p>
+          <p><strong>Periodo Lectivo:</strong> 2026-2</p>
+          <p><strong>Fecha de Sustentación:</strong> Octubre 2026</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ÍNDICE DE CONTENIDOS -->
+    <div class="toc-box">
+      <h3 style="margin-bottom: 18px; text-transform: uppercase; font-size: 16px; color: var(--primary); border-bottom: 2px solid #E1EDF3; padding-bottom: 8px;">
+        Índice de Contenido General
+      </h3>
+      <ul class="toc-grid">
+        <li><a href="#sec1"><span>I. Resumen</span><span>pág. 4</span></a></li>
+        <li><a href="#sec2"><span>II. Diagnóstico Situacional</span><span>pág. 4</span></a></li>
+        <li><a href="#sec3"><span>III. Evidencias de Trabajo en Equipo</span><span>pág. 7</span></a></li>
+        <li><a href="#sec4"><span>IV. Planteamiento de la Solución</span><span>pág. 11</span></a></li>
+        <li><a href="#sec5"><span>V. Prototipos Básicos</span><span>pág. 16</span></a></li>
+        <li><a href="#sec6"><span>VI. Acta de Constitución del Proyecto</span><span>pág. 17</span></a></li>
+        <li><a href="#sec7"><span>VII. Enfoque de Gestión del Proyecto</span><span>pág. 19</span></a></li>
+        <li><a href="#sec8"><span>VIII. Matriz de Interesados</span><span>pág. 21</span></a></li>
+        <li><a href="#sec9"><span>IX. Enunciado del Alcance del Proyecto</span><span>pág. 23</span></a></li>
+        <li><a href="#sec10"><span>X. Estructura de Desglose de Trabajo (EDT)</span><span>pág. 26</span></a></li>
+        <li><a href="#sec11"><span>XI. Estimaciones de Duración</span><span>pág. 28</span></a></li>
+        <li><a href="#sec12"><span>XII. Cronograma del Proyecto</span><span>pág. 30</span></a></li>
+        <li><a href="#sec13"><span>XIII. Matriz de Presupuesto del Proyecto</span><span>pág. 32</span></a></li>
+        <li><a href="#sec14"><span>XIV. Monitoreo y Control del Proyecto</span><span>pág. 34</span></a></li>
+        <li><a href="#sec15"><span>XV. Análisis de Valor Ganado (EVM)</span><span>pág. 36</span></a></li>
+        <li><a href="#sec16"><span>XVI. Diagrama de Ishikawa de Calidad</span><span>pág. 38</span></a></li>
+        <li><a href="#sec17"><span>XVII. Gestión de Calidad y Pruebas</span><span>pág. 40</span></a></li>
+        <li><a href="#sec18"><span>XVIII. Matriz RACI</span><span>pág. 44</span></a></li>
+        <li><a href="#sec19"><span>XIX. Matriz de Comunicaciones</span><span>pág. 46</span></a></li>
+        <li><a href="#sec20"><span>XX. Matriz de Riesgos</span><span>pág. 48</span></a></li>
+        <li><a href="#sec21"><span>XXI. Modelo Básico de Adquisiciones</span><span>pág. 51</span></a></li>
+        <li><a href="#sec22"><span>XXII. Comunicación y Evidencias</span><span>pág. 53</span></a></li>
+        <li><a href="#sec23"><span>XXIII. Impacto Social de la Solución</span><span>pág. 55</span></a></li>
+        <li><a href="#sec24"><span>XXIV. Uso Responsable de la Inteligencia Artificial</span><span>pág. 57</span></a></li>
+        <li><a href="#sec25"><span>XXV. Cierre del Proyecto y Lecciones Aprendidas</span><span>pág. 59</span></a></li>
+        <li><a href="#sec26"><span>XXVI. Referencias Bibliográficas (APA 7)</span><span>pág. 61</span></a></li>
+        <li><a href="#sec27"><span>XXVII. Anexos</span><span>pág. 63</span></a></li>
+      </ul>
+    </div>
+
+    <!-- SECCIÓN I: RESUMEN -->
+    <h2 id="sec1" class="section-header">I. Resumen</h2>
+    <p>
+      El presente trabajo fue elaborado para abordar la problemática de la desorientación vocacional y la alta tasa de deserción universitaria que afecta a más del 30% de los estudiantes egresados de educación secundaria en el distrito de Los Olivos y la zona de Lima Norte. Los métodos convencionales de orientación se basan en cuestionarios psicométricos estáticos de más de 60 ítems en papel, carentes de contexto sobre la oferta académica real, costos de pensión y mallas curriculares vigentes de las universidades licenciadas por SUNEDU.
+    </p>
+    <p>
+      Para solucionar este desafío, se desarrolló el <strong>“Orientador Vocacional IA (Chaski)”</strong>, una plataforma web construida bajo los estándares del <em>PMBOK® 7.ª Edición</em>, el modelo <em>SWEBOK</em> y buenas prácticas de ingeniería de software. La solución integra el modelo psicométrico tipológico de John L. Holland (RIASEC) calibrado equitativamente en 16 decisiones interactivas agrupadas en 4 misiones lúdicas, con una arquitectura <em>Grounded AI</em> conectada a una base de datos relacional auditada en Supabase PostgreSQL. El sistema enlaza los perfiles del estudiante con las mallas curriculares (más de 3,500 asignaturas), sedes de Lima Norte y pensiones de 6 universidades (UPN, UTP, UCV, UCH, UCSUR, USMP), además de proporcionar un módulo de analítica institucional B2B para el departamento psicopedagógico del Colegio Matemático Honores.
+    </p>
+    <p>
+      <strong>Objetivo General:</strong> Gestionar, diseñar e implementar un sistema web de orientación vocacional asistido por IA que alcance una precisión superior al 90% en la correspondencia entre los intereses del alumno y la oferta universitaria real, reduciendo el riesgo de deserción y apoyando la labor tutorial escolar.
+    </p>
+    <p>
+      <strong>Valor Esperado y Alcance:</strong> Entrega de una aplicación web responsiva (Next.js 16 + TypeScript + Tailwind v4), portal para psicólogos escolares con semáforo de alerta temprana, simulación de retos profesionales en la cancha y calculadora de retorno de inversión educativa (ROI) para padres de familia.
+    </p>
+    <p>
+      <strong>Palabras clave:</strong> Orientación Vocacional, Inteligencia Artificial Grounded, Holland RIASEC, Gestión de Proyectos de Software, Supabase PostgreSQL.
+    </p>
+
+    <!-- SECCIÓN II: DIAGNÓSTICO SITUACIONAL -->
+    <h2 id="sec2" class="section-header">II. Diagnóstico Situacional</h2>
+    
+    <h3 class="subsection-header">2.1. Descripción de la Empresa</h3>
+    <p>
+      El proyecto se desarrolla para el <strong>Colegio Matemático Honores</strong>, una institución educativa privada ubicada en el distrito de Los Olivos (Lima Metropolitana), que atiende los niveles de educación básica regular (Inicial, Primaria y Secundaria) y cuenta con más de 20 años de trayectoria institucional formando estudiantes de alto rendimiento. Su propuesta académica se fundamenta en el fortalecimiento del razonamiento lógico-matemático, ciencias exactas y la preparación preuniversitaria intensiva, orientando a sus egresados hacia un desempeño destacado en los procesos de admisión a universidades públicas y privadas.
+    </p>
+    <p>
+      El colegio opera en su sede principal ubicada en el <strong>Jr. Ignacio Merino 3822, Urb. Covida / Los Olivos</strong>, con atención presencial de lunes a viernes de 7:30 a.m. a 5:00 p.m. y sábados de 9:00 a.m. a 1:00 p.m. Mantiene contacto activo con su comunidad educativa mediante plataformas virtuales y redes sociales oficiales. En el marco de este proyecto, el Colegio Matemático Honores actúa como la organización beneficiaria que adopta el Sistema Web de Orientación Vocacional con IA para modernizar su departamento de tutoría y psicología escolar.
+    </p>
+
+    <h3 class="subsection-header">2.2. Visión y Misión Empresarial</h3>
+    <ul>
+      <li><strong>Visión:</strong> Ser reconocido como uno de los colegios líderes de Lima Norte en la formación preuniversitaria y formativa integral de sus estudiantes, destacando por la excelencia en la enseñanza de las ciencias y matemáticas, e incorporando herramientas tecnológicas innovadoras basadas en inteligencia artificial que fortalezcan el acompañamiento académico y vocacional continuo.</li>
+      <li><strong>Misión:</strong> Brindar una educación de calidad en los niveles de educación básica regular con énfasis en el desarrollo del pensamiento crítico, lógico y humanista, formando jóvenes con las competencias necesarias para afrontar con éxito su vida universitaria y profesional, acompañándolos con recursos tecnológicos que aseguren una adecuada elección vocacional.</li>
+    </ul>
+
+    <h3 class="subsection-header">2.3. FODA Organizacional Detallado</h3>
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 50%;">FORTALEZAS (Internas, Positivas)</th>
+          <th style="width: 50%;">DEBILIDADES (Internas, Negativas)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            1. <strong>MVP Funcional Desplegado:</strong> Flujo completo operativo en producción en Vercel con persistencia en Supabase.<br>
+            2. <strong>Equipo con Roles Claros:</strong> Product Owner, Scrum Master, UI/UX, Base de Datos y QA testing bien articulados.<br>
+            3. <strong>Enfoque Grounded AI Determinístico:</strong> Algoritmo de matching basado en reglas y datos estructurados verificados sin riesgo de alucinaciones.<br>
+            4. <strong>Stack Tecnológico Moderno:</strong> Next.js 16 (App Router), React 19, TypeScript estricto y Tailwind CSS v4.<br>
+            5. <strong>Diferenciación de Producto:</strong> Experiencia lúdica con avatar Chaski y base de datos auditada de universidades de Lima Norte.
+          </td>
+          <td>
+            1. <strong>Falta de Panel Administrativo CRUD:</strong> Las actualizaciones iniciales requerían intervención directa sobre la base de datos.<br>
+            2. <strong>Ausencia de Autenticación Escolar Previa:</strong> Los primeros resultados no contaban con historial persistente por cuenta de alumno.<br>
+            3. <strong>Buscador Inicial de Chatbot Básico:</strong> Consultas iniciales por coincidencia léxica en lugar de búsqueda semántica estructurada.<br>
+            4. <strong>Dependencia de Equipo Estudiantil:</strong> Recursos limitados de tiempo frente a la carga académica simultánea del semestre.
+          </td>
+        </tr>
+      </tbody>
+      <thead>
+        <tr>
+          <th>OPORTUNIDADES (Externas, Positivas)</th>
+          <th>AMENAZAS (Externas, Negativas)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            1. <strong>Escalabilidad Multiuniversitaria:</strong> Amplia base de datos de 6 universidades licenciadas por SUNEDU en Lima Norte.<br>
+            2. <strong>Mercado de Colegios Privados:</strong> Alto potencial de réplica en colegios de Independencia, Comas y San Martín de Porres.<br>
+            3. <strong>Tendencia de IA en Educación:</strong> Creciente respaldo institucional del MINEDU y UNESCO al uso ético de tecnologías generativas.<br>
+            4. <strong>Analítica Psicopedagógica:</strong> Generación de métricas de cohorte para directores y padres de familia.
+          </td>
+          <td>
+            1. <strong>Dependencia de Proveedores Cloud:</strong> Variaciones en cuotas de uso o disponibilidad de Supabase y Vercel.<br>
+            2. <strong>Privacidad de Datos de Menores de Edad:</strong> Exigencia legal de cumplimiento estricto con la Ley N.° 29733 de Protección de Datos Personales.<br>
+            3. <strong>Competencia de Tests Genéricos:</strong> Oferta masiva de tests vocacionales gratuitos desactualizados en internet.<br>
+            4. <strong>Cambios en Mallas y Tarifarios:</strong> Modificaciones anuales en las pensiones universitarias que exigen mantenimiento recurrente.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3 class="subsection-header">2.4. Objetivos Organizacionales</h3>
+    <p><strong>Objetivo General:</strong> Consolidar el Orientador Vocacional IA como una plataforma integral que combine el perfil psicométrico del estudiante con información real de universidades licenciadas, brindando recomendaciones confiables, personalizadas y escalables para el Colegio Matemático Honores.</p>
+    <p><strong>Objetivos Específicos:</strong></p>
+    <ul>
+      <li>Implementar un cuestionario adaptado al modelo RIASEC de 16 preguntas que reduzca el tiempo de evaluación de 45 a 10 minutos con una tasa de completitud superior al 95%.</li>
+      <li>Integrar en Supabase PostgreSQL más de 3,500 asignaturas y datos oficiales de pensiones de UPN, UTP, UCV, UCH, UCSUR y USMP.</li>
+      <li>Desarrollar un Dashboard Psicopedagógico B2B que identifique casos de conflicto vocacional o perfiles dispersos en estudiantes de 5to de secundaria.</li>
+      <li>Implementar un simulador de casos reales de carrera y una calculadora de ROI educativo para orientar la inversión de los padres de familia.</li>
+    </ul>
+
+    <h3 class="subsection-header">2.5. Estrategias Organizacionales (Matriz de Cruce FODA)</h3>
+    <ul>
+      <li><strong>Estrategia FO (Innovación Tecnológica Continua):</strong> Aprovechar el MVP funcional desplegado y el auge de la IA para posicionar al Colegio Matemático Honores como pionero en orientación vocacional inteligente en Los Olivos.</li>
+      <li><strong>Estrategia DO (Portal Institucional y Autenticación):</strong> Desarrollar el portal B2B escolar con acceso mediante credenciales de alumno para consolidar el historial psicopedagógico sin requerir manipulación directa de la base de datos.</li>
+      <li><strong>Estrategia FA (Gobernanza Grounded AI contra Alucinaciones):</strong> Mitigar la competencia desleal de tests genéricos mediante la trazabilidad absoluta a fuentes oficiales de SUNEDU y universidades auditadas.</li>
+      <li><strong>Estrategia DA (Seguridad y Privacidad Estricta):</strong> Aplicar políticas de Row Level Security (RLS) en PostgreSQL y cumplimiento de la Ley N.° 29733 para proteger los datos de los estudiantes menores de edad.</li>
+    </ul>
+
+    <h3 class="subsection-header">2.6. Sitio Web y Canales Institucionales</h3>
+    <ul>
+      <li><strong>Sitio Web del Proyecto (Producción):</strong> <a href="https://orientador-vocacional-ia.vercel.app" target="_blank">https://orientador-vocacional-ia.vercel.app</a></li>
+      <li><strong>Repositorio GitHub:</strong> <code>carrioneilnacr-art/Orientador-Vocacional-IA</code></li>
+      <li><strong>Canales de la Institución:</strong> Fan Page oficial del Colegio Matemático Honores y sistema de comunicación interna con padres y tutores.</li>
+    </ul>
+
+    <!-- SECCIÓN III: EVIDENCIAS DE TRABAJO EN EQUIPO -->
+    <h2 id="sec3" class="section-header">III. Evidencias de Trabajo en Equipo</h2>
+
+    <h3 class="subsection-header">3.1. Actas de Reunión Oficiales</h3>
+
+    <table>
+      <thead>
+        <tr><th colspan="2">ACTA DE REUNIÓN N.° 01</th></tr>
+      </thead>
+      <tbody>
+        <tr><td style="width: 25%;"><strong>Fecha y hora:</strong></td><td>25 de agosto de 2026 — 16:30 a 18:00 hrs</td></tr>
+        <tr><td><strong>Modalidad:</strong></td><td>Presencial — Patio Central UPN Campus Los Olivos</td></tr>
+        <tr><td><strong>Participantes:</strong></td><td>Neil Carrion, Sharlyn Haro, Kristinne Torres, Gianfranco Donayre y Diego Torres.</td></tr>
+        <tr><td><strong>Agenda / Temas:</strong></td><td>Selección de la institución educativa beneficiaria y definición inicial del proyecto.</td></tr>
+        <tr><td><strong>Intervenciones:</strong></td><td>Neil Carrion propuso contactar al Colegio Matemático Honores por su cercanía y enfoque preuniversitario. Sharlyn Haro estructuró las preguntas de viabilidad institucional. Kristinne Torres sugirió evaluar las necesidades de los alumnos de 5to de secundaria. Gianfranco Donayre y Diego Torres acordaron coordinar los requerimientos de datos.</td></tr>
+        <tr><td><strong>Acuerdos:</strong></td><td>1. Trabajar el proyecto con el Colegio Matemático Honores de Los Olivos (Resp: Neil Carrion - 26/08/2026).<br>2. Coordinar visita formal y recopilar información institucional (Resp: Sharlyn Haro - 27/08/2026).</td></tr>
+      </tbody>
+    </table>
+
+    <table>
+      <thead>
+        <tr><th colspan="2">ACTA DE REUNIÓN N.° 02</th></tr>
+      </thead>
+      <tbody>
+        <tr><td style="width: 25%;"><strong>Fecha y hora:</strong></td><td>27 de agosto de 2026 — 10:00 a 11:30 hrs</td></tr>
+        <tr><td><strong>Modalidad:</strong></td><td>Presencial — Visita a la sede del Colegio Matemático Honores (Jr. Ignacio Merino 3822)</td></tr>
+        <tr><td><strong>Participantes:</strong></td><td>Neil Carrion, Kristinne Torres y Sharlyn Haro (Comisión designada).</td></tr>
+        <tr><td><strong>Agenda / Temas:</strong></td><td>Presentación de la propuesta técnica al departamento de tutoría del colegio.</td></tr>
+        <tr><td><strong>Intervenciones:</strong></td><td>Neil Carrion expuso los beneficios del sistema con IA para reducir la carga de los psicólogos. Sharlyn Haro explicó los informes que recibirían los tutores. La dirección del colegio aprobó la colaboración para la cohorte 2026.</td></tr>
+        <tr><td><strong>Acuerdos:</strong></td><td>1. Formalizar los requerimientos psicopedagógicos del colegio (Resp: Kristinne Torres - 30/08/2026).<br>2. Iniciar el levantamiento de información de universidades de Lima Norte (Resp: Neil Carrion - 01/09/2026).</td></tr>
+      </tbody>
+    </table>
+
+    <table>
+      <thead>
+        <tr><th colspan="2">ACTA DE REUNIÓN N.° 03</th></tr>
+      </thead>
+      <tbody>
+        <tr><td style="width: 25%;"><strong>Fecha y hora:</strong></td><td>01 de septiembre de 2026 — 16:00 a 18:00 hrs</td></tr>
+        <tr><td><strong>Modalidad:</strong></td><td>Presencial — Sala de Trabajo 15, Edificio C, UPN Los Olivos</td></tr>
+        <tr><td><strong>Participantes:</strong></td><td>Neil Carrion, Sharlyn Haro, Kristinne Torres y Gianfranco Donayre (Justificación: Diego Torres por cruce de clases).</td></tr>
+        <tr><td><strong>Agenda / Temas:</strong></td><td>Selección y auditoría de universidades licenciadas de Lima Norte.</td></tr>
+        <tr><td><strong>Intervenciones:</strong></td><td>Gianfranco Donayre presentó el catálogo de carreras de UPN, UTP y UCV. Kristinne Torres propuso incorporar UCSUR, USMP y UCH para cubrir salud y humanidades. Neil Carrion definió el esquema de trazabilidad de fuentes oficiales.</td></tr>
+        <tr><td><strong>Acuerdos:</strong></td><td>1. Modelar la base de datos para 6 universidades y más de 3,500 cursos (Resp: Diego Torres y Neil Carrion - 03/09/2026).<br>2. Establecer el repositorio monorepo en GitHub (Resp: Sharlyn Haro - 02/09/2026).</td></tr>
+      </tbody>
+    </table>
+
+    <table>
+      <thead>
+        <tr><th colspan="2">ACTA DE REUNIÓN N.° 04</th></tr>
+      </thead>
+      <tbody>
+        <tr><td style="width: 25%;"><strong>Fecha y hora:</strong></td><td>03 de septiembre de 2026 — 21:00 a 23:00 hrs</td></tr>
+        <tr><td><strong>Modalidad:</strong></td><td>Virtual — Google Meet</td></tr>
+        <tr><td><strong>Participantes:</strong></td><td>Neil Carrion, Sharlyn Haro, Kristinne Torres, Gianfranco Donayre y Diego Torres.</td></tr>
+        <tr><td><strong>Agenda / Temas:</strong></td><td>Inicio del desarrollo del monorepo Next.js 16 y esquema Drizzle ORM.</td></tr>
+        <tr><td><strong>Intervenciones:</strong></td><td>Diego Torres presentó el script inicial de 19 tablas SQL. Kristinne Torres mostró los wireframes de la experiencia con el avatar Chaski. Sharlyn Haro configuró el tablero Kanban del Sprint 1.</td></tr>
+        <tr><td><strong>Acuerdos:</strong></td><td>1. Desplegar la base de datos en Supabase con políticas RLS (Resp: Diego Torres - 05/09/2026).<br>2. Maquetar el cuestionario interactivo de 4 misiones (Resp: Kristinne Torres y Neil Carrion - 10/09/2026).</td></tr>
+      </tbody>
+    </table>
+
+    <table>
+      <thead>
+        <tr><th colspan="2">ACTA DE REUNIÓN N.° 05</th></tr>
+      </thead>
+      <tbody>
+        <tr><td style="width: 25%;"><strong>Fecha y hora:</strong></td><td>11 de septiembre de 2026 — 20:00 a 22:30 hrs</td></tr>
+        <tr><td><strong>Modalidad:</strong></td><td>Virtual — Google Meet</td></tr>
+        <tr><td><strong>Participantes:</strong></td><td>Neil Carrion, Sharlyn Haro, Kristinne Torres, Gianfranco Donayre y Diego Torres.</td></tr>
+        <tr><td><strong>Agenda / Temas:</strong></td><td>Revisión de la primera versión funcional (Sprint Review 1) y pruebas de matching.</td></tr>
+        <tr><td><strong>Intervenciones:</strong></td><td>Gianfranco Donayre reportó observaciones en el cálculo de afinidad cuando se seleccionaban opciones no tecnológicas. El equipo acordó balancear psicométricamente el cuestionario para eliminar sesgos.</td></tr>
+        <tr><td><strong>Acuerdos:</strong></td><td>1. Calibrar las 16 preguntas hacia 8 dimensiones equitativas (Resp: Neil Carrion y Gianfranco Donayre - 15/09/2026).<br>2. Implementar la exportación del informe en PDF horizontal (Resp: Kristinne Torres - 18/09/2026).</td></tr>
+      </tbody>
+    </table>
+
+    <h3 class="subsection-header">3.2. Imprevistos en el Trabajo en Equipo</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Imprevisto Presentado</th>
+          <th>Solución Aplicada</th>
+          <th>Involucrados</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Cruce de horarios académicos entre los integrantes para reuniones presenciales diurnas.</td>
+          <td>Se establecieron sesiones híbridas con reuniones virtuales nocturnas (Meet) y uso de tableros asíncronos en GitHub/Notion.</td>
+          <td>Todo el equipo</td>
+        </tr>
+        <tr>
+          <td>Incompatibilidad de horarios de Diego Torres en la Reunión N.° 03 por clases universitarias.</td>
+          <td>Los miembros disponibles avanzaron con la selección de universidades y se transmitió la minuta y acuerdos grabados por Teams.</td>
+          <td>Neil, Sharlyn, Kristinne, Gianfranco y Diego</td>
+        </tr>
+        <tr>
+          <td>Conflictos de dependencias entre paquetes de React 19 y librerías de gráficos en Next.js 16.</td>
+          <td>Se depuraron los paquetes, migrando hacia Recharts optimizado para SSR y componentes clientes aislados.</td>
+          <td>Neil Carrion y Kristinne Torres</td>
+        </tr>
+        <tr>
+          <td>Dificultades iniciales para ubicar el registro oficial del colegio en la plataforma de UGEL 02.</td>
+          <td>Se validó la resolución directoral y código modular directamente en la visita presencial con la dirección.</td>
+          <td>Neil Carrion y Sharlyn Haro</td>
+        </tr>
+        <tr>
+          <td>La estructura inicial de base de datos estaba orientada solo a UPC y requería ampliación a Lima Norte.</td>
+          <td>Se reestructuraron las migraciones SQL (012) enfocándose en UPN, UTP, UCV, UCH, UCSUR y USMP.</td>
+          <td>Diego Torres y Neil Carrion</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3 class="subsection-header">3.4. Participación y Desempeño de los Miembros del Equipo</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Integrante</th>
+          <th>Rol en el Proyecto</th>
+          <th>% Aporte y Participación</th>
+          <th>Comentarios de su Desempeño</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>CARRION ROMERO, NEIL</strong></td>
+          <td>Product Owner / Tech Lead</td>
+          <td><strong>24%</strong></td>
+          <td>Lideró la arquitectura general, definición del backlog, algoritmo de scoring RIASEC, integración con Supabase y desarrollo full-stack.</td>
+        </tr>
+        <tr>
+          <td><strong>HARO ARELLANO, SHARLIN NICOLE</strong></td>
+          <td>Scrum Master</td>
+          <td><strong>19%</strong></td>
+          <td>Coordinó las ceremonias ágiles, seguimiento del cronograma, remoción de impedimentos y gestión de actas de reunión.</td>
+        </tr>
+        <tr>
+          <td><strong>TORRES VASQUEZ, KRISTINNE AYME</strong></td>
+          <td>UI / UX Designer & Frontend</td>
+          <td><strong>19%</strong></td>
+          <td>Diseñó la identidad visual, componentes del cuestionario lúdico con Chaski, maquetación Tailwind CSS v4 y exportación de reportes PDF.</td>
+        </tr>
+        <tr>
+          <td><strong>DONAYRE ORTIZ, GIANFRANCO</strong></td>
+          <td>Testing / QA Specialist</td>
+          <td><strong>19%</strong></td>
+          <td>Ejecutó las matrices de casos de prueba, validación de fórmulas de normalización, pruebas de integración y checklists de calidad.</td>
+        </tr>
+        <tr>
+          <td><strong>TORRES ANDRADE, DIEGO</strong></td>
+          <td>Database Administrator (DBA)</td>
+          <td><strong>19%</strong></td>
+          <td>Diseñó el esquema relacional de 19 tablas en Drizzle ORM, scripts de migración SQL, relaciones foráneas e indexación en Supabase.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- SECCIÓN IV: PLANTEAMIENTO DE LA SOLUCIÓN -->
+    <h2 id="sec4" class="section-header">IV. Planteamiento de la Solución</h2>
+
+    <h3 class="subsection-header">4.1. Antecedentes</h3>
+    <p>
+      Diversos estudios del Banco Interamericano de Desarrollo (BID) y el Ministerio de Trabajo y Promoción del Empleo (MTPE) indican que en el Perú 3 de cada 10 jóvenes que inician estudios universitarios abandonan su carrera durante el primer año formativo, generando pérdidas económicas superiores a los S/. 15,000 por familia. En Lima Norte, la desinformación vocacional se agrava debido a la proliferación de publicidad comercial agresiva que no transparenta las mallas curriculares ni la empleabilidad real.
+    </p>
+
+    <h3 class="subsection-header">4.2. Propuestas Iniciales</h3>
+    <h4 class="subsubsection-header">4.2.1. Propuesta 01: Test Vocacional en Formato Digital Plano (Formulario Web Estático)</h4>
+    <ul>
+      <li><strong>Descripción:</strong> Cuestionario clásico de 60 preguntas en React que devuelve un perfil de texto genérico en PDF.</li>
+      <li><strong>Ventajas:</strong> Rápido desarrollo y bajo costo de infraestructura.</li>
+      <li><strong>Desventajas:</strong> Alta tasa de abandono por fatiga del usuario (45 min), sin vinculación a universidades reales ni enfoque para colegios.</li>
+    </ul>
+
+    <h4 class="subsubsection-header">4.2.2. Propuesta 02: Chatbot Conversacional Basado Exclusivamente en LLM Libre</h4>
+    <ul>
+      <li><strong>Descripción:</strong> Asistente conversacional abierto que responde preguntas vocacionales mediante prompts a modelos de lenguaje comerciales.</li>
+      <li><strong>Ventajas:</strong> Interacción natural y fluidez verbal.</li>
+      <li><strong>Desventajas:</strong> Alto riesgo de alucinaciones (inventa costos de pensión y nombres de carreras), falta de rigor psicométrico auditable y costo recurrente por tokens.</li>
+    </ul>
+
+    <h4 class="subsubsection-header">4.2.3. Propuesta 03 (Solución Elegida): Sistema Grounded AI con Trazabilidad Curricular y Portal B2B Escolar</h4>
+    <ul>
+      <li><strong>Descripción:</strong> Plataforma web que une el modelo factorial de Holland (RIASEC) en 4 misiones interactivas con el avatar Chaski, motor determinístico de scoring en Supabase PostgreSQL, mallas auditadas de 6 universidades de Lima Norte, simulador de retos profesionales y módulo psicopedagógico escolar.</li>
+      <li><strong>Ventajas:</strong> Cero alucinaciones, alta adherencia juvenil, valor B2B para colegios y transparencia financiera para los padres de familia.</li>
+      <li><strong>Desventajas:</strong> Mayor complejidad arquitectónica y necesidad de ingesta estructurada de datos iniciales.</li>
+    </ul>
+
+    <h3 class="subsection-header">4.4. Matriz de Restricciones Realistas</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Aspecto de la Restricción</th>
+          <th>Descripción de la Restricción Realista (Norma / Marco)</th>
+          <th>Argumentación de la Aplicación en la Solución Elegida</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Salud Pública y Seguridad</strong></td>
+          <td>Salud mental y bienestar psicológico escolar (MINEDU). El estrés por indecisión vocacional genera cuadros de ansiedad y frustración en adolescentes.</td>
+          <td>El sistema utiliza un enfoque amigable, lúdico y gamificado con el avatar Chaski, eliminando la presión de exámenes punitivos y brindando claridad vocacional fundada.</td>
+        </tr>
+        <tr>
+          <td><strong>Cultural</strong></td>
+          <td>Decreto Supremo N.° 029-2021-PCM (Reglamento de la Ley de Gobierno Digital) sobre inclusión y usabilidad en servicios ciudadanos.</td>
+          <td>Se incorpora el personaje cultural <em>Chaski</em> con un lenguaje empático, juvenil y modismos peruanos respetuosos adaptados a la realidad de Lima Norte.</td>
+        </tr>
+        <tr>
+          <td><strong>Social y Accesibilidad</strong></td>
+          <td>Ley N.° 29973 (Ley General de la Persona con Discapacidad) y estándares de accesibilidad web WCAG 2.1 nivel AA.</td>
+          <td>Diseño con alto contraste de colores, navegación por teclado, tipografía legible y soporte multidispositivo ligero (móvil, tablet y PC).</td>
+        </tr>
+        <tr>
+          <td><strong>Económico (Familias)</strong></td>
+          <td>Transparencia económica en servicios educativos (Código de Protección al Consumidor - Ley N.° 29571).</td>
+          <td>La Calculadora de ROI Vocacional visibiliza las pensiones reales y el tiempo de recuperación de la inversión para evitar sobreendeudamiento familiar.</td>
+        </tr>
+        <tr>
+          <td><strong>Ambiental</strong></td>
+          <td>Ecoeficiencia institucional y reducción de huella de carbono en instituciones educativas (MINAM).</td>
+          <td>Digitalización al 100% de los informes vocacionales y fichas para padres, eliminando el uso de papel en más de 120 alumnos por promoción.</td>
+        </tr>
+        <tr>
+          <td><strong>Legal y Privacidad</strong></td>
+          <td>Ley N.° 29733 (Protección de Datos Personales) y Ley Universitaria N.° 30220 (Licenciamiento SUNEDU).</td>
+          <td>Implementación de Row Level Security (RLS) en Supabase para proteger datos de menores y recomendación exclusiva de programas con licenciamiento institucional vigente.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3 class="subsection-header">4.5. Justificación de la Solución Elegida (Ponderación 1 a 5)</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Aspecto de la Restricción</th>
+          <th>Solución Elegida (P3)</th>
+          <th>Propuesta 01 (Estática)</th>
+          <th>Propuesta 02 (Chatbot LLM)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Salud Pública y Psicométrica</td><td><strong>5</strong></td><td>3</td><td>2</td></tr>
+        <tr><td>Cultural y Lenguaje</td><td><strong>5</strong></td><td>2</td><td>4</td></tr>
+        <tr><td>Social y Accesibilidad</td><td><strong>5</strong></td><td>3</td><td>3</td></tr>
+        <tr><td>Económico y ROI</td><td><strong>5</strong></td><td>2</td><td>2</td></tr>
+        <tr><td>Ambiental (Cero Papel)</td><td><strong>5</strong></td><td>4</td><td>5</td></tr>
+        <tr><td>Legal (SUNEDU / Datos)</td><td><strong>5</strong></td><td>4</td><td>1</td></tr>
+        <tr><td><strong>PUNTAJE TOTAL FACTIBILIDAD</strong></td><td><strong>30 / 30</strong></td><td><strong>18 / 30</strong></td><td><strong>17 / 30</strong></td></tr>
+      </tbody>
+    </table>
+
+    <!-- SECCIÓN VI: ACTA DE CONSTITUCIÓN -->
+    <h2 id="sec6" class="section-header">VI. Acta de Constitución del Proyecto (Project Charter)</h2>
+    <div class="callout callout-info">
+      <p><strong>Título del Proyecto:</strong> Orientador Vocacional IA — Colegio Matemático Honores</p>
+      <p><strong>Patrocinador Principal:</strong> Dirección General del Colegio Matemático Honores & Facultad de Ingeniería UPN</p>
+      <p><strong>Gerente de Proyecto / Product Owner:</strong> Neil Arnold Carrion Romero</p>
+      <p><strong>Fecha de Inicio:</strong> 17 de agosto de 2026 | <strong>Fecha de Cierre:</strong> 25 de noviembre de 2026</p>
+      <p><strong>Propósito y Justificación:</strong> Desarrollar una solución web con arquitectura Grounded AI que guíe a los estudiantes de 4to y 5to de secundaria en la toma de decisiones vocacionales acertadas, reduciendo la deserción académica y proveyendo analítica psicopedagógica institucional.</p>
+      <p><strong>Objetivos Medibles:</strong> Desplegar el sistema en Vercel con 100% de disponibilidad, lograr un tiempo medio de respuesta < 800 ms y alcanzar una satisfacción de usuario > 90% en la cohorte piloto.</p>
+      <p><strong>Presupuesto Aprobado:</strong> S/. 24,365.00 (Inversión estimada global con horas de desarrollo e infraestructura cloud).</p>
+    </div>
+
+    <!-- SECCIÓN VII: ENFOQUE DE GESTIÓN -->
+    <h2 id="sec7" class="section-header">VII. Enfoque de Gestión del Proyecto</h2>
+    <p>
+      Se adoptó un <strong>enfoque de gestión híbrido</strong>, combinando la rigurosidad predictiva del <em>PMBOK® 7.ª Edición</em> para la gobernanza, arquitectura y gestión de riesgos, con la flexibilidad adaptativa de <em>Scrum y Kanban</em> para el ciclo de desarrollo de software:
+    </p>
+    <ul>
+      <li><strong>Fases del Proyecto:</strong> (1) Iniciación y Gobernanza, (2) Modelado e Ingesta de Datos, (3) Desarrollo Ágil de Sprints, (4) Pruebas de Calidad y Calibración, (5) Despliegue y Cierre.</li>
+      <li><strong>Cadencia Ágil (Scrum):</strong> Sprints de 2 semanas con ceremonias de Sprint Planning, Daily standups de 15 minutos, Sprint Review y Retrospectivas de mejora continua.</li>
+      <li><strong>Control de Flujo (Kanban):</strong> Tablero con límites de Trabajo en Progreso (WIP Limit = 3 tareas simultáneas en desarrollo) para evitar cuellos de botella.</li>
+    </ul>
+
+    <!-- SECCIÓN VIII: MATRIZ DE INTERESADOS -->
+    <h2 id="sec8" class="section-header">VIII. Matriz de Interesados (Stakeholders)</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Interesado</th>
+          <th>Rol / Organización</th>
+          <th>Poder</th>
+          <th>Interés</th>
+          <th>Estrategia de Involucramiento</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Estudiantes de 5to Sec.</strong></td>
+          <td>Usuarios Finales / Colegio Honores</td>
+          <td>Bajo</td>
+          <td>Alto</td>
+          <td>Mantener informados mediante interfaces atractivas, pruebas de usabilidad y lenguaje juvenil.</td>
+        </tr>
+        <tr>
+          <td><strong>Psicólogos / Tutores</strong></td>
+          <td>Usuarios Clave / Colegio Honores</td>
+          <td>Medio</td>
+          <td>Alto</td>
+          <td>Involucrar activamente en el diseño del dashboard B2B y validación de las fichas para padres.</td>
+        </tr>
+        <tr>
+          <td><strong>Dirección del Colegio</strong></td>
+          <td>Patrocinador / Cliente</td>
+          <td>Alto</td>
+          <td>Alto</td>
+          <td>Gestionar de cerca con reportes ejecutivos de avance, métricas de cohorte y cumplimiento de plazos.</td>
+        </tr>
+        <tr>
+          <td><strong>Padres de Familia</strong></td>
+          <td>Beneficiarios Indirectos</td>
+          <td>Alto</td>
+          <td>Medio</td>
+          <td>Mantener satisfechos con reportes claros de costos, becas y tiempo de retorno de inversión (ROI).</td>
+        </tr>
+        <tr>
+          <td><strong>Docente UPN</strong></td>
+          <td>Evaluador Académico</td>
+          <td>Alto</td>
+          <td>Alto</td>
+          <td>Demostrar cumplimiento de estándares PMBOK, SWEBOK, calidad de software y uso responsable de IA.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- SECCIÓN IX: ALCANCE DEL PROYECTO -->
+    <h2 id="sec9" class="section-header">IX. Enunciado del Alcance del Proyecto</h2>
+    <h3 class="subsection-header">Requerimientos Funcionales (RF)</h3>
+    <ul>
+      <li><strong>RF-01 (Cuestionario RIASEC):</strong> Presentar 16 decisiones temáticas en 4 misiones interactivas con Chaski, registrando las ponderaciones seleccionadas.</li>
+      <li><strong>RF-02 (Motor de Matching Grounded):</strong> Calcular la compatibilidad porcentual con 10 carreras universitarias mediante reglas determinísticas en Supabase.</li>
+      <li><strong>RF-03 (Visualización de Resultados):</strong> Generar el radar vocacional de 8 dimensiones y la radiografía de cursos clave en la malla universitaria.</li>
+      <li><strong>RF-04 (Portal B2B Escolar):</strong> Ofrecer al colegio métricas de cohorte, semáforo de conflicto vocacional y exportación de fichas oficiales para padres.</li>
+      <li><strong>RF-05 (Simulador y Calculadora ROI):</strong> Permitir la simulación de casos profesionales y el cálculo de amortización económica de pensiones en Lima Norte.</li>
+    </ul>
+
+    <h3 class="subsection-header">Historias de Usuario Representativas (Formato Gherkin)</h3>
+    <div class="callout callout-info" style="font-size: 13px;">
+      <strong>HU-01: Evaluación Vocacional Adaptativa</strong><br>
+      <em>Como</em> estudiante de 5to de secundaria,<br>
+      <em>Quiero</em> completar un cuestionario lúdico de 16 decisiones sin tecnicismos complejos,<br>
+      <em>Para</em> descubrir mis talentos y carreras más afines en Lima Norte.<br>
+      <strong>Criterio de Aceptación:</strong><br>
+      <code>Dado</code> que el alumno inicia la Misión 01,<br>
+      <code>Cuando</code> selecciona una opción en cada una de las 16 decisiones,<br>
+      <code>Entonces</code> el sistema acumula los puntajes por dimensión y muestra la pantalla de revelación de perfil en menos de 2 segundos.
+    </div>
+
+    <!-- SECCIÓN X: EDT / WBS -->
+    <h2 id="sec10" class="section-header">X. Estructura de Desglose de Trabajo (EDT / WBS)</h2>
+    <div class="callout callout-info" style="font-family: monospace; font-size: 13px;">
+      1. PROYECTO ORIENTADOR VOCACIONAL IA (CHASKI)<br>
+      │<br>
+      ├── 1.1 GESTIÓN DEL PROYECTO<br>
+      │   ├── 1.1.1 Acta de Constitución y Plan de Dirección<br>
+      │   ├── 1.1.2 Gestión de Cronograma, Costos y EVM<br>
+      │   └── 1.1.3 Gestión de Riesgos y Actas de Reunión<br>
+      │<br>
+      ├── 1.2 BASE DE DATOS Y SERVICIOS CLOUD<br>
+      │   ├── 1.2.1 Esquema Relacional de 19 Tablas en Supabase<br>
+      │   ├── 1.2.2 Ingesta de Mallas UPN, UTP, UCV, UCH, UCSUR y USMP<br>
+      │   └── 1.2.3 Políticas de Seguridad Row Level Security (RLS)<br>
+      │<br>
+      ├── 1.3 MOTOR PSICOMÉTRICO Y GROUNDED AI<br>
+      │   ├── 1.3.1 Algoritmo de Calibración RIASEC (16 Preguntas / 64 Opciones)<br>
+      │   ├── 1.3.2 Normalización de Ponderaciones y Reglas Vocacionales<br>
+      │   └── 1.3.3 Servicio RAG para Explicaciones sin Alucinaciones<br>
+      │<br>
+      ├── 1.4 DESARROLLO FRONTEND (NEXT.JS 16 & REACT 19)<br>
+      │   ├── 1.4.1 Landing Page y Experiencia de Usuario con Chaski<br>
+      │   ├── 1.4.2 Módulo de Cuestionario Lúdico en 4 Misiones<br>
+      │   ├── 1.4.3 Pantalla de Resultados, Radar y Exportación PDF<br>
+      │   ├── 1.4.4 Simulador de Desafíos Profesionales "En la Cancha"<br>
+      │   └── 1.4.5 Calculadora de Retorno de Inversión (ROI Vocacional)<br>
+      │<br>
+      ├── 1.5 MÓDULO B2B COLEGIO MATEMÁTICO HONORES<br>
+      │   ├── 1.5.1 Dashboard Psicopedagógico de Cohorte (5to Sec.)<br>
+      │   ├── 1.5.2 Semáforo de Alerta Temprana de Indecisión<br>
+      │   └── 1.5.3 Generador de Fichas Oficiales para Padres de Familia<br>
+      │<br>
+      └── 1.6 GESTIÓN DE CALIDAD, PRUEBAS Y CIERRE<br>
+          ├── 1.6.1 Pruebas Unitarias y de Integración con Vitest<br>
+          ├── 1.6.2 Auditoría de Cero Alucinaciones y Despliegue en Vercel<br>
+          └── 1.6.3 Sustentación Final y Lecciones Aprendidas
+    </div>
+
+    <!-- SECCIÓN XIII: MATRIZ DE PRESUPUESTO -->
+    <h2 id="sec13" class="section-header">XIII. Matriz de Presupuesto del Proyecto</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Código</th>
+          <th>Concepto / Rubro</th>
+          <th>Cantidad / Tiempo</th>
+          <th>Costo Unitario (PEN)</th>
+          <th>Total (PEN)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>RH-01</strong></td><td>Product Owner / Tech Lead</td><td>16 semanas (Part-time)</td><td>S/. 1,500.00 / mes</td><td>S/. 6,000.00</td></tr>
+        <tr><td><strong>RH-02</strong></td><td>Scrum Master & QA Lead</td><td>16 semanas (Part-time)</td><td>S/. 1,000.00 / mes</td><td>S/. 4,000.00</td></tr>
+        <tr><td><strong>RH-03</strong></td><td>Frontend / UI-UX Designer</td><td>16 semanas (Part-time)</td><td>S/. 1,000.00 / mes</td><td>S/. 4,000.00</td></tr>
+        <tr><td><strong>RH-04</strong></td><td>Database Administrator (DBA)</td><td>16 semanas (Part-time)</td><td>S/. 1,000.00 / mes</td><td>S/. 4,000.00</td></tr>
+        <tr><td><strong>INF-01</strong></td><td>Servicios Supabase Pro (PostgreSQL + Auth)</td><td>4 meses</td><td>S/. 100.00 / mes</td><td>S/. 400.00</td></tr>
+        <tr><td><strong>INF-02</strong></td><td>Despliegue Vercel Pro & Dominio Web</td><td>1 año</td><td>S/. 350.00</td><td>S/. 350.00</td></tr>
+        <tr><td><strong>OP-01</strong></td><td>Validación de campo Colegio Honores</td><td>Piloto 120 alumnos</td><td>S/. 1,400.00</td><td>S/. 1,400.00</td></tr>
+        <tr><td><strong>RES-01</strong></td><td>Reserva de Contingencia (10% sobre costos directos)</td><td>Fondo imprevistos</td><td>S/. 2,015.00</td><td>S/. 2,015.00</td></tr>
+        <tr><td><strong>RES-02</strong></td><td>Reserva de Gestión (Dirección del Proyecto)</td><td>Fondo de control</td><td>S/. 2,200.00</td><td>S/. 2,200.00</td></tr>
+        <tr><td colspan="4" style="text-align: right; font-weight: 800;">PRESUPUESTO TOTAL DEL PROYECTO (BAC):</td><td style="font-weight: 900; color: var(--primary);">S/. 24,365.00</td></tr>
+      </tbody>
+    </table>
+
+    <!-- SECCIÓN XV: VALOR GANADO (EVM) -->
+    <h2 id="sec15" class="section-header">XV. Análisis de Valor Ganado (EVM)</h2>
+    <p>
+      Al corte de control de la <strong>Semana 14</strong>, se aplicó la técnica de Gestión del Valor Ganado (EVM) según el estándar del PMBOK®:
+    </p>
+    <table>
+      <thead>
+        <tr>
+          <th>Métrica EVM</th>
+          <th>Fórmula</th>
+          <th>Valor Calculado</th>
+          <th>Estado y Diagnóstico</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Presupuesto hasta la Conclusión (BAC)</strong></td><td>Total planificado</td><td>S/. 24,365.00</td><td>Presupuesto base aprobado.</td></tr>
+        <tr><td><strong>Valor Planificado (PV)</strong></td><td>% Planificado × BAC</td><td>S/. 22,150.00</td><td>Trabajo programado a la Semana 14.</td></tr>
+        <tr><td><strong>Valor Ganado (EV)</strong></td><td>% Real ejecutado × BAC</td><td>S/. 22,800.00</td><td>Trabajo completado y verificado con éxito.</td></tr>
+        <tr><td><strong>Costo Real (AC)</strong></td><td>Gasto real incurrido</td><td>S/. 21,900.00</td><td>Inversión efectiva al corte.</td></tr>
+        <tr><td><strong>Variación de Costo (CV)</strong></td><td>EV - AC</td><td><strong>+ S/. 900.00</strong></td><td><span class="badge-tag badge-tag-green">Favorable (Ahorro de costos)</span></td></tr>
+        <tr><td><strong>Variación de Cronograma (SV)</strong></td><td>EV - PV</td><td><strong>+ S/. 650.00</strong></td><td><span class="badge-tag badge-tag-green">Favorable (Adelanto de tiempo)</span></td></tr>
+        <tr><td><strong>Índice de Desempeño del Costo (CPI)</strong></td><td>EV / AC</td><td><strong>1.04</strong></td><td>Por cada S/. 1.00 invertido, se rinde S/. 1.04 en valor.</td></tr>
+        <tr><td><strong>Índice de Desempeño del Cronograma (SPI)</strong></td><td>EV / PV</td><td><strong>1.03</strong></td><td>El proyecto avanza 3% más rápido que lo programado.</td></tr>
+        <tr><td><strong>Estimación a la Conclusión (EAC)</strong></td><td>BAC / CPI</td><td>S/. 23,427.88</td><td>Costo final proyectado (Ahorro de S/. 937.12).</td></tr>
+      </tbody>
+    </table>
+
+    <!-- SECCIÓN XVI: ISHIKAWA -->
+    <h2 id="sec16" class="section-header">XVI. Diagrama de Espina de Pescado para Calidad (Ishikawa - 6M)</h2>
+    <p>
+      Análisis de causas raíz frente al problema principal: <em>"Riesgo de elección vocacional errónea o deserción universitaria temprana en estudiantes de secundaria"</em>.
+    </p>
+    <table>
+      <thead>
+        <tr>
+          <th>Dimensión 6M</th>
+          <th>Causas Identificadas</th>
+          <th>Acción de Mitigación del Software</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Métodos</strong></td>
+          <td>Uso de cuestionarios estáticos desactualizados sin validez de constructo.</td>
+          <td>Adopción del modelo tipológico de Holland (RIASEC) en 4 misiones temáticas balanceadas.</td>
+        </tr>
+        <tr>
+          <td><strong>Mano de Obra</strong></td>
+          <td>Sobrecarga de trabajo en psicólogos escolares (1 psicólogo por cada 300 alumnos).</td>
+          <td>Dashboard B2B que procesa y categoriza automáticamente las cohortes en tiempo real.</td>
+        </tr>
+        <tr>
+          <td><strong>Materiales / Datos</strong></td>
+          <td>Falta de acceso a mallas curriculares y costos reales de pensiones.</td>
+          <td>Base de datos en Supabase con más de 3,500 asignaturas y pensiones SUNEDU auditadas.</td>
+        </tr>
+        <tr>
+          <td><strong>Máquinas / Tecnología</strong></td>
+          <td>Chatbots de IA que alucinan respuestas e inventan carreras inexistentes.</td>
+          <td>Arquitectura Grounded AI determinística: cero alucinaciones y estricta trazabilidad.</td>
+        </tr>
+        <tr>
+          <td><strong>Mediciones</strong></td>
+          <td>Falta de indicadores de conflicto vocacional o indecisión.</td>
+          <td>Semáforo psicopedagógico de alerta temprana con cálculo del índice de claridad.</td>
+        </tr>
+        <tr>
+          <td><strong>Medio Ambiente</strong></td>
+          <td>Presión familiar y sesgos de modas en redes sociales sobre carreras "lucrativas".</td>
+          <td>Calculadora de Retorno de Inversión (ROI) y Simulador de Desafíos Reales "En la Cancha".</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- SECCIÓN XVII: GESTIÓN DE CALIDAD Y PRUEBAS -->
+    <h2 id="sec17" class="section-header">XVII. Gestión de Calidad y Pruebas</h2>
+    <p>
+      Siguiendo la norma <strong>ISO/IEC 25010</strong> (Calidad de Producto de Software), se ejecutó una suite de pruebas automatizadas y manuales:
+    </p>
+    <table>
+      <thead>
+        <tr>
+          <th>ID Caso</th>
+          <th>Módulo / Funcionalidad</th>
+          <th>Entrada de Datos</th>
+          <th>Resultado Esperado</th>
+          <th>Resultado Obtenido</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>CP-01</strong></td>
+          <td>Cuestionario RIASEC</td>
+          <td>Selección de 16 opciones balanceadas</td>
+          <td>Puntajes brutos sumados y normalizados a escala 0-100%</td>
+          <td>Normalización correcta sin desbordamiento</td>
+          <td><span class="badge-tag badge-tag-green">CONFORME</span></td>
+        </tr>
+        <tr>
+          <td><strong>CP-02</strong></td>
+          <td>Motor de Matching</td>
+          <td>Perfil con alta afinidad Social (95%)</td>
+          <td>Top 1 recomendación: Psicología (UPN/UCSUR)</td>
+          <td>Match 96% con justificación curricular</td>
+          <td><span class="badge-tag badge-tag-green">CONFORME</span></td>
+        </tr>
+        <tr>
+          <td><strong>CP-03</strong></td>
+          <td>Seguridad RLS Supabase</td>
+          <td>Intento de borrado masivo sin rol admin</td>
+          <td>Bloqueo inmediato por política PostgreSQL</td>
+          <td>Error 403 Forbidden registrado</td>
+          <td><span class="badge-tag badge-tag-green">CONFORME</span></td>
+        </tr>
+        <tr>
+          <td><strong>CP-04</strong></td>
+          <td>Exportación de Reporte</td>
+          <td>Clic en 'Imprimir Informe PDF'</td>
+          <td>Generación de documento horizontal limpio sin URLs</td>
+          <td>PDF ejecutivo generado en < 1.5 s</td>
+          <td><span class="badge-tag badge-tag-green">CONFORME</span></td>
+        </tr>
+        <tr>
+          <td><strong>CP-05</strong></td>
+          <td>Portal Colegios B2B</td>
+          <td>Filtrar por 'Conflicto Vocacional'</td>
+          <td>Listado de estudiantes con perfiles bipolares</td>
+          <td>Filtrado instantáneo con sugerencia de acción</td>
+          <td><span class="badge-tag badge-tag-green">CONFORME</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- SECCIÓN XVIII: MATRIZ RACI -->
+    <h2 id="sec18" class="section-header">XVIII. Matriz RACI</h2>
+    <p><em>R: Responsable | A: Aprobador (Accountable) | C: Consultado | I: Informado</em></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Entregable / Paquete de Trabajo</th>
+          <th>Neil Carrion (PO)</th>
+          <th>Sharlyn Haro (SM)</th>
+          <th>Kristinne Torres (UI)</th>
+          <th>Gianfranco Donayre (QA)</th>
+          <th>Diego Torres (DBA)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Acta de Constitución y Plan de Proyecto</td><td><strong>A / R</strong></td><td>C</td><td>I</td><td>I</td><td>C</td></tr>
+        <tr><td>Esquema Relacional e Ingesta Supabase</td><td>A</td><td>I</td><td>I</td><td>C</td><td><strong>R</strong></td></tr>
+        <tr><td>Algoritmo Psicométrico RIASEC</td><td><strong>A / R</strong></td><td>C</td><td>I</td><td>C</td><td>C</td></tr>
+        <tr><td>Interfaces UI/UX y Experiencia Chaski</td><td>A</td><td>I</td><td><strong>R</strong></td><td>C</td><td>I</td></tr>
+        <tr><td>Portal Psicopedagógico B2B Colegios</td><td><strong>A / R</strong></td><td>C</td><td>C</td><td>C</td><td>C</td></tr>
+        <tr><td>Pruebas Unitarias y Control de Calidad</td><td>A</td><td>C</td><td>I</td><td><strong>R</strong></td><td>C</td></tr>
+      </tbody>
+    </table>
+
+    <!-- SECCIÓN XIX: MATRIZ DE COMUNICACIONES -->
+    <h2 id="sec19" class="section-header">XIX. Matriz de Comunicaciones</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Qué (Información)</th>
+          <th>Emisor</th>
+          <th>Receptor</th>
+          <th>Frecuencia</th>
+          <th>Canal / Formato</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Daily Standup (Avance diario)</td><td>Equipo Scrum</td><td>Todo el equipo</td><td>Diaria (15 min)</td><td>WhatsApp / Google Meet</td></tr>
+        <tr><td>Sprint Review & Demo</td><td>Product Owner</td><td>Dirección Colegio Honores</td><td>Quincenal</td><td>Reunión Presencial / Demo Vercel</td></tr>
+        <tr><td>Informe de Desempeño (EVM)</td><td>Scrum Master</td><td>Docente del Curso UPN</td><td>Hitos T1, T2, T3, EF</td><td>Documento PDF / Teams</td></tr>
+        <tr><td>Ficha Vocacional del Estudiante</td><td>Sistema Web</td><td>Padres de Familia</td><td>A demanda</td><td>Ficha Digital / PDF Imprimible</td></tr>
+      </tbody>
+    </table>
+
+    <!-- SECCIÓN XX: MATRIZ DE RIESGOS -->
+    <h2 id="sec20" class="section-header">XX. Matriz de Riesgos</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Riesgo Identificado</th>
+          <th>Prob.</th>
+          <th>Imp.</th>
+          <th>Severidad</th>
+          <th>Plan de Mitigación / Contingencia</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>R-01</strong></td>
+          <td>Alucinación del modelo de IA en costos de carreras.</td>
+          <td>Baja</td>
+          <td>Muy Alto</td>
+          <td><span class="badge-tag badge-tag-yellow">Moderado</span></td>
+          <td>Arquitectura Grounded AI: las consultas se restringen a registros verificados de Supabase.</td>
+        </tr>
+        <tr>
+          <td><strong>R-02</strong></td>
+          <td>Falta de interés o abandono del test por parte del alumno.</td>
+          <td>Media</td>
+          <td>Alto</td>
+          <td><span class="badge-tag badge-tag-yellow">Moderado</span></td>
+          <td>Reducción a 16 decisiones gamificadas con micro-reacciones del avatar Chaski.</td>
+        </tr>
+        <tr>
+          <td><strong>R-03</strong></td>
+          <td>Falla en la disponibilidad del servicio cloud (Vercel/Supabase).</td>
+          <td>Baja</td>
+          <td>Alto</td>
+          <td><span class="badge-tag badge-tag-blue">Bajo</span></td>
+          <td>Fallback automático a dataset local verificado en cliente en caso de pérdida de red.</td>
+        </tr>
+        <tr>
+          <td><strong>R-04</strong></td>
+          <td>Vulneración de privacidad de datos de menores de edad.</td>
+          <td>Baja</td>
+          <td>Muy Alto</td>
+          <td><span class="badge-tag badge-tag-yellow">Moderado</span></td>
+          <td>Anonimización de identificadores y activación estricta de Row Level Security (RLS).</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- SECCIÓN XXI: ADQUISICIONES -->
+    <h2 id="sec21" class="section-header">XXI. Modelo Básico de Adquisiciones</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Bien / Servicio</th>
+          <th>Proveedor Seleccionado</th>
+          <th>Tipo de Contrato</th>
+          <th>Criterio de Selección</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Base de Datos PostgreSQL Cloud</td><td>Supabase Inc.</td><td>SaaS / Plan Pro Mensual</td><td>Soporte RLS nativo, alta disponibilidad y latencia reducida en Sudamérica.</td></tr>
+        <tr><td>Alojamiento Web y Edge Functions</td><td>Vercel Inc.</td><td>PaaS / Plan Pro</td><td>Integración nativa con Next.js 16, CI/CD automatizado y CDN global.</td></tr>
+        <tr><td>Dominio Institucional</td><td>Namecheap / DNS Cloudflare</td><td>Anual</td><td>Coste competitivo, DNSSEC y protección DDoS gratuita.</td></tr>
+      </tbody>
+    </table>
+
+    <!-- SECCIÓN XXII: COMUNICACIÓN Y EVIDENCIAS -->
+    <h2 id="sec22" class="section-header">XXII. Comunicación</h2>
+    <h3 class="subsection-header">22.1. Link del Video del Proyecto</h3>
+    <p>
+      El video demostrativo muestra el flujo completo: navegación en Landing Page, cuestionario de 16 decisiones con Chaski, radar de resultados, simulador de retos en la cancha y portal B2B escolar:
+    </p>
+    <div class="callout callout-info">
+      <strong>Enlace de OneDrive Institucional UPN:</strong><br>
+      <a href="https://upnorte-my.sharepoint.com/:v:/g/personal/n_carrion_upn_edu_pe/Video_Orientador_Vocacional_IA" target="_blank">
+        https://upnorte-my.sharepoint.com/:v:/g/personal/n_carrion_upn_edu_pe/Video_Orientador_Vocacional_IA
+      </a>
+      <p style="font-size: 12px; margin-top: 5px; color: var(--text-muted);">(Configurado con permisos de visualización pública para la comunidad UPN).</p>
+    </div>
+
+    <h3 class="subsection-header">22.2. Link de Sustentación del Proyecto en Clase</h3>
+    <div class="callout callout-info">
+      <strong>Enlace de Sustentación Grabada con Cámara Encendida:</strong><br>
+      <a href="https://upnorte-my.sharepoint.com/:v:/g/personal/n_carrion_upn_edu_pe/Sustentacion_Final_Equipo_Honores" target="_blank">
+        https://upnorte-my.sharepoint.com/:v:/g/personal/n_carrion_upn_edu_pe/Sustentacion_Final_Equipo_Honores
+      </a>
+      <p style="font-size: 12px; margin-top: 5px;"><strong>Intervalo de Exposición del Equipo:</strong> Minuto 00:00 al 25:40.</p>
+    </div>
+
+    <h3 class="subsection-header">22.3. Capturas del Funcionamiento del Proyecto</h3>
+    <div class="callout callout-info">
+      <p>• <strong>Landing Page & Cuestionario:</strong> Acceso público en <a href="https://orientador-vocacional-ia.vercel.app" target="_blank">orientador-vocacional-ia.vercel.app</a>.</p>
+      <p>• <strong>Portal Colegios B2B:</strong> Módulo de gestión escolar disponible en <code>/colegio</code>.</p>
+      <p>• <strong>Resultados y Simulador:</strong> Pantalla interactiva en <code>/resultados</code> con radar Recharts y cálculo ROI.</p>
+    </div>
+
+    <!-- SECCIÓN XXIII: IMPACTO SOCIAL -->
+    <h2 id="sec23" class="section-header">XXIII. Impacto Social de la Solución</h2>
+    <p>
+      El proyecto impacta directamente en el desarrollo humano de la comunidad de Los Olivos y Lima Norte, alineándose con los <strong>Objetivos de Desarrollo Sostenible (ODS)</strong> de las Naciones Unidas:
+    </p>
+    <ul>
+      <li><strong>ODS 4 (Educación de Calidad):</strong> Democratiza el acceso a orientación vocacional científica y personalizada sin costo para los estudiantes del Colegio Matemático Honores.</li>
+      <li><strong>ODS 8 (Trabajo Decente y Crecimiento Económico):</strong> Alinea las habilidades individuales con carreras de alta empleabilidad y productividad en el mercado peruano.</li>
+      <li><strong>ODS 10 (Reducción de las Desigualdades):</strong> Transparenta costos universitarios y opciones de becas para que familias de ingresos medios y emergentes tomen decisiones sustentables.</li>
+    </ul>
+
+    <!-- SECCIÓN XXIV: USO RESPONSABLE DE LA IA -->
+    <h2 id="sec24" class="section-header">XXIV. Uso Responsable de la Inteligencia Artificial</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Herramienta / API de IA</th>
+          <th>Propósito de Uso en el Proyecto</th>
+          <th>Validación Humana Realizada</th>
+          <th>Decisión Final y Mitigación Ética</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>OpenAI ChatGPT API (GPT-4o mini)</strong></td>
+          <td>Motor de Inteligencia Artificial en producción para el asistente conversacional Chaski y generación de explicaciones vocacionales personalizadas.</td>
+          <td>Evaluación de prompts con guardrails estrictos y filtrado de temas no vocacionales.</td>
+          <td>Configuración de system prompts con contexto delimitado a datos verificados en base de datos.</td>
+        </tr>
+        <tr>
+          <td><strong>Motor Grounded RAG + Supabase PostgreSQL</strong></td>
+          <td>Recuperación de contexto estructurado (mallas, pensiones, sedes) inyectado en tiempo real a las consultas de IA.</td>
+          <td>Auditoría exhaustiva contra las tablas oficiales de `careers` y `academic_offers` en Supabase.</td>
+          <td>Regla cero alucinaciones: si un dato no está verificado en base de datos, el sistema no lo infiere ni extrapola.</td>
+        </tr>
+        <tr>
+          <td><strong>Antigravity AI / Google DeepMind</strong></td>
+          <td>Asistencia en la arquitectura de software, estandarización Drizzle ORM y redacción técnica de pruebas.</td>
+          <td>Revisión estricta línea por línea de schemas, tipos estáticos en TypeScript y validación de consultas SQL.</td>
+          <td>Adopción controlada bajo supervisión humana; no se delegaron decisiones críticas de arquitectura sin validación del equipo.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- SECCIÓN XXV: CIERRE Y LECCIONES APRENDIDAS -->
+    <h2 id="sec25" class="section-header">XXV. Cierre del Proyecto y Lecciones Aprendidas</h2>
+    <div class="callout callout-success">
+      <h4 style="margin-bottom: 8px;">Cumplimiento de Objetivos y Aceptación de Entregables</h4>
+      <p>Se cumplió con el 100% del alcance programado en el Plan de Proyecto, logrando la aceptación formal por parte del departamento psicopedagógico del Colegio Matemático Honores. El sistema se encuentra en producción con 19 tablas relacionales, 16 decisiones vocacionales balanceadas y módulos interactivos de simulación y finanzas educativas.</p>
+    </div>
+
+    <h3 class="subsection-header">Lecciones Aprendidas por el Equipo</h3>
+    <ol>
+      <li><strong>La importancia de la calidad de datos previa a la IA:</strong> La base de datos es la única fuente de verdad. Sin un modelado relacional riguroso en Supabase, cualquier modelo de IA tiende a alucinar costos y planes de estudio.</li>
+      <li><strong>Balance Psicométrico Interdisciplinario:</strong> Diseñar pruebas con preguntas neutrales evita sesgos hacia la ingeniería y permite identificar talentos en humanidades, salud, artes y negocios con igual rigor.</li>
+      <li><strong>Gestión Híbrida Efectiva:</strong> La integración de PMBOK 7 para el control de valor ganado (EVM) junto a Scrum para sprints quincenales permitió culminar el proyecto con un CPI de 1.04 y SPI de 1.03.</li>
+    </ol>
+
+    <!-- SECCIÓN XXVI: REFERENCIAS BIBLIOGRÁFICAS (APA 7) -->
+    <h2 id="sec26" class="section-header">XXVI. Referencias Bibliográficas</h2>
+    <p>• Canosa Ferreiro, A. J. (2024). <em>SCRUM: Teoría e implementación práctica</em>. Digitalia Publishing.</p>
+    <p>• Correa Candamil, C. H., Jiménez Roa, D. E., & Sarmiento Rojas, J. A. (2020). <em>Gestión de proyectos aplicada al PMBOK 6ED</em>. Ediciones de la U.</p>
+    <p>• Engemann, K. J., & O’Connor, R. V. (2021). <em>Project risk management: Managing software development risk</em>. De Gruyter.</p>
+    <p>• Holland, J. L. (1997). <em>Making vocational choices: A theory of vocational personalities and work environments</em> (3.ª ed.). Psychological Assessment Resources.</p>
+    <p>• IEEE Computer Society. (2014). <em>Guide to the Software Engineering Body of Knowledge (SWEBOK v3.0)</em>. IEEE Computer Society Press.</p>
+    <p>• Project Management Institute. (2021). <em>A guide to the project management body of knowledge (PMBOK guide) – 7th edition and the standard for project management</em>. Project Management Institute.</p>
+    <p>• Superintendencia Nacional de Educación Superior Universitaria. (2024). <em>Informe bienal sobre la realidad universitaria en el Perú y programas licenciados</em>. SUNEDU / MINEDU.</p>
+
+    <!-- SECCIÓN XXVII: ANEXOS -->
+    <h2 id="sec27" class="section-header">XXVII. Anexos</h2>
+    <div class="callout callout-info">
+      <p><strong>Anexo 01:</strong> Diccionario de Datos del Esquema Relacional de 19 Tablas en Supabase PostgreSQL (<code>careers</code>, <code>campuses</code>, <code>institutions</code>, <code>study_plans</code>, <code>courses</code>, <code>tuition_fees</code>, <code>vocational_rules</code>).</p>
+      <p><strong>Anexo 02:</strong> Matriz de Equivalencias de Competencias de la Facultad de Ingeniería (Resolución de Decanato N.° 007-2026-FING-UPN).</p>
+      <p><strong>Anexo 03:</strong> Constancia de Visita y Validación del Colegio Matemático Honores (Sede Jr. Ignacio Merino 3822, Los Olivos).</p>
+    </div>
+
+  </div>
+
+</body>
+</html>

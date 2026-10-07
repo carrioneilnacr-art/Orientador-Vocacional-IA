@@ -18,9 +18,16 @@ import {
   VERIFIED_CAREERS,
   VERIFIED_RULES,
 } from '@/data/questionnaireData';
+import { checkRateLimit } from '@/lib/rateLimit';
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
+    const ip = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown';
+    const rateLimit = checkRateLimit(ip);
+    if (!rateLimit.allowed) {
+      return NextResponse.json({ error: 'Too many requests' }, { status: 429, headers: { 'Retry-After': String(rateLimit.retryAfter) } });
+    }
+
     const questions = await db
       .select()
       .from(questionnaireQuestions)
@@ -52,6 +59,12 @@ export async function GET() {
 
 export async function POST(req: Request) {
   try {
+    const ip = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown';
+    const rateLimit = checkRateLimit(ip);
+    if (!rateLimit.allowed) {
+      return NextResponse.json({ error: 'Too many requests' }, { status: 429, headers: { 'Retry-After': String(rateLimit.retryAfter) } });
+    }
+
     const body = await req.json();
     const answers: Record<string | number, number> = body.answers || {};
 
@@ -89,21 +102,21 @@ export async function POST(req: Request) {
     }
 
     // 3. Normalizar puntajes a 0-100 de forma proporcional al rendimiento máximo por dimensión
-    // En las 16 interacciones, cada dimensión tiene un techo teórico de entre 12 y 16 puntos
+    // Calibrado uniformemente sobre las 16 interacciones balanceadas
     const maxPossiblePerDim: Record<string, number> = {
-      TECH: 30,
-      LOGIC: 28,
-      ARTISTIC: 42,
-      INVESTIGATIVE: 33,
-      ENTERPRISING: 31,
-      CONVENTIONAL: 11,
-      REALISTIC: 23,
-      SOCIAL: 32,
+      TECH: 120,
+      LOGIC: 120,
+      ARTISTIC: 140,
+      INVESTIGATIVE: 140,
+      ENTERPRISING: 140,
+      CONVENTIONAL: 130,
+      REALISTIC: 130,
+      SOCIAL: 140,
     };
 
     const normalizedScores: Record<string, number> = {};
     for (const [dim, rawScore] of Object.entries(dimensionScores)) {
-      const maxCap = maxPossiblePerDim[dim] || 16;
+      const maxCap = maxPossiblePerDim[dim] || 120;
       normalizedScores[dim] = Math.min(99, Math.max(0, Math.round((rawScore / maxCap) * 100)));
     }
 

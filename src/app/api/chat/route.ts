@@ -1,8 +1,12 @@
-import { openai } from '@ai-sdk/openai';
+import { createOpenAI, openai } from '@ai-sdk/openai';
+import { createGoogleGenerativeAI, google } from '@ai-sdk/google';
 import { streamText } from 'ai';
+import { cookies } from 'next/headers';
 import { db } from '@/db';
 import { careers, campuses, academicOffers, tuitionFees, institutions, curricula, curriculumCourses } from '@/db/schema';
 import { eq, ilike, inArray, or } from 'drizzle-orm';
+import { checkRateLimit } from '@/lib/rateLimit';
+import { verifyStudentSession, STUDENT_COOKIE_NAME } from '@/lib/studentAuth';
 
 export const maxDuration = 30;
 
@@ -150,7 +154,36 @@ ${uniComparisons.join('\n\n')}`;
 
 export async function POST(req: Request) {
   try {
+    const ip = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown';
+    const rateLimit = checkRateLimit(ip);
+    if (!rateLimit.allowed) {
+      return new Response(JSON.stringify({ error: 'Too many requests' }), {
+        status: 429,
+        headers: {
+          'Content-Type': 'application/json',
+          'Retry-After': String(rateLimit.retryAfter),
+        },
+      });
+    }
+
+    // 2. Extracción segura del perfil del estudiante desde la sesión en el servidor
+    const cookieStore = await cookies();
+    const studentCookie = cookieStore.get(STUDENT_COOKIE_NAME)?.value;
+    let serverProfileContext = '';
+
+    if (studentCookie) {
+      const session = verifyStudentSession(studentCookie);
+      if (session) {
+        serverProfileContext = `\n\n=== DATOS DEL ESTUDIANTE (AUTENTICADO VÍA COLEGIO) ===\nColegio: ${session.schoolName || 'Colegio Matemático Honores'}\nAula: ${session.classroom || 'No asignada'}\nConsentimiento: ${session.consentStatus}\n======================================================\n`;
+      }
+    }
+
     const { messages, profileContext } = await req.json();
+
+    // Sanitización del contexto de perfil provisto por el cliente
+    const sanitizedClientProfile = typeof profileContext === 'string'
+      ? profileContext.slice(0, 1500).replace(/[<>]/g, '')
+      : '';
 
     const lastUserMsg = [...messages].reverse().find((m: any) => m.role === 'user');
     const careerContext = lastUserMsg ? await fetchCareerContext(lastUserMsg.content) : '';
@@ -189,16 +222,54 @@ BECAS Y BENEFICIOS (MUY IMPORTANTE):
 DATOS OFICIALES, CREDIBILIDAD Y MUNDO REAL:
 - Las universidades oficiales con las que trabajamos en nuestra BD son: UPN, UTP, UCV, UCH, UCSUR y USMP.
 - Toda información de cursos, semestres y sedes debe basarse en los datos provistos abajo.
-- Si te preguntan algo que no está en la base de datos, actúa como si hubieras buscado en internet y dales la mejor respuesta basada en tu amplio conocimiento general del mundo actual (tendencias tecnológicas, demanda de empresas, etc.).
-- ¡REGLA ESTRICTA DE CREDIBILIDAD!: NUNCA le digas al estudiante que "busque en la web de la universidad", "consulte la página oficial" o "busque más información por su cuenta". Eres un experto, compórtate como tal. Responde directamente con total seguridad. Jamás delegues la búsqueda al usuario.${profileContext || ''}${careerContext}`;
+- Si un dato no está en la base de datos oficial, dilo con honestidad: "No cuento con esa información verificada en este momento, pero puedo orientarte con lo que sí tenemos registrado." Nunca inventes datos de costos, mallas o requisitos de admisión.${serverProfileContext}${sanitizedClientProfile ? `\n\n[Perfil Vocacional del Alumno]:\n${sanitizedClientProfile}` : ''}${careerContext}`;
 
-    const result = streamText({
-      model: openai('gpt-4o-mini'),
-      messages,
-      system: systemPrompt,
-    });
+    // 3. Selección y conmutación inteligente de modelo (Gemini / OpenAI)
+    const geminiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GEMINI_API_KEY;
+    const openaiKey = process.env.OPENAI_API_KEY;
+
+    const customGoogle = geminiKey ? createGoogleGenerativeAI({ apiKey: geminiKey }) : google;
+    const customOpenAI = openaiKey ? createOpenAI({ apiKey: openaiKey }) : openai;
+
+    // Se prefiere Gemini si la clave está disponible o si no se ha definido OpenAI
+    const preferGemini = process.env.AI_PROVIDER === 'gemini' || !!geminiKey || !openaiKey;
+
+    let result;
+    try {
+      if (preferGemini) {
+        result = streamText({
+          model: customGoogle('gemini-2.0-flash'),
+          messages,
+          system: systemPrompt,
+        });
+      } else {
+        result = streamText({
+          model: customOpenAI('gpt-4o-mini'),
+          messages,
+          system: systemPrompt,
+        });
+      }
+    } catch (modelErr) {
+      console.warn('[Chat AI] Fallback a modelo secundario debido a:', modelErr);
+      try {
+        const fallbackModel = preferGemini ? customOpenAI('gpt-4o-mini') : customGoogle('gemini-1.5-flash');
+        result = streamText({
+          model: fallbackModel,
+          messages,
+          system: systemPrompt,
+        });
+      } catch (finalErr) {
+        console.warn('[Chat AI] Fallback final a gemini-1.5-flash:', finalErr);
+        result = streamText({
+          model: customGoogle('gemini-1.5-flash'),
+          messages,
+          system: systemPrompt,
+        });
+      }
+    }
 
     return result.toUIMessageStreamResponse();
+
   } catch (e: any) {
     const errorMsg = e.message || e.toString();
     console.error('[Chat API Error]', errorMsg);
