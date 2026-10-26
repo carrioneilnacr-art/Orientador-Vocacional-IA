@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { db } from '@/db';
 import { students, auditLog } from '@/db/schema';
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { verifyStudentSession, signStudentSession, STUDENT_COOKIE_NAME } from '@/lib/studentAuth';
 
 const consentSchema = z.object({
@@ -30,13 +30,18 @@ export async function POST(req: NextRequest) {
     const newStatus = parsed.data.consentGranted ? 'GRANTED' : 'REVOKED';
 
     try {
-      await db
+      const updated = await db
         .update(students)
         .set({
           consentStatus: newStatus,
           consentAt: new Date(),
         })
-        .where(eq(students.id, session.studentId));
+        .where(and(eq(students.id, session.studentId), eq(students.schoolId, session.schoolId)))
+        .returning({ id: students.id });
+
+      if (updated.length === 0) {
+        return NextResponse.json({ error: 'No se encontró el registro del estudiante.' }, { status: 404 });
+      }
 
       await db.insert(auditLog).values({
         actorId: session.studentId,
@@ -50,7 +55,8 @@ export async function POST(req: NextRequest) {
         },
       });
     } catch (dbErr) {
-      console.warn('[Consentimiento] Error al actualizar BD:', dbErr);
+      console.error('[Consentimiento] Error al actualizar BD:', dbErr instanceof Error ? dbErr.message : 'unknown error');
+      return NextResponse.json({ error: 'No se pudo guardar el consentimiento. Inténtalo nuevamente.' }, { status: 503 });
     }
 
     // Actualizar cookie con nuevo consentStatus
@@ -78,8 +84,8 @@ export async function POST(req: NextRequest) {
     });
 
     return res;
-  } catch (err: any) {
-    console.error('[Consentimiento Error]', err);
+  } catch (err) {
+    console.error('[Consentimiento Error]', err instanceof Error ? err.message : 'unknown error');
     return NextResponse.json({ error: 'Error al actualizar consentimiento' }, { status: 500 });
   }
 }

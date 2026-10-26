@@ -1,23 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
-import { schools, students, gradeImports, gradeImportRows } from '@/db/schema';
+import { students, gradeImports, gradeImportRows } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { parseGradeCSV, ParsedGradeRow } from '@/lib/gradeParser';
 import { validateGradeRows, ExistingStudentInfo } from '@/lib/gradeValidator';
+import { getActiveStaffSessionFromRequest, hasStaffPermission } from '@/lib/staffAuth';
+import { z } from 'zod';
 
 export async function POST(req: NextRequest) {
   try {
+    const session = await getActiveStaffSessionFromRequest(req);
+    if (!session) return NextResponse.json({ error: 'Inicia sesión para continuar.' }, { status: 401 });
+    if (!hasStaffPermission(session.role, 'grades:import')) {
+      return NextResponse.json({ error: 'No tienes permiso para importar calificaciones.' }, { status: 403 });
+    }
     let fileContent = '';
-    let schoolId = req.headers.get('x-school-id') || undefined;
-    let providedRows: ParsedGradeRow[] | undefined;
 
     const contentType = req.headers.get('content-type') || '';
 
     if (contentType.includes('multipart/form-data')) {
       const formData = await req.formData();
       const file = formData.get('file') as File | null;
-      const formSchoolId = formData.get('schoolId') as string | null;
-      if (formSchoolId) schoolId = formSchoolId;
 
       if (!file) {
         return NextResponse.json(
@@ -25,38 +28,18 @@ export async function POST(req: NextRequest) {
           { status: 400 }
         );
       }
+      if (file.size > 5 * 1024 * 1024) {
+        return NextResponse.json({ error: 'El archivo supera el límite de 5 MB.' }, { status: 413 });
+      }
 
       fileContent = await file.text();
     } else {
-      const jsonBody = await req.json();
-      if (jsonBody.schoolId) schoolId = jsonBody.schoolId;
-      if (jsonBody.fileContent) fileContent = jsonBody.fileContent;
-      if (Array.isArray(jsonBody.rows)) providedRows = jsonBody.rows;
+      const payload = z.object({ fileContent: z.string().max(5 * 1024 * 1024).optional() }).safeParse(await req.json());
+      if (!payload.success) return NextResponse.json({ error: 'Formato de importación inválido.' }, { status: 400 });
+      fileContent = payload.data.fileContent || '';
     }
 
-    // 1. Obtener o resolver schoolId
-    let targetSchoolId = schoolId;
-    if (!targetSchoolId) {
-      try {
-        const foundSchools = await db.select().from(schools).limit(1);
-        if (foundSchools.length > 0) {
-          targetSchoolId = foundSchools[0].id;
-        } else {
-          // Crear un colegio por defecto si la base está limpia
-          const [newSchool] = await db
-            .insert(schools)
-            .values({
-              name: 'Colegio Nacional Ejemplo',
-              slug: 'colegio-nacional-ejemplo',
-              gradeScale: 'VIGESIMAL',
-            })
-            .returning();
-          targetSchoolId = newSchool.id;
-        }
-      } catch (dbErr) {
-        console.warn('[Importar Notas] Error consultando escuelas:', dbErr);
-      }
-    }
+    const targetSchoolId = session.schoolId;
 
     // 2. Parsear el archivo o usar filas provistas
     let rowsToValidate: ParsedGradeRow[] = [];
@@ -75,8 +58,6 @@ export async function POST(req: NextRequest) {
           { status: 400 }
         );
       }
-    } else if (providedRows && providedRows.length > 0) {
-      rowsToValidate = providedRows;
     } else {
       return NextResponse.json(
         { error: 'El archivo está vacío o no contiene filas con datos de notas.' },
@@ -110,55 +91,43 @@ export async function POST(req: NextRequest) {
     });
 
     // 5. Persistir en grade_imports y grade_import_rows si hay targetSchoolId
-    let importId = crypto.randomUUID();
-
-    if (targetSchoolId) {
-      try {
-        const [insertedImport] = await db
-          .insert(gradeImports)
-          .values({
-            id: importId,
-            schoolId: targetSchoolId,
-            fileType: 'CSV',
-            status: 'NEEDS_REVIEW',
-            stats: {
-              totalRows: summary.totalRows,
-              okCount: summary.okCount,
-              warningCount: summary.warningCount,
-              errorCount: summary.errorCount,
-            },
-          })
-          .returning();
-
-        if (insertedImport) {
-          importId = insertedImport.id;
+    const importId = crypto.randomUUID();
+    try {
+      await db.transaction(async (tx) => {
+        await tx.insert(gradeImports).values({
+          id: importId,
+          schoolId: targetSchoolId,
+          uploadedBy: session.userId,
+          fileType: 'CSV',
+          status: 'NEEDS_REVIEW',
+          stats: {
+            totalRows: summary.totalRows,
+            okCount: summary.okCount,
+            warningCount: summary.warningCount,
+            errorCount: summary.errorCount,
+          },
+        });
+        const rowsToInsert = summary.rows.map((row) => ({
+          id: crypto.randomUUID(),
+          importId,
+          rawStudentCode: row.studentCode,
+          rawName: row.rawName || null,
+          subject: row.subject,
+          period: row.period,
+          rawGrade: row.rawGrade,
+          parsedGrade: row.parsedGrade !== null ? String(row.parsedGrade) : null,
+          status: row.status,
+          issues: row.issues,
+          confidence: String(row.confidence),
+        }));
+        const chunkSize = 100;
+        for (let i = 0; i < rowsToInsert.length; i += chunkSize) {
+          await tx.insert(gradeImportRows).values(rowsToInsert.slice(i, i + chunkSize));
         }
-
-        // Insertar filas individuales en grade_import_rows
-        if (summary.rows.length > 0) {
-          const rowsToInsert = summary.rows.map((row) => ({
-            id: crypto.randomUUID(),
-            importId,
-            rawStudentCode: row.studentCode,
-            rawName: row.rawName || null,
-            subject: row.subject,
-            period: row.period,
-            rawGrade: row.rawGrade,
-            parsedGrade: row.parsedGrade !== null ? String(row.parsedGrade) : null,
-            status: row.status,
-            issues: row.issues,
-            confidence: String(row.confidence),
-          }));
-
-          // Insertar en chunks de 100 para evitar límites de parámetros
-          const chunkSize = 100;
-          for (let i = 0; i < rowsToInsert.length; i += chunkSize) {
-            await db.insert(gradeImportRows).values(rowsToInsert.slice(i, i + chunkSize));
-          }
-        }
-      } catch (dbInsertErr) {
-        console.error('[Importar Notas] Error guardando registros en base de datos:', dbInsertErr);
-      }
+      });
+    } catch (dbInsertErr) {
+      console.error('[Importar Notas] Error guardando importación:', dbInsertErr instanceof Error ? dbInsertErr.message : 'unknown error');
+      return NextResponse.json({ error: 'No se pudo guardar la importación. Inténtalo nuevamente.' }, { status: 503 });
     }
 
     return NextResponse.json({
@@ -168,10 +137,10 @@ export async function POST(req: NextRequest) {
       headers: detectedHeaders,
       summary,
     });
-  } catch (error: any) {
-    console.error('[API Importar Notas] Error general:', error);
+  } catch (error) {
+    console.error('[API Importar Notas] Error general:', error instanceof Error ? error.message : 'unknown error');
     return NextResponse.json(
-      { error: error?.message || 'Error al procesar la importación de calificaciones.' },
+      { error: 'Error al procesar la importación de calificaciones.' },
       { status: 500 }
     );
   }

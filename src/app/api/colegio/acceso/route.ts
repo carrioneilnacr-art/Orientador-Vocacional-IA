@@ -2,14 +2,19 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { db } from '@/db';
 import { students, schools, classrooms, userSessions, auditLog } from '@/db/schema';
-import { eq, or } from 'drizzle-orm';
-import { hashAccessCode, signStudentSession, STUDENT_COOKIE_NAME } from '@/lib/studentAuth';
+import { and, eq, isNull } from 'drizzle-orm';
+import {
+  GUEST_TEST_COOKIE_NAME,
+  hashAccessCode,
+  signStudentSession,
+  STUDENT_COOKIE_NAME,
+  verifyGuestTestSession,
+} from '@/lib/studentAuth';
 import { checkRateLimit } from '@/lib/rateLimit';
 
 const accessSchema = z.object({
   accessCode: z.string().min(4, 'El código debe tener al menos 4 caracteres').max(30),
-  testId: z.string().uuid().optional(),
-});
+}).strict();
 
 export async function POST(req: NextRequest) {
   try {
@@ -33,7 +38,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { accessCode, testId } = parsed.data;
+    const { accessCode } = parsed.data;
+    const guestTest = verifyGuestTestSession(req.cookies.get(GUEST_TEST_COOKIE_NAME)?.value);
     const codeHash = hashAccessCode(accessCode);
 
     // 3. Búsqueda en base de datos
@@ -83,16 +89,21 @@ export async function POST(req: NextRequest) {
 
     // 4. Vincular test previo si existe testId (Modo Invitado -> Alumno Vinculado)
     let linkedTest = false;
-    if (testId) {
+    if (guestTest) {
       try {
-        await db
+        const linkedSession = await db
           .update(userSessions)
           .set({
             studentId: studentResult.id,
             schoolId: studentResult.schoolId,
           })
-          .where(or(eq(userSessions.sessionToken, testId), eq(userSessions.id, testId)));
-        linkedTest = true;
+          .where(and(
+            eq(userSessions.sessionToken, guestTest.testId),
+            isNull(userSessions.studentId),
+            isNull(userSessions.schoolId)
+          ))
+          .returning({ id: userSessions.id });
+        linkedTest = linkedSession.length > 0;
       } catch (linkError) {
         console.warn('[Acceso Alumno] No se pudo vincular la sesión previa:', linkError);
       }
@@ -154,6 +165,7 @@ export async function POST(req: NextRequest) {
       path: '/',
       maxAge: 7 * 24 * 60 * 60,
     });
+    response.cookies.delete(GUEST_TEST_COOKIE_NAME);
 
     return response;
   } catch (error: any) {

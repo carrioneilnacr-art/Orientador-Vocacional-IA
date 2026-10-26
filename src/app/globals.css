@@ -3,11 +3,29 @@
 :root {
   --background: #F8FCFF;
   --foreground: #082A4A;
+  --chaski-page: #F8FCFF;
+  --chaski-subtle: #EAF9FC;
+  --chaski-border: #D8EAF0;
+  --chaski-border-hover: #7DD8E5;
+  --chaski-heading: #0B2D4D;
+  --chaski-accent-ink: #006B7A;
+  --chaski-action: #08BBD5;
+  --chaski-action-hover: #07A9C1;
+  --chaski-action-text: #0B2D4D;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-chaski-page: var(--chaski-page);
+  --color-chaski-subtle: var(--chaski-subtle);
+  --color-chaski-border: var(--chaski-border);
+  --color-chaski-border-hover: var(--chaski-border-hover);
+  --color-chaski-heading: var(--chaski-heading);
+  --color-chaski-accent-ink: var(--chaski-accent-ink);
+  --color-chaski-action: var(--chaski-action);
+  --color-chaski-action-hover: var(--chaski-action-hover);
+  --color-chaski-action-text: var(--chaski-action-text);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }

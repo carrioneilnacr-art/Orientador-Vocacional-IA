@@ -386,6 +386,8 @@ export const schoolStaff = pgTable('school_staff', {
   userId: uuid('user_id').primaryKey(),
   schoolId: uuid('school_id').notNull().references(() => schools.id, { onDelete: 'cascade' }),
   role: text('role').notNull(), // ADMIN|PSICOLOGO|TUTOR|DIRECTOR
+  username: text('username').unique(),
+  loginEmail: text('login_email'),
 });
 
 // 23. Grade Imports

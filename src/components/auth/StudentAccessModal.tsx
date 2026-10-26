@@ -7,11 +7,10 @@ import { KeyRound, School, CheckCircle2, AlertCircle, ArrowRight, X, ShieldCheck
 interface StudentAccessModalProps {
   isOpen: boolean;
   onClose: () => void;
-  testId?: string; // Si viene de la pantalla de resultados para vincular
   onSuccess?: (studentData: any) => void;
 }
 
-export function StudentAccessModal({ isOpen, onClose, testId, onSuccess }: StudentAccessModalProps) {
+export function StudentAccessModal({ isOpen, onClose, onSuccess }: StudentAccessModalProps) {
   const [accessCode, setAccessCode] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -42,16 +41,10 @@ export function StudentAccessModal({ isOpen, onClose, testId, onSuccess }: Stude
     setError(null);
 
     try {
-      // Si no viene testId por prop, intentar buscarlo en sessionStorage
-      const currentTestId = testId || (typeof window !== 'undefined' ? sessionStorage.getItem('chaski_test_id') || undefined : undefined);
-
       const res = await fetch('/api/colegio/acceso', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          accessCode: accessCode.trim(),
-          testId: currentTestId,
-        }),
+        body: JSON.stringify({ accessCode: accessCode.trim() }),
       });
 
       const data = await res.json();

@@ -5,55 +5,13 @@ import {
   hasStaffRole,
   requireStaffRole,
   canAccessModule,
-  findStaffByDemoCredentials,
-  DEMO_STAFF_ACCOUNTS,
+  hasStaffPermission,
   StaffRole,
 } from '../lib/staffAuth';
 
+process.env.STAFF_AUTH_SECRET = 'unit-test-secret-with-more-than-32-characters';
+
 describe('Staff Auth & RBAC Security (Fase 3)', () => {
-  describe('Cuentas Demo y Búsqueda de Credenciales', () => {
-    it('contiene las 4 cuentas de rol del Colegio Matemático Honores', () => {
-      const roles: StaffRole[] = ['ADMIN', 'PSICOLOGO', 'TUTOR', 'DIRECTOR'];
-      roles.forEach((role) => {
-        const found = DEMO_STAFF_ACCOUNTS.find((a) => a.role === role);
-        expect(found).toBeDefined();
-        expect(found?.email).toContain('@honores.edu.pe');
-        expect(found?.password).toBeTruthy();
-      });
-    });
-
-    it('autentica correctamente credenciales válidas de prueba', () => {
-      const admin = findStaffByDemoCredentials('admin@honores.edu.pe', 'admin123');
-      expect(admin).not.toBeNull();
-      expect(admin?.role).toBe('ADMIN');
-      expect(admin?.fullName).toContain('Miguel Ángel Ramos');
-
-      const psicologo = findStaffByDemoCredentials('psicologo@honores.edu.pe', 'psico123');
-      expect(psicologo).not.toBeNull();
-      expect(psicologo?.role).toBe('PSICOLOGO');
-
-      const tutor = findStaffByDemoCredentials('tutor@honores.edu.pe', 'tutor123');
-      expect(tutor).not.toBeNull();
-      expect(tutor?.role).toBe('TUTOR');
-      expect(tutor?.classroomAssigned).toBe('5° "A" Secundaria');
-
-      const director = findStaffByDemoCredentials('director@honores.edu.pe', 'director123');
-      expect(director).not.toBeNull();
-      expect(director?.role).toBe('DIRECTOR');
-    });
-
-    it('es insensible a mayúsculas y espacios en el correo', () => {
-      const user = findStaffByDemoCredentials('  ADMIN@HONORES.EDU.PE  ', 'admin123');
-      expect(user).not.toBeNull();
-      expect(user?.role).toBe('ADMIN');
-    });
-
-    it('rechaza contraseñas incorrectas o correos inexistentes', () => {
-      expect(findStaffByDemoCredentials('admin@honores.edu.pe', 'wrongpass')).toBeNull();
-      expect(findStaffByDemoCredentials('desconocido@honores.edu.pe', 'admin123')).toBeNull();
-    });
-  });
-
   describe('Firma y Verificación HMAC de Tokens de Sesión', () => {
     const basePayload = {
       userId: '11111111-aaaa-1111-aaaa-111111111111',
@@ -182,6 +140,14 @@ describe('Staff Auth & RBAC Security (Fase 3)', () => {
       expect(canAccessModule('TUTOR', 'aula')).toBe(true);
       expect(canAccessModule('PSICOLOGO', 'aula')).toBe(true);
       expect(canAccessModule('DIRECTOR', 'aula')).toBe(false);
+    });
+
+    it('asigna la importación y confirmación de notas solo al administrador', () => {
+      expect(hasStaffPermission('ADMIN', 'grades:import')).toBe(true);
+      expect(hasStaffPermission('ADMIN', 'grades:confirm')).toBe(true);
+      expect(hasStaffPermission('PSICOLOGO', 'grades:confirm')).toBe(false);
+      expect(hasStaffPermission('TUTOR', 'grades:import')).toBe(false);
+      expect(hasStaffPermission('DIRECTOR', 'grades:confirm')).toBe(false);
     });
   });
 });

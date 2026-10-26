@@ -1,8 +1,12 @@
 import crypto from 'crypto';
 
 export const STUDENT_COOKIE_NAME = 'chaski_student_session';
+export const GUEST_TEST_COOKIE_NAME = 'chaski_guest_test';
 
-const AUTH_SECRET = process.env.STUDENT_AUTH_SECRET || process.env.NEXTAUTH_SECRET || 'chaski-secret-salt-key-2026-peru';
+function getAuthSecret(): string | null {
+  const secret = process.env.STUDENT_AUTH_SECRET;
+  return secret && secret.length >= 32 ? secret : null;
+}
 
 export interface StudentSessionPayload {
   studentId: string;
@@ -14,6 +18,52 @@ export interface StudentSessionPayload {
   classroom?: string;
   issuedAt: number;
   expiresAt: number;
+}
+
+interface GuestTestSessionPayload {
+  testId: string;
+  issuedAt: number;
+  expiresAt: number;
+}
+
+export function signGuestTestSession(testId: string, expiresInDays = 30): string | null {
+  const authSecret = getAuthSecret();
+  if (!authSecret || !testId) return null;
+  const issuedAt = Date.now();
+  const payload: GuestTestSessionPayload = {
+    testId,
+    issuedAt,
+    expiresAt: issuedAt + expiresInDays * 24 * 60 * 60 * 1000,
+  };
+  const encoded = Buffer.from(JSON.stringify(payload)).toString('base64url');
+  const signature = crypto.createHmac('sha256', authSecret).update(encoded).digest('base64url');
+  return `${encoded}.${signature}`;
+}
+
+export function verifyGuestTestSession(token: string | undefined): GuestTestSessionPayload | null {
+  const authSecret = getAuthSecret();
+  if (!authSecret || !token) return null;
+  const [encoded, signature, ...extra] = token.split('.');
+  if (!encoded || !signature || extra.length > 0) return null;
+
+  const expected = crypto.createHmac('sha256', authSecret).update(encoded).digest('base64url');
+  const signatureBytes = Buffer.from(signature);
+  const expectedBytes = Buffer.from(expected);
+  if (signatureBytes.length !== expectedBytes.length || !crypto.timingSafeEqual(signatureBytes, expectedBytes)) {
+    return null;
+  }
+
+  try {
+    const payload = JSON.parse(Buffer.from(encoded, 'base64url').toString('utf8')) as GuestTestSessionPayload;
+    if (
+      !payload.testId ||
+      !payload.issuedAt || payload.issuedAt > Date.now() ||
+      !payload.expiresAt || Date.now() > payload.expiresAt
+    ) return null;
+    return payload;
+  } catch {
+    return null;
+  }
 }
 
 /**
@@ -45,6 +95,8 @@ export function signStudentSession(
   payload: Omit<StudentSessionPayload, 'issuedAt' | 'expiresAt'>,
   expiresInHours = 24 * 7 // 7 días de sesión por defecto
 ): string {
+  const authSecret = getAuthSecret();
+  if (!authSecret) throw new Error('STUDENT_AUTH_SECRET must be configured with at least 32 characters.');
   const issuedAt = Date.now();
   const expiresAt = issuedAt + expiresInHours * 60 * 60 * 1000;
 
@@ -56,7 +108,7 @@ export function signStudentSession(
 
   const payloadBase64 = Buffer.from(JSON.stringify(fullPayload)).toString('base64url');
   const signature = crypto
-    .createHmac('sha256', AUTH_SECRET)
+    .createHmac('sha256', authSecret)
     .update(payloadBase64)
     .digest('base64url');
 
@@ -69,6 +121,8 @@ export function signStudentSession(
  */
 export function verifyStudentSession(token: string): StudentSessionPayload | null {
   if (!token || typeof token !== 'string') return null;
+  const authSecret = getAuthSecret();
+  if (!authSecret) return null;
 
   const parts = token.split('.');
   if (parts.length !== 2) return null;
@@ -76,7 +130,7 @@ export function verifyStudentSession(token: string): StudentSessionPayload | nul
   const [payloadBase64, signature] = parts;
 
   const expectedSignature = crypto
-    .createHmac('sha256', AUTH_SECRET)
+    .createHmac('sha256', authSecret)
     .update(payloadBase64)
     .digest('base64url');
 
@@ -92,7 +146,12 @@ export function verifyStudentSession(token: string): StudentSessionPayload | nul
     const jsonStr = Buffer.from(payloadBase64, 'base64url').toString('utf8');
     const payload = JSON.parse(jsonStr) as StudentSessionPayload;
 
-    if (!payload.expiresAt || Date.now() > payload.expiresAt) {
+    if (
+      !payload.studentId || !payload.schoolId || !payload.studentCode || !payload.fullName ||
+      !['PENDING', 'GRANTED', 'REVOKED'].includes(payload.consentStatus) ||
+      !payload.issuedAt || payload.issuedAt > Date.now() ||
+      !payload.expiresAt || Date.now() > payload.expiresAt
+    ) {
       return null; // Token expirado
     }
 

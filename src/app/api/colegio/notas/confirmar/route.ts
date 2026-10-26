@@ -1,13 +1,43 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
 import { gradeImports, gradeImportRows, academicRecords, students, auditLog } from '@/db/schema';
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { ValidatedGradeRow } from '@/lib/gradeValidator';
+import { getActiveStaffSessionFromRequest, hasStaffPermission } from '@/lib/staffAuth';
+import { z } from 'zod';
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
-    const { importId, rows: providedRows } = body;
+    const session = await getActiveStaffSessionFromRequest(req);
+    if (!session) return NextResponse.json({ error: 'Inicia sesión para continuar.' }, { status: 401 });
+    if (!hasStaffPermission(session.role, 'grades:confirm')) {
+      return NextResponse.json({ error: 'No tienes permiso para confirmar calificaciones.' }, { status: 403 });
+    }
+    const body = await req.json().catch(() => null);
+    const rowSchema = z.object({
+      originalRowIndex: z.number().int().positive(),
+      studentCode: z.string().max(100),
+      rawName: z.string().max(200).optional(),
+      matchedStudentId: z.string().uuid().optional(),
+      matchedStudentName: z.string().max(200).optional(),
+      subject: z.string().max(200),
+      area: z.string().max(100),
+      period: z.string().max(30),
+      rawGrade: z.string().max(30),
+      parsedGrade: z.number().min(0).max(20).nullable(),
+      gradeScale: z.enum(['VIGESIMAL', 'LITERAL', 'UNKNOWN']),
+      status: z.enum(['OK', 'WARNING', 'ERROR']),
+      issues: z.array(z.object({
+        field: z.enum(['studentCode', 'rawName', 'subject', 'period', 'rawGrade', 'parsedGrade', 'general']),
+        severity: z.enum(['ERROR', 'WARNING']),
+        message: z.string().max(500),
+        code: z.string().max(100),
+      })).max(20),
+      confidence: z.number().min(0).max(1),
+    });
+    const parsed = z.object({ importId: z.string().uuid(), rows: z.array(rowSchema).max(5000).optional() }).safeParse(body);
+    if (!parsed.success) return NextResponse.json({ error: 'Datos de importación inválidos.' }, { status: 400 });
+    const { importId, rows: providedRows } = parsed.data;
 
     if (!importId) {
       return NextResponse.json(
@@ -20,17 +50,16 @@ export async function POST(req: NextRequest) {
     const [existingImport] = await db
       .select()
       .from(gradeImports)
-      .where(eq(gradeImports.id, importId))
+      .where(and(eq(gradeImports.id, importId), eq(gradeImports.schoolId, session.schoolId)))
       .limit(1);
 
     if (!existingImport) {
       return NextResponse.json(
-        { error: 'No se encontró la importación especificada.' },
+        { error: 'No se encontró la importación o no tienes acceso.' },
         { status: 404 }
       );
     }
-
-    const schoolId = existingImport.schoolId;
+    const schoolId = session.schoolId;
 
     // 2. Determinar las filas a confirmar (si se enviaron filas editadas o si leemos de grade_import_rows)
     let rowsToProcess: ValidatedGradeRow[] = [];

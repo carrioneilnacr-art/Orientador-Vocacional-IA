@@ -11,7 +11,8 @@ import {
   userSessions,
 } from '@/db/schema';
 import { eq } from 'drizzle-orm';
-import { NextResponse } from 'next/server';
+import { randomUUID } from 'node:crypto';
+import { NextRequest, NextResponse } from 'next/server';
 import {
   VERIFIED_16_QUESTIONS,
   VERIFIED_64_OPTIONS,
@@ -19,6 +20,7 @@ import {
   VERIFIED_RULES,
 } from '@/data/questionnaireData';
 import { checkRateLimit } from '@/lib/rateLimit';
+import { GUEST_TEST_COOKIE_NAME, signGuestTestSession } from '@/lib/studentAuth';
 
 export async function GET(req: Request) {
   try {
@@ -57,7 +59,7 @@ export async function GET(req: Request) {
   }
 }
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
     const ip = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown';
     const rateLimit = checkRateLimit(ip);
@@ -291,7 +293,8 @@ export async function POST(req: Request) {
     const dominantDimension =
       Object.entries(normalizedScores).sort(([, a], [, b]) => b - a)[0]?.[0] || 'LOGIC';
 
-    const testId = `TEST-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
+    const testId = `TEST-${randomUUID()}`;
+    let testSaved = false;
 
     try {
       await db.insert(userSessions).values({
@@ -304,17 +307,34 @@ export async function POST(req: Request) {
         recommendedCareerIds: validTopCareers.map((c) => c!.id),
         expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // 1 año de conservación
       });
+      testSaved = true;
       console.log(`[API Vocacional] Test registrado exitosamente en user_sessions con ID: ${testId}`);
     } catch (err) {
       console.warn('[API Vocacional] Advertencia: No se pudo guardar la sesión en user_sessions:', err);
     }
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       testId,
       createdAt: new Date().toISOString(),
       dimensionScores: normalizedScores,
       topCareers: validTopCareers,
     });
+    response.cookies.delete(GUEST_TEST_COOKIE_NAME);
+    if (testSaved) {
+      const guestToken = signGuestTestSession(testId);
+      if (guestToken) {
+        response.cookies.set({
+          name: GUEST_TEST_COOKIE_NAME,
+          value: guestToken,
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'strict',
+          path: '/',
+          maxAge: 30 * 24 * 60 * 60,
+        });
+      }
+    }
+    return response;
   } catch (e: unknown) {
     const message = e instanceof Error ? e.message : 'Error desconocido';
     return NextResponse.json({ error: message }, { status: 500 });
