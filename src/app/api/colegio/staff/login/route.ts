@@ -6,10 +6,11 @@ import { auditLog, schoolStaff, schools } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { checkRateLimit } from '@/lib/rateLimit';
 import { signStaffSession, STAFF_COOKIE_NAME, StaffRole } from '@/lib/staffAuth';
+import { resolveStaffLoginEmail } from '@/lib/staffLoginIdentity';
 
 const loginSchema = z.object({
-  email: z.string().trim().email().max(254),
-  password: z.string().min(8).max(256),
+  identifier: z.string().trim().min(1).max(254),
+  password: z.string().min(1).max(256),
 });
 
 const isStaffRole = (role: string): role is StaffRole =>
@@ -26,9 +27,12 @@ export async function POST(req: NextRequest) {
   }
 
   const body = await req.json().catch(() => null);
-  const parsed = loginSchema.safeParse(body);
+  const parsed = loginSchema.safeParse({
+    identifier: body?.identifier ?? body?.email,
+    password: body?.password,
+  });
   if (!parsed.success) {
-    return NextResponse.json({ error: 'Correo o contraseña inválidos.' }, { status: 400 });
+    return NextResponse.json({ error: 'Usuario o contraseña inválidos.' }, { status: 400 });
   }
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -38,12 +42,19 @@ export async function POST(req: NextRequest) {
   }
 
   try {
+    const loginEmail = resolveStaffLoginEmail(parsed.data.identifier);
+    if (!loginEmail) {
+      return NextResponse.json({ error: 'Usuario o contraseña incorrectos.' }, { status: 401 });
+    }
     const supabaseAuth = createClient(supabaseUrl, supabaseAnonKey, {
       auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
     });
-    const { data: authData, error: authError } = await supabaseAuth.auth.signInWithPassword(parsed.data);
+    const { data: authData, error: authError } = await supabaseAuth.auth.signInWithPassword({
+      email: loginEmail,
+      password: parsed.data.password,
+    });
     if (authError || !authData.user) {
-      return NextResponse.json({ error: 'Correo o contraseña incorrectos.' }, { status: 401 });
+      return NextResponse.json({ error: 'Usuario o contraseña incorrectos.' }, { status: 401 });
     }
 
     const [staff] = await db
@@ -62,7 +73,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Esta cuenta no tiene acceso al portal escolar.' }, { status: 403 });
     }
 
-    const email = authData.user.email ?? parsed.data.email;
+    const email = authData.user.email ?? loginEmail;
     const sessionPayload = {
       userId: staff.userId,
       schoolId: staff.schoolId,

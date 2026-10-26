@@ -4,11 +4,11 @@ import { useState, type FormEvent } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { ArrowRight, Eye, EyeOff, LockKeyhole, Mail, ShieldCheck } from 'lucide-react';
+import { ArrowRight, Eye, EyeOff, LockKeyhole, UserRound, ShieldCheck } from 'lucide-react';
 
 export default function ColegioStaffLoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState('');
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -16,8 +16,8 @@ export default function ColegioStaffLoginPage() {
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!email.trim() || !password) {
-      setError('Ingresa tu correo institucional y contraseña.');
+    if (!identifier.trim() || !password) {
+      setError('Ingresa tu usuario y contraseña.');
       return;
     }
 
@@ -28,7 +28,7 @@ export default function ColegioStaffLoginPage() {
       const response = await fetch('/api/colegio/staff/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: email.trim(), password }),
+        body: JSON.stringify({ identifier: identifier.trim(), password }),
       });
 
       const data = await response.json();
@@ -71,18 +71,18 @@ export default function ColegioStaffLoginPage() {
 
             <form onSubmit={handleSubmit} className="mt-7 space-y-5">
               <div>
-                <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-slate-700">Correo institucional</label>
+                <label htmlFor="identifier" className="mb-1.5 block text-sm font-medium text-slate-700">Usuario o correo</label>
                 <div className="relative">
-                  <Mail className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" aria-hidden="true" />
+                  <UserRound className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" aria-hidden="true" />
                   <input
-                    id="email"
-                    name="email"
-                    type="email"
+                    id="identifier"
+                    name="identifier"
+                    type="text"
                     autoComplete="username"
-                    inputMode="email"
-                    value={email}
-                    onChange={(event) => { setEmail(event.target.value); if (error) setError(null); }}
-                    placeholder="nombre@colegio.edu.pe"
+                    autoCapitalize="none"
+                    value={identifier}
+                    onChange={(event) => { setIdentifier(event.target.value); if (error) setError(null); }}
+                    placeholder="Tu usuario institucional"
                     required
                     aria-invalid={Boolean(error)}
                     aria-describedby={error ? 'login-error' : undefined}
