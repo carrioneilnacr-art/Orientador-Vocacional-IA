@@ -42,7 +42,15 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const loginEmail = resolveStaffLoginEmail(parsed.data.identifier);
+    let loginEmail = resolveStaffLoginEmail(parsed.data.identifier);
+    if (!loginEmail && /^[a-z0-9._-]{3,64}$/i.test(parsed.data.identifier)) {
+      const [identity] = await db
+        .select({ loginEmail: schoolStaff.loginEmail })
+        .from(schoolStaff)
+        .where(eq(schoolStaff.username, parsed.data.identifier.toLowerCase()))
+        .limit(1);
+      loginEmail = identity?.loginEmail ?? null;
+    }
     if (!loginEmail) {
       return NextResponse.json({ error: 'Usuario o contraseña incorrectos.' }, { status: 401 });
     }
