@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, Map, ShieldCheck, GraduationCap, FileText, Menu, KeyRound } from "lucide-react";
+import { ArrowRight, Map, ShieldCheck, GraduationCap, FileText, Menu } from "lucide-react";
 
 /* ─────────────────────────────────────────────
    Decoración cartográfica SVG inline — muy sutil
@@ -114,15 +114,8 @@ export default function Home() {
           </Link>
         </nav>
 
-        {/* Contenedor derecho: Acceso Alumno Colegios Aliados */}
+        {/* Contenedor derecho */}
         <div className="flex-1 flex justify-end items-center gap-2">
-          <Link
-            href="/colegio"
-            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold text-[#0B2D4D] bg-white/90 border border-[#CBDDE6] hover:bg-white hover:border-[#08BBD5] hover:text-[#08BBD5] active:scale-[0.96] transition-all shadow-sm"
-          >
-            <KeyRound className="w-3.5 h-3.5 text-[#08BBD5]" />
-            <span>Portal Psicopedagógico</span>
-          </Link>
           <button
             className="md:hidden p-2 rounded-full border border-[#E1EDF3] bg-white/90"
             aria-label="Menú"
