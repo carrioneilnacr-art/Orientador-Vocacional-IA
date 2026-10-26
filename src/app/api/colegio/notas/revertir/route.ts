@@ -1,12 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
 import { gradeImports, academicRecords, auditLog } from '@/db/schema';
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
+import { z } from 'zod';
+import { getActiveStaffSessionFromRequest, hasStaffPermission } from '@/lib/staffAuth';
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
-    const { importId } = body;
+    const session = await getActiveStaffSessionFromRequest(req);
+    if (!session) return NextResponse.json({ error: 'Inicia sesión para continuar.' }, { status: 401 });
+    if (!hasStaffPermission(session.role, 'grades:confirm')) {
+      return NextResponse.json({ error: 'No tienes permiso para revertir importaciones.' }, { status: 403 });
+    }
+    const body = await req.json().catch(() => null);
+    const parsed = z.object({ importId: z.string().uuid() }).safeParse(body);
+    if (!parsed.success) return NextResponse.json({ error: 'Identificador de importación inválido.' }, { status: 400 });
+    const { importId } = parsed.data;
 
     if (!importId) {
       return NextResponse.json(
@@ -19,12 +28,12 @@ export async function POST(req: NextRequest) {
     const [existingImport] = await db
       .select()
       .from(gradeImports)
-      .where(eq(gradeImports.id, importId))
+      .where(and(eq(gradeImports.id, importId), eq(gradeImports.schoolId, session.schoolId)))
       .limit(1);
 
     if (!existingImport) {
       return NextResponse.json(
-        { error: 'No se encontró la importación especificada.' },
+        { error: 'No se encontró la importación o no tienes acceso.' },
         { status: 404 }
       );
     }
@@ -45,7 +54,7 @@ export async function POST(req: NextRequest) {
 
     // 4. Registrar en auditoría
     await db.insert(auditLog).values({
-      id: crypto.randomUUID(),
+      actorId: session.userId,
       action: 'IMPORT_REVERTED',
       targetType: 'grade_imports',
       targetId: importId,
@@ -61,10 +70,10 @@ export async function POST(req: NextRequest) {
       revertedCount: deletedRecords.length,
       message: `Se revirtió la importación eliminando ${deletedRecords.length} calificaciones de los expedientes.`,
     });
-  } catch (error: any) {
-    console.error('[API Revertir Notas] Error:', error);
+  } catch (error) {
+    console.error('[API Revertir Notas] Error:', error instanceof Error ? error.message : 'unknown error');
     return NextResponse.json(
-      { error: error?.message || 'Error al revertir la importación de calificaciones.' },
+      { error: 'Error al revertir la importación de calificaciones.' },
       { status: 500 }
     );
   }

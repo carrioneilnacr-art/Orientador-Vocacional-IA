@@ -1,13 +1,15 @@
 import crypto from 'crypto';
 import { NextRequest } from 'next/server';
+import { db } from '@/db';
+import { schoolStaff } from '@/db/schema';
+import { and, eq } from 'drizzle-orm';
 
 export const STAFF_COOKIE_NAME = 'chaski_staff_session';
 
-const AUTH_SECRET =
-  process.env.STAFF_AUTH_SECRET ||
-  process.env.STUDENT_AUTH_SECRET ||
-  process.env.NEXTAUTH_SECRET ||
-  'chaski-staff-secret-salt-2026-peru';
+function getAuthSecret(): string | null {
+  const secret = process.env.STAFF_AUTH_SECRET;
+  return secret && secret.length >= 32 ? secret : null;
+}
 
 export type StaffRole = 'ADMIN' | 'PSICOLOGO' | 'TUTOR' | 'DIRECTOR';
 
@@ -63,74 +65,6 @@ export const ROLE_PERMISSIONS: Record<StaffRole, string[]> = {
  * Cuentas de personal de prueba del Colegio Matemático Honores
  * Diseñadas para evaluación y demostración guiada
  */
-export interface DemoStaffUser {
-  userId: string;
-  schoolId: string;
-  email: string;
-  password: string; // En producción gestionado por Supabase Auth
-  fullName: string;
-  role: StaffRole;
-  schoolName: string;
-  classroomAssigned?: string;
-  avatarUrl?: string;
-}
-
-export const DEMO_STAFF_ACCOUNTS: DemoStaffUser[] = [
-  {
-    userId: '11111111-aaaa-1111-aaaa-111111111111',
-    schoolId: 'a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d',
-    email: 'admin@honores.edu.pe',
-    password: 'admin123',
-    fullName: 'Ing. Miguel Ángel Ramos',
-    role: 'ADMIN',
-    schoolName: 'Colegio Matemático Honores',
-  },
-  {
-    userId: '22222222-bbbb-2222-bbbb-222222222222',
-    schoolId: 'a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d',
-    email: 'psicologo@honores.edu.pe',
-    password: 'psico123',
-    fullName: 'Lic. Valeria Torres Salazar',
-    role: 'PSICOLOGO',
-    schoolName: 'Colegio Matemático Honores',
-  },
-  {
-    userId: '33333333-cccc-3333-cccc-333333333333',
-    schoolId: 'a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d',
-    email: 'tutor@honores.edu.pe',
-    password: 'tutor123',
-    fullName: 'Prof. Roberto Sánchez Vega',
-    role: 'TUTOR',
-    schoolName: 'Colegio Matemático Honores',
-    classroomAssigned: '5° "A" Secundaria',
-  },
-  {
-    userId: '44444444-dddd-4444-dddd-444444444444',
-    schoolId: 'a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d',
-    email: 'director@honores.edu.pe',
-    password: 'director123',
-    fullName: 'Dr. Fernando Morales Castro',
-    role: 'DIRECTOR',
-    schoolName: 'Colegio Matemático Honores',
-  },
-];
-
-/**
- * Busca credenciales demo de personal escolar
- */
-export function findStaffByDemoCredentials(
-  email: string,
-  plainPassword: string
-): DemoStaffUser | null {
-  const normalizedEmail = email.trim().toLowerCase();
-  const staff = DEMO_STAFF_ACCOUNTS.find(
-    (u) => u.email.toLowerCase() === normalizedEmail
-  );
-  if (!staff) return null;
-  if (staff.password !== plainPassword) return null;
-  return staff;
-}
-
 /**
  * Firma un payload de sesión con HMAC-SHA256 para el personal del colegio.
  * Por defecto dura 8 horas (jornada laboral escolar).
@@ -139,6 +73,10 @@ export function signStaffSession(
   payload: Omit<StaffSessionPayload, 'issuedAt' | 'expiresAt'>,
   expiresInHours = 8
 ): string {
+  const authSecret = getAuthSecret();
+  if (!authSecret) {
+    throw new Error('STAFF_AUTH_SECRET must be configured with at least 32 characters.');
+  }
   const issuedAt = Date.now();
   const expiresAt = issuedAt + expiresInHours * 60 * 60 * 1000;
 
@@ -150,7 +88,7 @@ export function signStaffSession(
 
   const payloadBase64 = Buffer.from(JSON.stringify(fullPayload)).toString('base64url');
   const signature = crypto
-    .createHmac('sha256', AUTH_SECRET)
+    .createHmac('sha256', authSecret)
     .update(payloadBase64)
     .digest('base64url');
 
@@ -163,6 +101,8 @@ export function signStaffSession(
  */
 export function verifyStaffSession(token: string): StaffSessionPayload | null {
   if (!token || typeof token !== 'string') return null;
+  const authSecret = getAuthSecret();
+  if (!authSecret) return null;
 
   const parts = token.split('.');
   if (parts.length !== 2) return null;
@@ -170,7 +110,7 @@ export function verifyStaffSession(token: string): StaffSessionPayload | null {
   const [payloadBase64, signature] = parts;
 
   const expectedSignature = crypto
-    .createHmac('sha256', AUTH_SECRET)
+    .createHmac('sha256', authSecret)
     .update(payloadBase64)
     .digest('base64url');
 
@@ -193,7 +133,12 @@ export function verifyStaffSession(token: string): StaffSessionPayload | null {
       return null;
     }
 
-    if (!payload.role || !['ADMIN', 'PSICOLOGO', 'TUTOR', 'DIRECTOR'].includes(payload.role)) {
+    if (
+      !payload.userId || !payload.schoolId || !payload.email || !payload.fullName ||
+      !payload.schoolName || !payload.role ||
+      !['ADMIN', 'PSICOLOGO', 'TUTOR', 'DIRECTOR'].includes(payload.role) ||
+      !payload.issuedAt || payload.issuedAt > Date.now()
+    ) {
       return null;
     }
 
@@ -210,6 +155,32 @@ export function getStaffSessionFromRequest(req: NextRequest): StaffSessionPayloa
   const cookie = req.cookies.get(STAFF_COOKIE_NAME);
   if (!cookie?.value) return null;
   return verifyStaffSession(cookie.value);
+}
+
+/** Rechecks the current school and role so removed staff access expires immediately. */
+export async function getActiveStaffSessionFromRequest(
+  req: NextRequest
+): Promise<StaffSessionPayload | null> {
+  const session = getStaffSessionFromRequest(req);
+  if (!session) return null;
+
+  try {
+    const [membership] = await db
+      .select({ role: schoolStaff.role })
+      .from(schoolStaff)
+      .where(and(
+        eq(schoolStaff.userId, session.userId),
+        eq(schoolStaff.schoolId, session.schoolId)
+      ))
+      .limit(1);
+
+    if (!membership || !['ADMIN', 'PSICOLOGO', 'TUTOR', 'DIRECTOR'].includes(membership.role)) {
+      return null;
+    }
+    return { ...session, role: membership.role as StaffRole };
+  } catch {
+    return null;
+  }
 }
 
 /**
@@ -258,6 +229,10 @@ export function requireStaffRole(
     authorized: true,
     status: 200,
   };
+}
+
+export function hasStaffPermission(role: StaffRole, permission: string): boolean {
+  return ROLE_PERMISSIONS[role].includes(permission);
 }
 
 /**

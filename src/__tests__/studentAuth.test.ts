@@ -4,9 +4,39 @@ import {
   generateAccessCode,
   signStudentSession,
   verifyStudentSession,
+  signGuestTestSession,
+  verifyGuestTestSession,
 } from '../lib/studentAuth';
 
+process.env.STUDENT_AUTH_SECRET = 'unit-test-student-secret-with-more-than-32-characters';
+
 describe('Student Access Code & Auth Security (Fase 2)', () => {
+  it('firma un test de invitado y permite verificar el ID asociado', () => {
+    const token = signGuestTestSession('TEST-guest-session-id');
+    expect(token).toBeTruthy();
+    expect(verifyGuestTestSession(token ?? undefined)?.testId).toBe('TEST-guest-session-id');
+  });
+
+  it('rechaza cookies de test manipuladas y expiradas', () => {
+    const token = signGuestTestSession('TEST-guest-session-id');
+    expect(token).toBeTruthy();
+    expect(verifyGuestTestSession(`${token}x`)).toBeNull();
+
+    const expired = signGuestTestSession('TEST-old-session-id', -1);
+    expect(verifyGuestTestSession(expired ?? undefined)).toBeNull();
+  });
+
+  it('no firma ni verifica vínculos cuando falta STUDENT_AUTH_SECRET', () => {
+    const configuredSecret = process.env.STUDENT_AUTH_SECRET;
+    delete process.env.STUDENT_AUTH_SECRET;
+    try {
+      expect(signGuestTestSession('TEST-unlinked')).toBeNull();
+      expect(verifyGuestTestSession('payload.signature')).toBeNull();
+    } finally {
+      process.env.STUDENT_AUTH_SECRET = configuredSecret;
+    }
+  });
+
   it('normaliza y calcula hash SHA-256 de forma determinista e insensible a mayúsculas/espacios', () => {
     const hash1 = hashAccessCode('hon-7k9p');
     const hash2 = hashAccessCode('  HON-7K9P  ');

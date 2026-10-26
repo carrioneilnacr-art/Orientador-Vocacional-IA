@@ -1,160 +1,101 @@
+import { createClient } from '@supabase/supabase-js';
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { db } from '@/db';
-import { schoolStaff, schools, auditLog } from '@/db/schema';
+import { auditLog, schoolStaff, schools } from '@/db/schema';
 import { eq } from 'drizzle-orm';
-import {
-  findStaffByDemoCredentials,
-  signStaffSession,
-  STAFF_COOKIE_NAME,
-  StaffRole,
-} from '@/lib/staffAuth';
 import { checkRateLimit } from '@/lib/rateLimit';
+import { signStaffSession, STAFF_COOKIE_NAME, StaffRole } from '@/lib/staffAuth';
 
 const loginSchema = z.object({
-  email: z.string().email('Ingresa un correo electrónico válido'),
-  password: z.string().min(4, 'La contraseña debe tener al menos 4 caracteres'),
+  email: z.string().trim().email().max(254),
+  password: z.string().min(8).max(256),
 });
 
+const isStaffRole = (role: string): role is StaffRole =>
+  ['ADMIN', 'PSICOLOGO', 'TUTOR', 'DIRECTOR'].includes(role);
+
 export async function POST(req: NextRequest) {
+  const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
+  const rateCheck = checkRateLimit(`staff_login:${ip}`, 10, 60);
+  if (!rateCheck.allowed) {
+    return NextResponse.json(
+      { error: 'Demasiados intentos. Espera un momento antes de volver a intentar.' },
+      { status: 429, headers: { 'Retry-After': String(rateCheck.retryAfter || 60) } }
+    );
+  }
+
+  const body = await req.json().catch(() => null);
+  const parsed = loginSchema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json({ error: 'Correo o contraseña inválidos.' }, { status: 400 });
+  }
+
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!supabaseUrl || !supabaseAnonKey || !process.env.STAFF_AUTH_SECRET || process.env.STAFF_AUTH_SECRET.length < 32) {
+    return NextResponse.json({ error: 'El acceso institucional no está configurado.' }, { status: 503 });
+  }
+
   try {
-    // 1. Rate Limiting por IP para evitar ataques de fuerza bruta (15 req/min)
-    const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || '127.0.0.1';
-    const rateCheck = checkRateLimit(`staff_login:${ip}`, 15, 60);
-    if (!rateCheck.allowed) {
-      return NextResponse.json(
-        { error: 'Demasiados intentos de acceso. Por seguridad, espera un momento.' },
-        { status: 429, headers: { 'Retry-After': String(rateCheck.retryAfter || 60) } }
-      );
+    const supabaseAuth = createClient(supabaseUrl, supabaseAnonKey, {
+      auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
+    });
+    const { data: authData, error: authError } = await supabaseAuth.auth.signInWithPassword(parsed.data);
+    if (authError || !authData.user) {
+      return NextResponse.json({ error: 'Correo o contraseña incorrectos.' }, { status: 401 });
     }
 
-    // 2. Validación de payload
-    const body = await req.json();
-    const parsed = loginSchema.safeParse(body);
-    if (!parsed.success) {
-      return NextResponse.json(
-        { error: parsed.error.issues[0]?.message || 'Datos de inicio de sesión inválidos' },
-        { status: 400 }
-      );
+    const [staff] = await db
+      .select({
+        userId: schoolStaff.userId,
+        schoolId: schoolStaff.schoolId,
+        role: schoolStaff.role,
+        schoolName: schools.name,
+      })
+      .from(schoolStaff)
+      .innerJoin(schools, eq(schools.id, schoolStaff.schoolId))
+      .where(eq(schoolStaff.userId, authData.user.id))
+      .limit(1);
+
+    if (!staff || !isStaffRole(staff.role)) {
+      return NextResponse.json({ error: 'Esta cuenta no tiene acceso al portal escolar.' }, { status: 403 });
     }
 
-    const { email, password } = parsed.data;
+    const email = authData.user.email ?? parsed.data.email;
+    const sessionPayload = {
+      userId: staff.userId,
+      schoolId: staff.schoolId,
+      email,
+      fullName: typeof authData.user.user_metadata?.full_name === 'string'
+        ? authData.user.user_metadata.full_name
+        : email,
+      role: staff.role,
+      schoolName: staff.schoolName,
+    };
+    const token = signStaffSession(sessionPayload, 8);
 
-    let authenticatedStaff: {
-      userId: string;
-      schoolId: string;
-      email: string;
-      fullName: string;
-      role: StaffRole;
-      schoolName: string;
-      classroomAssigned?: string;
-    } | null = null;
-
-    // 3. Revisar credenciales de prueba preconfiguradas del colegio (para demos y evaluación)
-    const demoUser = findStaffByDemoCredentials(email, password);
-    if (demoUser) {
-      authenticatedStaff = {
-        userId: demoUser.userId,
-        schoolId: demoUser.schoolId,
-        email: demoUser.email,
-        fullName: demoUser.fullName,
-        role: demoUser.role,
-        schoolName: demoUser.schoolName,
-        classroomAssigned: demoUser.classroomAssigned,
-      };
-    } else {
-      // 4. Consulta opcional a base de datos (school_staff) si existe integración Supabase
-      try {
-        const staffRecords = await db
-          .select({
-            userId: schoolStaff.userId,
-            schoolId: schoolStaff.schoolId,
-            role: schoolStaff.role,
-            schoolName: schools.name,
-          })
-          .from(schoolStaff)
-          .leftJoin(schools, eq(schools.id, schoolStaff.schoolId))
-          .limit(1);
-
-        if (staffRecords.length > 0) {
-          const rec = staffRecords[0];
-          // Verificación de credenciales en base de datos si coincidiera
-          authenticatedStaff = {
-            userId: rec.userId,
-            schoolId: rec.schoolId,
-            email,
-            fullName: 'Personal Escolar Autorizado',
-            role: (rec.role as StaffRole) || 'ADMIN',
-            schoolName: rec.schoolName || 'Colegio Matemático Honores',
-          };
-        }
-      } catch (dbErr) {
-        console.warn('[Staff Login] Base de datos no disponible o sin tabla de usuarios:', dbErr);
-      }
-    }
-
-    // Si no se autenticó
-    if (!authenticatedStaff) {
-      return NextResponse.json(
-        {
-          error:
-            'Correo o contraseña incorrectos. Verifica tus credenciales institucionales o prueba las cuentas de demostración.',
-        },
-        { status: 401 }
-      );
-    }
-
-    // 5. Auditoría institucional (Ley 29733 de Protección de Datos Personales)
-    try {
-      await db.insert(auditLog).values({
-        actorId: authenticatedStaff.userId,
-        action: 'STAFF_LOGIN',
-        targetType: 'SCHOOL_STAFF',
-        targetId: authenticatedStaff.userId,
-        metadata: {
-          email: authenticatedStaff.email,
-          role: authenticatedStaff.role,
-          schoolId: authenticatedStaff.schoolId,
-          schoolName: authenticatedStaff.schoolName,
-          ipAnonymized: ip.substring(0, 7) + '***',
-        },
-      });
-    } catch (auditErr) {
-      console.warn('[Staff Login] Error al registrar auditoría:', auditErr);
-    }
-
-    // 6. Firmar token HMAC para cookie institucional (8 horas de duración)
-    const token = signStaffSession(authenticatedStaff, 8);
-
-    const response = NextResponse.json({
-      success: true,
-      staff: {
-        userId: authenticatedStaff.userId,
-        schoolId: authenticatedStaff.schoolId,
-        email: authenticatedStaff.email,
-        fullName: authenticatedStaff.fullName,
-        role: authenticatedStaff.role,
-        schoolName: authenticatedStaff.schoolName,
-        classroomAssigned: authenticatedStaff.classroomAssigned,
-      },
+    await db.insert(auditLog).values({
+      actorId: staff.userId,
+      action: 'STAFF_LOGIN',
+      targetType: 'SCHOOL_STAFF',
+      targetId: staff.userId,
+      metadata: { role: staff.role, schoolId: staff.schoolId },
     });
 
+    const response = NextResponse.json({ success: true, staff: sessionPayload });
     response.cookies.set({
       name: STAFF_COOKIE_NAME,
       value: token,
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      sameSite: 'strict',
       path: '/',
-      maxAge: 8 * 60 * 60, // 8 horas
+      maxAge: 8 * 60 * 60,
     });
-
     return response;
-  } catch (error: any) {
-    console.error('[Staff Login Error]', error);
-    return NextResponse.json(
-      { error: 'Ocurrió un error inesperado al iniciar sesión.' },
-      { status: 500 }
-    );
+  } catch (error) {
+    console.error('[Staff Login] Authentication failed:', error instanceof Error ? error.message : 'unknown error');
+    return NextResponse.json({ error: 'No se pudo iniciar sesión. Inténtalo más tarde.' }, { status: 503 });
   }
 }
