@@ -17,6 +17,7 @@
     "@ai-sdk/openai": "^4.0.57",
     "@ai-sdk/react": "^4.0.94",
     "@google/genai": "^2.21.0",
+    "@napi-rs/canvas": "0.1.80",
     "@supabase/supabase-js": "^2.49.1",
     "@vercel/analytics": "^2.0.1",
     "ai": "^7.0.91",

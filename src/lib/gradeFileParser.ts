@@ -96,6 +96,8 @@ async function parseXlsx(bytes: Uint8Array): Promise<ParsedGradeFile> {
 }
 
 async function parsePdf(bytes: Uint8Array): Promise<ParsedGradeFile> {
+  const { DOMMatrix, ImageData, Path2D } = await import('@napi-rs/canvas');
+  Object.assign(globalThis, { DOMMatrix, ImageData, Path2D });
   const { PDFParse } = await import('pdf-parse');
   const parser = new PDFParse({ data: bytes });
   try {
