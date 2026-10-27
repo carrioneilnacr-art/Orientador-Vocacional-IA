@@ -112,14 +112,13 @@ Juan Perez,2025-1`;
     expect(result.errors.some((e) => e.includes('código'))).toBe(true);
   });
 
-  it('genera la plantilla CSV oficial con formato correcto', () => {
+  it('genera una plantilla vacía para no confundir ejemplos con notas reales', () => {
     const template = generateGradeCsvTemplate();
     expect(template).toContain('codigo_estudiante');
     expect(template).toContain('curso');
     expect(template).toContain('nota');
-    const parsed = parseGradeCSV(template);
-    expect(parsed.errors.length).toBe(0);
-    expect(parsed.rows.length).toBeGreaterThanOrEqual(3);
+    expect(template.trim().split('\n')).toHaveLength(1);
+    expect(template).not.toContain('HON-');
   });
 });
 
