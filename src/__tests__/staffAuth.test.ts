@@ -1,7 +1,5 @@
 import { describe, it, expect } from 'vitest';
 import {
-  signStaffSession,
-  verifyStaffSession,
   hasStaffRole,
   requireStaffRole,
   canAccessModule,
@@ -9,66 +7,7 @@ import {
   StaffRole,
 } from '../lib/staffAuth';
 
-process.env.STAFF_AUTH_SECRET = 'unit-test-secret-with-more-than-32-characters';
-
 describe('Staff Auth & RBAC Security (Fase 3)', () => {
-  describe('Firma y Verificación HMAC de Tokens de Sesión', () => {
-    const basePayload = {
-      userId: '11111111-aaaa-1111-aaaa-111111111111',
-      schoolId: 'a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d',
-      email: 'psicologo@honores.edu.pe',
-      fullName: 'Lic. Valeria Torres Salazar',
-      role: 'PSICOLOGO' as StaffRole,
-      schoolName: 'Colegio Matemático Honores',
-    };
-
-    it('firma y verifica un token de sesión con rol correctamente', () => {
-      const token = signStaffSession(basePayload, 8);
-      expect(typeof token).toBe('string');
-      expect(token).toContain('.');
-
-      const verified = verifyStaffSession(token);
-      expect(verified).not.toBeNull();
-      expect(verified?.userId).toBe(basePayload.userId);
-      expect(verified?.email).toBe(basePayload.email);
-      expect(verified?.fullName).toBe(basePayload.fullName);
-      expect(verified?.role).toBe('PSICOLOGO');
-      expect(verified?.schoolName).toBe('Colegio Matemático Honores');
-    });
-
-    it('rechaza tokens manipulados o alterados (anti-tampering)', () => {
-      const token = signStaffSession(basePayload);
-      const [payloadPart, sig] = token.split('.');
-
-      // Intentar escalar privilegios de PSICOLOGO a ADMIN alterando el payload
-      const tamperedJson = JSON.stringify({
-        ...basePayload,
-        role: 'ADMIN',
-        issuedAt: Date.now(),
-        expiresAt: Date.now() + 8 * 3600 * 1000,
-      });
-      const tamperedPayloadPart = Buffer.from(tamperedJson).toString('base64url');
-      const forgedToken = `${tamperedPayloadPart}.${sig}`;
-
-      const verified = verifyStaffSession(forgedToken);
-      expect(verified).toBeNull();
-    });
-
-    it('rechaza tokens vencidos', () => {
-      // Expiración en el pasado (-1 hora)
-      const token = signStaffSession(basePayload, -1);
-      const verified = verifyStaffSession(token);
-      expect(verified).toBeNull();
-    });
-
-    it('rechaza strings vacíos, no delimitados o malformados', () => {
-      expect(verifyStaffSession('')).toBeNull();
-      expect(verifyStaffSession('invalid-token-no-dot')).toBeNull();
-      expect(verifyStaffSession('too.many.dots.in.token')).toBeNull();
-      expect(verifyStaffSession('invalidBase64.invalidSig')).toBeNull();
-    });
-  });
-
   describe('Control de Acceso Basado en Roles (RBAC)', () => {
     it('hasStaffRole valida rol simple o lista de roles permitidos', () => {
       expect(hasStaffRole('ADMIN', 'ADMIN')).toBe(true);

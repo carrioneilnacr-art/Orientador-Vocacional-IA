@@ -1,13 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyStaffSession, STAFF_COOKIE_NAME } from '@/lib/staffAuth';
+import { getActiveStaffSessionFromRequest, STAFF_COOKIE_NAME } from '@/lib/staffAuth';
 import { db } from '@/db';
 import { auditLog } from '@/db/schema';
 
 export async function POST(req: NextRequest) {
   try {
-    const token = req.cookies.get(STAFF_COOKIE_NAME)?.value;
-    if (token) {
-      const payload = verifyStaffSession(token);
+    if (req.cookies.get(STAFF_COOKIE_NAME)?.value) {
+      const payload = await getActiveStaffSessionFromRequest(req);
       if (payload) {
         try {
           await db.insert(auditLog).values({

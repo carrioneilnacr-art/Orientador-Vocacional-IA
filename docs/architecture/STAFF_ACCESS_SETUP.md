@@ -17,10 +17,10 @@ El acceso por usuario se resuelve desde la base de datos y no requiere
 
 ## Configuración del servidor
 
-Además de las variables de Supabase y PostgreSQL, cada despliegue necesita
-`STAFF_AUTH_SECRET`, con al menos 32 caracteres aleatorios. Configurar la
-variable en Vercel para el entorno correspondiente y volver a desplegar.
-La configuración local de `.env` no se sincroniza con Vercel.
+El personal usa el access token emitido y validado por Supabase Auth. El
+servidor vuelve a consultar `school_staff` en cada operación protegida para
+confirmar el colegio y el rol vigente. No se necesita una segunda clave de
+firma en Vercel: bastan las variables de Supabase y PostgreSQL ya configuradas.
 
 ## Verificación realizada
 
