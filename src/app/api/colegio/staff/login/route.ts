@@ -5,7 +5,7 @@ import { db } from '@/db';
 import { auditLog, schoolStaff, schools } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { checkRateLimit } from '@/lib/rateLimit';
-import { signStaffSession, STAFF_COOKIE_NAME, StaffRole } from '@/lib/staffAuth';
+import { STAFF_COOKIE_NAME, StaffRole } from '@/lib/staffAuth';
 import { resolveStaffLoginEmail } from '@/lib/staffLoginIdentity';
 
 const loginSchema = z.object({
@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!supabaseUrl || !supabaseAnonKey || !process.env.STAFF_AUTH_SECRET || process.env.STAFF_AUTH_SECRET.length < 32) {
+  if (!supabaseUrl || !supabaseAnonKey) {
     return NextResponse.json({ error: 'El acceso institucional no está configurado.' }, { status: 503 });
   }
 
@@ -61,7 +61,7 @@ export async function POST(req: NextRequest) {
       email: loginEmail,
       password: parsed.data.password,
     });
-    if (authError || !authData.user) {
+    if (authError || !authData.user || !authData.session?.access_token) {
       return NextResponse.json({ error: 'Usuario o contraseña incorrectos.' }, { status: 401 });
     }
 
@@ -92,8 +92,6 @@ export async function POST(req: NextRequest) {
       role: staff.role,
       schoolName: staff.schoolName,
     };
-    const token = signStaffSession(sessionPayload, 8);
-
     await db.insert(auditLog).values({
       actorId: staff.userId,
       action: 'STAFF_LOGIN',
@@ -105,12 +103,12 @@ export async function POST(req: NextRequest) {
     const response = NextResponse.json({ success: true, staff: sessionPayload });
     response.cookies.set({
       name: STAFF_COOKIE_NAME,
-      value: token,
+      value: authData.session.access_token,
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
       path: '/',
-      maxAge: 8 * 60 * 60,
+      maxAge: authData.session.expires_in,
     });
     return response;
   } catch (error) {
