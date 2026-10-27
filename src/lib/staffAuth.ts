@@ -35,6 +35,8 @@ export const ROLE_PERMISSIONS: Record<StaffRole, string[]> = {
     'reports:export',
   ],
   DIRECTOR: [
+    'grades:import',
+    'grades:confirm',
     'metrics:view',
     'metrics:executive',
     'profiles:view_aggregated',
@@ -169,7 +171,7 @@ export function canAccessModule(
 ): boolean {
   switch (moduleName) {
     case 'importador':
-      return role === 'ADMIN';
+      return role === 'ADMIN' || role === 'DIRECTOR';
     case 'auditoria':
       return role === 'ADMIN' || role === 'DIRECTOR';
     case 'alertas':

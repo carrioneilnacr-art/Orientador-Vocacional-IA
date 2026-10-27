@@ -3,9 +3,12 @@ import { db } from '@/db';
 import { students, gradeImports, gradeImportRows } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { parseGradeCSV, ParsedGradeRow } from '@/lib/gradeParser';
+import { MAX_GRADE_FILE_BYTES, parseGradeFile, type GradeFileType } from '@/lib/gradeFileParser';
 import { validateGradeRows, ExistingStudentInfo } from '@/lib/gradeValidator';
 import { getActiveStaffSessionFromRequest, hasStaffPermission } from '@/lib/staffAuth';
 import { z } from 'zod';
+
+export const maxDuration = 60;
 
 export async function POST(req: NextRequest) {
   try {
@@ -14,53 +17,65 @@ export async function POST(req: NextRequest) {
     if (!hasStaffPermission(session.role, 'grades:import')) {
       return NextResponse.json({ error: 'No tienes permiso para importar calificaciones.' }, { status: 403 });
     }
-    let fileContent = '';
+    let rowsToValidate: ParsedGradeRow[] = [];
+    let detectedHeaders: string[] = [];
+    let parseErrors: string[] = [];
+    let fileType: GradeFileType = 'CSV';
+    let sourceLabel = 'Contenido CSV';
+    let fileName: string | null = null;
 
     const contentType = req.headers.get('content-type') || '';
 
     if (contentType.includes('multipart/form-data')) {
       const formData = await req.formData();
-      const file = formData.get('file') as File | null;
+      const fileEntry = formData.get('file');
 
-      if (!file) {
+      if (!(fileEntry instanceof File)) {
         return NextResponse.json(
           { error: 'No se ha proporcionado ningún archivo para importar.' },
           { status: 400 }
         );
       }
-      if (file.size > 5 * 1024 * 1024) {
+      if (fileEntry.size > MAX_GRADE_FILE_BYTES) {
         return NextResponse.json({ error: 'El archivo supera el límite de 5 MB.' }, { status: 413 });
       }
+      fileName = fileEntry.name.slice(0, 255);
 
-      fileContent = await file.text();
-    } else {
-      const payload = z.object({ fileContent: z.string().max(5 * 1024 * 1024).optional() }).safeParse(await req.json());
-      if (!payload.success) return NextResponse.json({ error: 'Formato de importación inválido.' }, { status: 400 });
-      fileContent = payload.data.fileContent || '';
-    }
-
-    const targetSchoolId = session.schoolId;
-
-    // 2. Parsear el archivo o usar filas provistas
-    let rowsToValidate: ParsedGradeRow[] = [];
-    let detectedHeaders: string[] = [];
-    let parseErrors: string[] = [];
-
-    if (fileContent) {
-      const parseResult = parseGradeCSV(fileContent);
-      rowsToValidate = parseResult.rows;
-      detectedHeaders = parseResult.headers;
-      parseErrors = parseResult.errors;
-
-      if (parseErrors.length > 0 && rowsToValidate.length === 0) {
+      try {
+        const parsedFile = await parseGradeFile({
+          fileName: fileEntry.name,
+          mimeType: fileEntry.type,
+          bytes: new Uint8Array(await fileEntry.arrayBuffer()),
+        });
+        rowsToValidate = parsedFile.rows;
+        detectedHeaders = parsedFile.headers;
+        parseErrors = parsedFile.errors;
+        fileType = parsedFile.fileType;
+        sourceLabel = parsedFile.sourceLabel;
+      } catch (error) {
         return NextResponse.json(
-          { error: parseErrors.join(' ') },
+          { error: error instanceof Error ? error.message : 'No se pudo leer el archivo.' },
           { status: 400 }
         );
       }
     } else {
+      const payload = z.object({ fileContent: z.string().max(MAX_GRADE_FILE_BYTES).optional() }).safeParse(await req.json());
+      if (!payload.success) return NextResponse.json({ error: 'Formato de importación inválido.' }, { status: 400 });
+      const fileContent = payload.data.fileContent || '';
+      if (fileContent) {
+        const parseResult = parseGradeCSV(fileContent);
+        rowsToValidate = parseResult.rows;
+        detectedHeaders = parseResult.headers;
+        parseErrors = parseResult.errors;
+      }
+    }
+
+    const targetSchoolId = session.schoolId;
+
+    // 2. Rechazar entradas ambiguas antes de crear una vista previa.
+    if (parseErrors.length > 0 || rowsToValidate.length === 0) {
       return NextResponse.json(
-        { error: 'El archivo está vacío o no contiene filas con datos de notas.' },
+        { error: parseErrors.join(' ') || 'El archivo está vacío o no contiene filas con datos de notas.' },
         { status: 400 }
       );
     }
@@ -79,15 +94,15 @@ export async function POST(req: NextRequest) {
           .where(eq(students.schoolId, targetSchoolId));
 
         existingStudentsList = dbStudents;
-      } catch (stErr) {
-        console.warn('[Importar Notas] No se pudieron cargar los estudiantes para matching:', stErr);
+      } catch {
+        return NextResponse.json({ error: 'No se pudo consultar la matrícula del colegio.' }, { status: 503 });
       }
     }
 
     // 4. Validar filas con el validador oficial
     const summary = validateGradeRows(rowsToValidate, {
       existingStudents: existingStudentsList,
-      requireKnownStudents: false, // Permite advertencia en lugar de error si aún no se registró
+      requireKnownStudents: true,
     });
 
     // 5. Persistir en grade_imports y grade_import_rows si hay targetSchoolId
@@ -98,7 +113,8 @@ export async function POST(req: NextRequest) {
           id: importId,
           schoolId: targetSchoolId,
           uploadedBy: session.userId,
-          fileType: 'CSV',
+          fileType,
+          fileName,
           status: 'NEEDS_REVIEW',
           stats: {
             totalRows: summary.totalRows,
@@ -134,6 +150,8 @@ export async function POST(req: NextRequest) {
       success: true,
       importId,
       schoolId: targetSchoolId,
+      fileType,
+      sourceLabel,
       headers: detectedHeaders,
       summary,
     });

@@ -365,7 +365,10 @@ export const classrooms = pgTable('classrooms', {
   year: integer('year').notNull(),
   grade: integer('grade').notNull(),
   section: text('section').notNull(),
-});
+}, (table) => [
+  unique().on(table.schoolId, table.year, table.grade, table.section),
+  index('idx_classrooms_school').on(table.schoolId),
+]);
 
 // 21. Students
 export const students = pgTable('students', {
@@ -375,10 +378,14 @@ export const students = pgTable('students', {
   studentCode: text('student_code').notNull(),
   fullName: text('full_name').notNull(),
   accessCodeHash: text('access_code_hash').unique(),
+  isDemo: boolean('is_demo').default(false).notNull(),
+  active: boolean('active').default(true).notNull(),
   consentStatus: text('consent_status').default('PENDING').notNull(),
   consentAt: timestamp('consent_at', { withTimezone: true }),
 }, (table) => [
-  unique().on(table.schoolId, table.studentCode)
+  unique().on(table.schoolId, table.studentCode),
+  index('idx_students_school').on(table.schoolId),
+  index('idx_students_classroom').on(table.classroomId),
 ]);
 
 // 22. School Staff
@@ -396,26 +403,72 @@ export const gradeImports = pgTable('grade_imports', {
   schoolId: uuid('school_id').notNull().references(() => schools.id, { onDelete: 'cascade' }),
   uploadedBy: uuid('uploaded_by'),
   fileType: text('file_type').notNull(),
+  fileName: text('file_name'),
   storagePath: text('storage_path'),
   status: text('status').default('UPLOADED').notNull(),
   stats: jsonb('stats').default({}),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
   confirmedAt: timestamp('confirmed_at', { withTimezone: true }),
-});
+}, (table) => [
+  index('idx_grade_imports_school').on(table.schoolId),
+]);
 
-// 24. Academic Records
+// 24. Academic periods (four bimesters per academic year)
+export const academicPeriods = pgTable('academic_periods', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  schoolId: uuid('school_id').notNull().references(() => schools.id, { onDelete: 'cascade' }),
+  academicYear: integer('academic_year').notNull(),
+  bimester: integer('bimester').notNull(),
+  label: text('label').notNull(),
+  startsOn: date('starts_on'),
+  endsOn: date('ends_on'),
+  status: text('status').default('OPEN').notNull(),
+}, (table) => [
+  unique().on(table.schoolId, table.academicYear, table.bimester),
+  index('idx_academic_periods_school').on(table.schoolId),
+]);
+
+// 25. Academic records by course and bimester
 export const academicRecords = pgTable('academic_records', {
   id: uuid('id').primaryKey().defaultRandom(),
   studentId: uuid('student_id').notNull().references(() => students.id, { onDelete: 'cascade' }),
+  periodId: uuid('period_id').references(() => academicPeriods.id, { onDelete: 'cascade' }),
   importId: uuid('import_id').references(() => gradeImports.id, { onDelete: 'set null' }),
-  period: text('period').notNull(),
+  period: text('period'),
   subject: text('subject').notNull(),
   area: text('area').notNull(),
   grade: numeric('grade', { precision: 4, scale: 2 }),
   confirmedAt: timestamp('confirmed_at', { withTimezone: true }).defaultNow(),
-});
+}, (table) => [
+  unique().on(table.studentId, table.periodId, table.subject),
+  index('idx_academic_records_student').on(table.studentId),
+  index('idx_academic_records_period').on(table.periodId),
+  index('idx_academic_records_import').on(table.importId),
+]);
 
-// 25. Career Area Weights
+// 26. Report-card summary: attendance, rank and formative ratings
+export const studentPeriodSummaries = pgTable('student_period_summaries', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  studentId: uuid('student_id').notNull().references(() => students.id, { onDelete: 'cascade' }),
+  periodId: uuid('period_id').notNull().references(() => academicPeriods.id, { onDelete: 'cascade' }),
+  average: numeric('average', { precision: 4, scale: 2 }),
+  classRank: integer('class_rank'),
+  attendanceDays: integer('attendance_days').default(0).notNull(),
+  absenceDays: integer('absence_days').default(0).notNull(),
+  lateCount: integer('late_count').default(0).notNull(),
+  punctualityRating: text('punctuality_rating'),
+  uniformRating: text('uniform_rating'),
+  behaviorRating: text('behavior_rating'),
+  responsibilityRating: text('responsibility_rating'),
+  observation: text('observation'),
+  confirmedAt: timestamp('confirmed_at', { withTimezone: true }).defaultNow(),
+}, (table) => [
+  unique().on(table.studentId, table.periodId),
+  index('idx_student_period_summaries_student').on(table.studentId),
+  index('idx_student_period_summaries_period').on(table.periodId),
+]);
+
+// 27. Career Area Weights
 export const careerAreaWeights = pgTable('career_area_weights', {
   id: uuid('id').primaryKey().defaultRandom(),
   careerId: bigint('career_id', { mode: 'number' }).notNull().references(() => careers.id, { onDelete: 'cascade' }),
@@ -423,7 +476,7 @@ export const careerAreaWeights = pgTable('career_area_weights', {
   weight: numeric('weight', { precision: 3, scale: 2 }).notNull(),
 });
 
-// 26. Grade Import Rows
+// 28. Grade Import Rows
 export const gradeImportRows = pgTable('grade_import_rows', {
   id: uuid('id').primaryKey().defaultRandom(),
   importId: uuid('import_id').notNull().references(() => gradeImports.id, { onDelete: 'cascade' }),
@@ -436,7 +489,9 @@ export const gradeImportRows = pgTable('grade_import_rows', {
   status: text('status'),
   issues: jsonb('issues').default([]),
   confidence: numeric('confidence', { precision: 3, scale: 2 }),
-});
+}, (table) => [
+  index('idx_grade_import_rows_import').on(table.importId),
+]);
 
 // 27. Audit Log
 export const auditLog = pgTable('audit_log', {
@@ -448,6 +503,23 @@ export const auditLog = pgTable('audit_log', {
   metadata: jsonb('metadata').default({}),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 });
+
+export const gradeImportChanges = pgTable('grade_import_changes', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  importId: uuid('import_id').notNull().references(() => gradeImports.id, { onDelete: 'cascade' }),
+  studentId: uuid('student_id').notNull().references(() => students.id, { onDelete: 'cascade' }),
+  periodId: uuid('period_id').notNull().references(() => academicPeriods.id, { onDelete: 'cascade' }),
+  subject: text('subject').notNull(),
+  previousGrade: numeric('previous_grade', { precision: 4, scale: 2 }),
+  previousArea: text('previous_area'),
+  previousImportId: uuid('previous_import_id'),
+  wasExisting: boolean('was_existing').default(false).notNull(),
+}, (table) => [
+  unique().on(table.importId, table.studentId, table.periodId, table.subject),
+  index('idx_grade_import_changes_import').on(table.importId),
+  index('idx_grade_import_changes_student').on(table.studentId),
+  index('idx_grade_import_changes_period').on(table.periodId),
+]);
 
 // 28. Tutoring Requests
 export const tutoringRequests = pgTable('tutoring_requests', {

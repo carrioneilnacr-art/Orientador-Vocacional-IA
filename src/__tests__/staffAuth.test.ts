@@ -59,9 +59,9 @@ describe('Staff Auth & RBAC Security (Fase 3)', () => {
     });
 
     it('canAccessModule aplica la matriz de permisos por módulo', () => {
-      // Importador SIAGIE exclusivo para ADMIN
+      // Dirección y administración pueden validar actas académicas.
       expect(canAccessModule('ADMIN', 'importador')).toBe(true);
-      expect(canAccessModule('DIRECTOR', 'importador')).toBe(false);
+      expect(canAccessModule('DIRECTOR', 'importador')).toBe(true);
       expect(canAccessModule('PSICOLOGO', 'importador')).toBe(false);
       expect(canAccessModule('TUTOR', 'importador')).toBe(false);
 
@@ -81,12 +81,12 @@ describe('Staff Auth & RBAC Security (Fase 3)', () => {
       expect(canAccessModule('DIRECTOR', 'aula')).toBe(false);
     });
 
-    it('asigna la importación y confirmación de notas solo al administrador', () => {
+    it('asigna la importación y confirmación a administración y dirección', () => {
       expect(hasStaffPermission('ADMIN', 'grades:import')).toBe(true);
       expect(hasStaffPermission('ADMIN', 'grades:confirm')).toBe(true);
       expect(hasStaffPermission('PSICOLOGO', 'grades:confirm')).toBe(false);
       expect(hasStaffPermission('TUTOR', 'grades:import')).toBe(false);
-      expect(hasStaffPermission('DIRECTOR', 'grades:confirm')).toBe(false);
+      expect(hasStaffPermission('DIRECTOR', 'grades:confirm')).toBe(true);
     });
   });
 });

@@ -17,10 +17,9 @@ import {
   Check,
   AlertCircle,
   Info,
-  Sparkles,
   ExternalLink,
 } from 'lucide-react';
-import { generateGradeCsvTemplate, parseGradeCSV, mapSubjectToArea } from '@/lib/gradeParser';
+import { generateGradeCsvTemplate, mapSubjectToArea } from '@/lib/gradeParser';
 import { ValidatedGradeRow, ValidationSummary, validateGradeRow } from '@/lib/gradeValidator';
 
 export default function ImportadorNotasPage() {
@@ -98,7 +97,7 @@ export default function ImportadorNotasPage() {
     document.body.removeChild(link);
   };
 
-  // Cargar archivo CSV
+  // Cargar archivo CSV, XLSX o PDF
   const handleFileUpload = async (uploadedFile: File) => {
     setGlobalError(null);
     setSuccessInfo(null);
@@ -127,40 +126,6 @@ export default function ImportadorNotasPage() {
         setGlobalError(err.message || 'Error al conectar con el servidor.');
       }
     });
-  };
-
-  // Cargar datos de prueba de demostración con 1 clic
-  const handleLoadDemoData = () => {
-    setGlobalError(null);
-    setSuccessInfo(null);
-    setRevertedInfo(null);
-    setFileName('acta_notas_demo_bimestre1.csv');
-
-    const demoCSV = `codigo_estudiante,nombres_alumno,curso,periodo,nota
-HON-001,Ana Lucia Ramos Vargas,Matemática (Álgebra),2025-B1,18.5
-HON-002,Carlos Mendoza Quispe,Comunicación Integral,2025-B1,AD
-HON-003,Diego Fernando Sanchez,Física Elemental,2025-B1,14
-HON-004,Elena Sofia Castro,Historia del Perú,2025-B1,A
-HON-005,Gabriel Torres Morales,Inglés Técnico,2025-B1,16
-HON-006,Luciana Belen Rios,Ajedrez Deportivo,2025-B1,15
-HON-007,Matias Alexander Silva,Química Inorgánica,2025-B1,24.0`;
-
-    const parsed = parseGradeCSV(demoCSV);
-    const dummyOptions = {
-      existingStudents: [
-        { id: '1', studentCode: 'HON-001', fullName: 'Ana Lucia Ramos Vargas' },
-        { id: '2', studentCode: 'HON-002', fullName: 'Carlos Mendoza Quispe' },
-        { id: '3', studentCode: 'HON-003', fullName: 'Diego Fernando Sanchez' },
-        { id: '4', studentCode: 'HON-004', fullName: 'Elena Sofia Castro' },
-        { id: '5', studentCode: 'HON-005', fullName: 'Gabriel Torres Morales' },
-        { id: '6', studentCode: 'HON-006', fullName: 'Luciana Belen Rios' },
-        { id: '7', studentCode: 'HON-007', fullName: 'Matias Alexander Silva' },
-      ],
-    };
-
-    const initialRows = parsed.rows.map((r) => validateGradeRow(r, dummyOptions));
-    setRows(initialRows);
-    setImportId('demo-' + crypto.randomUUID().slice(0, 8));
   };
 
   // Manejo de drag and drop
@@ -235,7 +200,7 @@ HON-007,Matias Alexander Silva,Química Inorgánica,2025-B1,24.0`;
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          importId: importId || crypto.randomUUID(),
+          importId,
           rows: rows,
         }),
       });
@@ -321,13 +286,6 @@ HON-007,Matias Alexander Silva,Química Inorgánica,2025-B1,24.0`;
               <Download className="w-4 h-4 text-[#08BBD5]" />
               <span className="hidden sm:inline">Descargar</span> Plantilla CSV
             </button>
-            <button
-              onClick={handleLoadDemoData}
-              className="inline-flex items-center gap-1.5 px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold rounded-xl bg-[#E8F8FA] border border-[#08BBD5]/30 text-[#0799AF] hover:bg-[#D5F2F7] active:scale-[0.96] transition-all"
-            >
-              <Sparkles className="w-4 h-4" />
-              <span className="hidden sm:inline">Cargar</span> Demo
-            </button>
           </div>
         </div>
       </header>
@@ -355,7 +313,7 @@ HON-007,Matias Alexander Silva,Química Inorgánica,2025-B1,24.0`;
               <div>
                 <p className="font-bold text-base">¡Calificaciones integradas con éxito!</p>
                 <p className="text-xs sm:text-sm text-emerald-700 mt-0.5">
-                  Se guardaron <strong className="tabular-nums font-semibold">{successInfo.count}</strong> registros en los expedientes académicos para el ajuste vocacional.
+                  Se guardaron <strong className="tabular-nums font-semibold">{successInfo.count}</strong> registros en el historial académico.
                 </p>
               </div>
             </div>
@@ -390,7 +348,7 @@ HON-007,Matias Alexander Silva,Química Inorgánica,2025-B1,24.0`;
             <input
               type="file"
               id="file-upload"
-              accept=".csv,.txt"
+              accept=".csv,.txt,.xlsx,.pdf"
               className="hidden"
               onChange={(e) => {
                 if (e.target.files && e.target.files[0]) {
@@ -403,25 +361,16 @@ HON-007,Matias Alexander Silva,Química Inorgánica,2025-B1,24.0`;
                 <UploadCloud className="w-8 h-8" />
               </div>
               <h2 className="text-xl font-bold text-[#0B2D4D]">
-                Arrastra tu archivo CSV de calificaciones aquí
+                Arrastra tu archivo CSV, Excel o PDF de calificaciones aquí
               </h2>
               <p className="text-sm text-slate-500 mt-1.5 max-w-md mx-auto">
-                Admite actas con escala vigesimal (0-20) o literales oficiales MINEDU (AD, A, B, C). Detección automática de cursos y áreas.
+                Hasta 5 MB. El PDF debe contener una tabla seleccionable, no una imagen escaneada. Revisa las notas antes de confirmarlas.
               </p>
+              <p className="mx-auto mt-2 max-w-lg text-xs leading-5 text-slate-500">Usa las columnas código de estudiante, nombre, curso, periodo y nota. El periodo debe tener formato 2026-B1, 2026-B2, 2026-B3 o 2026-B4.</p>
               <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
                 <span className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#08BBD5] text-white text-sm font-semibold shadow-sm hover:bg-[#0799AF] active:scale-[0.96] transition-all">
                   Seleccionar archivo desde el equipo
                 </span>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleLoadDemoData();
-                  }}
-                  className="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold active:scale-[0.96] transition-all"
-                >
-                  Probar con datos de ejemplo
-                </button>
               </div>
             </label>
           </div>
@@ -842,7 +791,7 @@ HON-007,Matias Alexander Silva,Química Inorgánica,2025-B1,24.0`;
                   </div>
                 )}
                 <p className="text-xs text-slate-500 mt-1">
-                  Se actualizarán los expedientes de los estudiantes y el motor de ajuste vocacional recalculará las afinidades de carrera.
+                  Se actualizarán las notas de las boletas y sus promedios y puestos por bimestre.
                 </p>
               </div>
 

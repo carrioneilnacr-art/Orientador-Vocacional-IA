@@ -9,6 +9,7 @@ import {
   BookOpenCheck,
   ClipboardList,
   FileSpreadsheet,
+  GraduationCap,
   LogOut,
   Menu,
   MessageSquareText,
@@ -125,11 +126,12 @@ export default function ColegioDashboardPage() {
 
   const role = session.role;
   const intro = ROLE_INTROS[role];
-  const isAdmin = role === 'ADMIN';
+  const canImportGrades = role === 'ADMIN' || role === 'DIRECTOR';
   const isCounselor = role === 'PSICOLOGO' || role === 'TUTOR';
 
   const nav = [
     { href: '#inicio', label: 'Inicio', icon: School },
+    ...(['ADMIN', 'DIRECTOR'].includes(role) ? [{ href: '/colegio/academico', label: 'Historial académico', icon: GraduationCap }] : []),
     { href: '#seguimiento', label: 'Seguimiento', icon: ClipboardList },
     { href: '#recursos', label: 'Recursos', icon: BookOpenCheck },
   ];
@@ -170,9 +172,9 @@ export default function ColegioDashboardPage() {
           <nav className="border-t border-slate-100 bg-white px-4 py-3 sm:hidden" aria-label="Navegación principal">
             <div className="space-y-1">
               {nav.map(({ href, label, icon: Icon }) => (
-                <a key={href} href={href} onClick={() => setMobileMenuOpen(false)} className="flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm font-medium text-slate-700 hover:bg-chaski-subtle">
+                <Link key={href} href={href} onClick={() => setMobileMenuOpen(false)} className="flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm font-medium text-slate-700 hover:bg-chaski-subtle">
                   <Icon className="h-4 w-4 text-chaski-accent-ink" />{label}
-                </a>
+                </Link>
               ))}
               <button onClick={handleLogout} className="flex min-h-11 w-full items-center gap-3 rounded-xl px-3 text-left text-sm font-medium text-slate-700 hover:bg-slate-50"><LogOut className="h-4 w-4" />Cerrar sesión</button>
             </div>
@@ -185,9 +187,9 @@ export default function ColegioDashboardPage() {
           <p className="px-3 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">Espacio de trabajo</p>
           <nav className="mt-3 space-y-1" aria-label="Navegación principal">
             {nav.map(({ href, label, icon: Icon }, index) => (
-              <a key={href} href={href} className={`flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm font-medium transition-colors ${index === 0 ? 'bg-chaski-subtle text-chaski-action' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}`}>
+              <Link key={href} href={href} className={`flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm font-medium transition-colors ${index === 0 ? 'bg-chaski-subtle text-chaski-action' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}`}>
                 <Icon className="h-[17px] w-[17px]" />{label}
-              </a>
+              </Link>
             ))}
           </nav>
           <div className="mt-8 border-t border-slate-100 pt-5">
@@ -207,7 +209,7 @@ export default function ColegioDashboardPage() {
                 <h1 className="mt-2 max-w-3xl text-2xl font-semibold tracking-tight text-chaski-heading sm:text-3xl">{intro.title}</h1>
                 <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">{intro.description}</p>
               </div>
-              {isAdmin && (
+              {canImportGrades && (
                 <Link href="/colegio/notas/importar" className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-chaski-action px-4 text-sm font-semibold text-chaski-action-text shadow-sm transition hover:bg-chaski-action-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-chaski-accent-ink">
                   <FileSpreadsheet className="h-4 w-4" /> Importar registros <ArrowRight className="h-4 w-4" />
                 </Link>
@@ -237,7 +239,17 @@ export default function ColegioDashboardPage() {
                 <p className="mt-1 text-sm text-slate-600">Accesos disponibles para preparar y acompañar el proceso.</p>
               </div>
               <div className="grid gap-4 md:grid-cols-2">
-                {isAdmin ? (
+                {['ADMIN', 'DIRECTOR'].includes(role) && (
+                  <Link href="/colegio/academico" className="group flex min-h-[148px] items-start justify-between gap-4 rounded-2xl border border-chaski-border bg-white p-5 transition hover:border-chaski-border-hover hover:shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-chaski-accent-ink">
+                    <div>
+                      <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-chaski-subtle text-chaski-accent-ink"><GraduationCap className="h-5 w-5" /></span>
+                      <h3 className="mt-4 text-sm font-semibold text-slate-800">Historial académico</h3>
+                      <p className="mt-1 max-w-sm text-sm leading-5 text-slate-500">Revisa notas, puestos, asistencia y hábitos escolares por bimestre.</p>
+                    </div>
+                    <ArrowRight className="mt-1 h-4 w-4 shrink-0 text-slate-400 transition group-hover:translate-x-1 group-hover:text-chaski-accent-ink" />
+                  </Link>
+                )}
+                {canImportGrades ? (
                   <Link href="/colegio/notas/importar" className="group flex min-h-[148px] items-start justify-between gap-4 rounded-2xl border border-chaski-border bg-white p-5 transition hover:border-chaski-border-hover hover:shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-chaski-accent-ink">
                     <div>
                       <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-chaski-subtle text-chaski-accent-ink"><FileSpreadsheet className="h-5 w-5" /></span>

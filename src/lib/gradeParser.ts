@@ -458,7 +458,7 @@ export function parseGradeCSV(csvContent: string): ParseResult {
     const studentCode = colMap.studentCode !== -1 ? (values[colMap.studentCode] || '').trim() : '';
     const rawName = colMap.rawName !== -1 ? (values[colMap.rawName] || '').trim() : undefined;
     const subject = colMap.subject !== -1 ? (values[colMap.subject] || '').trim() : '';
-    const period = colMap.period !== -1 ? (values[colMap.period] || '2025-1').trim() : '2025-1';
+    const period = colMap.period !== -1 ? (values[colMap.period] || '').trim() : '';
     const rawGrade = colMap.rawGrade !== -1 ? (values[colMap.rawGrade] || '').trim() : '';
 
     const norm = normalizeGrade(rawGrade);
@@ -492,18 +492,9 @@ export function parseGradeCSV(csvContent: string): ParseResult {
 }
 
 /**
- * Genera el CSV de plantilla oficial con ejemplos listos para descargar
+ * Genera una plantilla vacía para completar con los códigos reales del colegio.
  */
 export function generateGradeCsvTemplate(): string {
   const headers = ['codigo_estudiante', 'nombres_alumno', 'curso', 'periodo', 'nota'];
-  const sampleRows = [
-    ['HON-001', 'Ana Lucia Ramos Vargas', 'Matemática (Álgebra)', '2025-B1', '18.5'],
-    ['HON-002', 'Carlos Mendoza Quispe', 'Comunicación Integral', '2025-B1', 'AD'],
-    ['HON-003', 'Diego Fernando Sanchez', 'Física Elemental', '2025-B1', '14'],
-    ['HON-004', 'Elena Sofia Castro', 'Historia del Perú', '2025-B1', 'A'],
-    ['HON-005', 'Gabriel Torres Morales', 'Inglés Técnico', '2025-B1', '16'],
-  ];
-
-  const lines = [headers.join(','), ...sampleRows.map((r) => r.join(','))];
-  return lines.join('\n');
+  return `${headers.join(',')}\n`;
 }
