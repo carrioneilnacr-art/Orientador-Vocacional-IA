@@ -1,5 +1,3 @@
-import ExcelJS from 'exceljs';
-import { PDFParse } from 'pdf-parse';
 import { parseGradeCSV, type ParseResult } from '@/lib/gradeParser';
 
 export const MAX_GRADE_FILE_BYTES = 5 * 1024 * 1024;
@@ -70,6 +68,7 @@ export function detectGradeFileType(fileName: string, mimeType: string, bytes: U
 }
 
 async function parseXlsx(bytes: Uint8Array): Promise<ParsedGradeFile> {
+  const { default: ExcelJS } = await import('exceljs');
   const workbook = new ExcelJS.Workbook();
   const excelBuffer = Buffer.from(bytes) as unknown as Parameters<typeof workbook.xlsx.load>[0];
   await workbook.xlsx.load(excelBuffer);
@@ -97,6 +96,7 @@ async function parseXlsx(bytes: Uint8Array): Promise<ParsedGradeFile> {
 }
 
 async function parsePdf(bytes: Uint8Array): Promise<ParsedGradeFile> {
+  const { PDFParse } = await import('pdf-parse');
   const parser = new PDFParse({ data: bytes });
   try {
     const info = await parser.getInfo();
