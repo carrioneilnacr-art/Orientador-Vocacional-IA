@@ -258,3 +258,5 @@ Lumi es una luciérnaga opcional: sugerencias contextuales cada 55 segundos, vis
 
 La cámara conserva las proporciones del mundo y sigue a Chaski en pantallas verticales. Se verificaron navegación entre escenarios, minimapa en movimiento, bitácora modal, persistencia del silencio de Lumi y ausencia de desbordamiento horizontal móvil. Tipos y 71 pruebas aprobados; compilación de producción aprobada antes del ajuste final de cámara (ajuste verificado con tipos y navegador).
 
+La interacción de proximidad muestra una señal breve al acercarse a un taller. Con teclado, `E` abre la actividad; con toque, el taller continúa siendo seleccionable directamente.
+

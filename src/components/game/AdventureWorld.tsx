@@ -205,10 +205,12 @@ export default function AdventureWorld({ onVisit, completed, paused, reducedMoti
         }
       }
       if (playerRef.current) {
+        const nearbyStation = STATIONS.some(station => Math.hypot(station.x - position.current.x, station.y - position.current.y) < 118);
         playerRef.current.style.left = `${position.current.x / 10}%`;
         playerRef.current.style.top = `${position.current.y / 6.2}%`;
         playerRef.current.classList.toggle(styles.walking, Boolean(dx || dy) && !latest.current.reducedMotion);
         playerRef.current.classList.toggle(styles.idle, !dx && !dy && !latest.current.paused);
+        playerRef.current.classList.toggle(styles.nearby, nearbyStation && !latest.current.paused);
         if (dx) playerRef.current.style.setProperty("--facing", dx < 0 ? "-1" : "1");
       }
       if (miniPlayerRef.current) { miniPlayerRef.current.setAttribute("cx", String(position.current.x)); miniPlayerRef.current.setAttribute("cy", String(position.current.y)); }
@@ -304,7 +306,7 @@ export default function AdventureWorld({ onVisit, completed, paused, reducedMoti
       onFocus={() => { position.current = { x: station.x, y: station.y }; target.current = null; }}
       aria-label={`${SCENE_STATION_LABELS[scene]?.[station.id] ?? station.label}. ${station.subtitle}.${completed.includes(station.id) ? " Actividad completada. Puedes volver a explorar." : " Entrar a la actividad."}`}
     ><span className={styles.marker}>{completed.includes(station.id) ? <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m4 10 4 4 8-8" /></svg> : station.number}</span><span className={styles.stationLabel}>{SCENE_STATION_LABELS[scene]?.[station.id] ?? station.label}<small>{station.subtitle}</small></span></button>)}
-    <div ref={playerRef} className={styles.player} style={{ left: "48.8%", top: "66.935%" }} aria-hidden="true"><span className={styles.playerShadow} /><span className={styles.character}>{/* The idle pose and the dedicated four-frame walking sheet switch with movement. */}{/* eslint-disable-next-line @next/next/no-img-element */}<img src="/game/chaski-2d.png" alt="" draggable={false} className={`${styles.sprite} ${styles.idleSprite}`} /><span className={styles.walkSprite} /></span><svg className={styles.inspectMap} viewBox="0 0 40 30"><path d="m2 7 12-4 12 4 12-4v21l-12 4-12-4-12 4Z" fill="#ecddb1" stroke="#927e54" strokeWidth="1.5" /><path d="M14 3v21M26 7v21" stroke="#c5ad77" /><path d="m6 19 8-9 11 10 7-8" fill="none" stroke="#6eaaa0" strokeWidth="2" /></svg><span className={styles.you}>TÚ</span></div>
+    <div ref={playerRef} className={styles.player} style={{ left: "48.8%", top: "66.935%" }} aria-hidden="true"><span className={styles.playerShadow} /><span className={styles.character}>{/* The idle pose and the dedicated four-frame walking sheet switch with movement. */}{/* eslint-disable-next-line @next/next/no-img-element */}<img src="/game/chaski-2d.png" alt="" draggable={false} className={`${styles.sprite} ${styles.idleSprite}`} /><span className={styles.walkSprite} /></span><svg className={styles.inspectMap} viewBox="0 0 40 30"><path d="m2 7 12-4 12 4 12-4v21l-12 4-12-4-12 4Z" fill="#ecddb1" stroke="#927e54" strokeWidth="1.5" /><path d="M14 3v21M26 7v21" stroke="#c5ad77" strokeWidth="1.5" /><path d="m6 19 8-9 11 10 7-8" fill="none" stroke="#6eaaa0" strokeWidth="2" /></svg><span className={styles.interactPrompt}>E · Explorar</span><span className={styles.you}>TÚ</span></div>
     </div>
     <div className={styles.navigation} data-map-overlay>
       <div className={styles.miniMap} aria-label={`Minimapa de ${sceneLabel}`} role="img">
