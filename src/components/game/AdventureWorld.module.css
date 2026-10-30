@@ -1,0 +1,54 @@
+.world{--world-ink:#183f42;position:relative;width:100%;aspect-ratio:1000/620;overflow:hidden;background:#9bbd95;border-radius:22px;isolation:isolate;outline:none;touch-action:manipulation;box-shadow:0 18px 70px #0002,inset 0 0 0 1px #ffffff30;user-select:none;cursor:crosshair}
+.world:focus-visible{outline:3px solid #79dfd1;outline-offset:5px}
+.landscape{display:block;width:100%;height:100%;pointer-events:none}
+.sceneLayer{position:absolute;top:0;left:0;width:100%;height:100%;transform-origin:top left;will-change:transform}
+
+
+
+.compass{position:absolute;top:18px;right:23px;text-align:center;color:var(--world-ink);font-size:9px;font-weight:800;pointer-events:none}
+.compass svg{display:block;width:42px;height:42px;filter:drop-shadow(0 2px 2px #24494325)}
+.station{position:absolute;display:flex;flex-direction:column;align-items:center;transform:translate(-50%,-21%);border:0;background:none;padding:0 9px 9px;cursor:pointer;color:var(--world-ink);z-index:3;min-width:44px;min-height:44px;transition:filter .18s}
+.station:hover{filter:brightness(1.08)}
+.station:focus-visible{outline:3px solid #103c42;outline-offset:5px;border-radius:12px}
+.station:disabled{cursor:default}
+.marker{display:grid;place-items:center;width:30px;height:30px;background:var(--station-color);border:3px solid #fff0cd;border-radius:50%;color:#274b48;font-size:10px;font-weight:900;box-shadow:0 2px 0 #73684b50,0 4px 12px #1f4d3920;position:relative}
+.marker:after{content:"";position:absolute;bottom:-6px;width:7px;height:7px;background:#fff0cd;transform:rotate(45deg);z-index:-1}
+.marker svg{height:18px;width:18px;stroke:#275945;stroke-width:2.5;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.stationLabel{display:block;margin-top:8px;background:#fff6deec;padding:7px 11px;border-radius:8px;border:1px solid #ffffff80;font-size:11px;font-weight:800;line-height:1.2;white-space:nowrap;box-shadow:0 2px 5px #264e3210}
+.stationLabel small{display:block;margin-top:4px;font-weight:500;font-size:9px;color:#536854}
+.completed .marker{background:#a4dfb2}.completed .stationLabel{background:#e8f2dcec}
+.player{position:absolute;width:9.2%;height:17.5%;transform:translate(-50%,-85%);pointer-events:none;z-index:4;will-change:left,top}
+.sprite{width:100%;height:100%;object-fit:contain;object-position:center bottom;display:block;filter:drop-shadow(0 3px 1px #294a3425);position:relative;z-index:1}
+.walkSprite{display:none;width:100%;height:100%;background-image:url('/game/chaski-walk-v1.png');background-repeat:no-repeat;background-size:400% 100%;background-position:0 0;filter:drop-shadow(0 3px 1px #294a3425);position:relative;z-index:1}
+.playerShadow{position:absolute;left:26%;bottom:1%;width:48%;height:12%;background:#284f3d45;border-radius:50%;filter:blur(2px)}
+.you{position:absolute;bottom:-15px;left:50%;transform:translateX(-50%);padding:2px 6px;border-radius:4px;color:#edf9eb;background:#254f48;font-size:8px;letter-spacing:1px;font-weight:800}
+.walking .idleSprite{display:none}.walking .walkSprite{display:block;animation:chaski-walk-frames .48s steps(4) infinite,chaski-walk-bob .24s steps(2) infinite alternate}
+.character{display:block;width:100%;height:100%;transform:scaleX(var(--facing,1));transform-origin:center bottom}
+.idle .sprite{animation:chaski-breathe 2.8s ease-in-out infinite alternate;transform-origin:center bottom}
+.inspectMap{position:absolute;right:-10%;bottom:24%;width:43%;height:auto;z-index:2;opacity:0;transform:translateY(5px) rotate(-10deg);transition:opacity .4s,transform .4s;filter:drop-shadow(0 2px 1px #35543c40)}
+.idle .inspectMap{opacity:1;transform:translateY(0) rotate(-10deg)}
+.navigation{position:absolute;right:23px;top:23px;width:147px;z-index:5;cursor:default}
+.miniMap{background:#183f3be8;border:1px solid #e4e7b659;border-radius:13px;padding:9px;box-shadow:0 4px 20px #21403930;color:#f5ebc9;backdrop-filter:blur(8px)}
+.miniHeading{display:flex;justify-content:space-between;align-items:center;font-size:8px;letter-spacing:1px;font-weight:800;padding:0 1px 6px}
+.miniMap>svg{display:block;width:100%;height:auto;border-radius:7px;overflow:hidden}
+.miniCaption{display:block;text-align:center;font-size:9px;padding-top:7px;font-weight:650;line-height:1.3}.miniCaption small{display:block;font-size:7px;letter-spacing:.5px;font-weight:400;color:#c0d0b2;margin-top:3px}
+.sceneExits{display:flex;flex-direction:column;gap:7px;margin-top:9px}
+.sceneExits button{display:flex;gap:8px;align-items:center;min-height:44px;border:1px solid #eee4b868;background:#244c40ed;color:#fff1cc;border-radius:9px;padding:7px 10px;font-size:10px;font-weight:700;cursor:pointer;box-shadow:0 3px 12px #203c3120;transition:background .2s,translate .2s}
+.sceneExits button:hover{background:#38644e;translate:-3px 0}.sceneExits button:focus-visible{outline:3px solid #fff0bc;outline-offset:3px}.sceneExits button:disabled{opacity:.55;cursor:default}.sceneExits svg{width:18px;height:18px;flex-shrink:0;stroke:currentColor;stroke-width:1.5;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.waves{animation:chaski-waves 4s ease-in-out infinite alternate}.gulls{animation:chaski-gulls 6s ease-in-out infinite alternate}.clouds{animation:chaski-clouds 20s ease-in-out infinite alternate}
+.still .sprite,.still .waves,.still .gulls,.still .clouds{animation:none}.still .inspectMap{transition:none}
+@keyframes chaski-breathe{from{transform:translateY(0) rotate(-.6deg) scaleY(1)}to{transform:translateY(-2px) rotate(.6deg) scaleY(1.015)}}
+@keyframes chaski-waves{from{translate:-5px 0;opacity:.35}to{translate:5px 2px;opacity:.8}}
+@keyframes chaski-gulls{from{translate:-8px 0}to{translate:14px -5px}}
+@keyframes chaski-clouds{from{translate:0 0}to{translate:32px 0}}
+
+
+.celebration{animation:chaski-sparkle 2s ease-in-out infinite alternate}
+.still .sprite,.still .celebration{animation:none}
+@keyframes chaski-walk-frames{from{background-position:0 0}to{background-position:100% 0}}
+@keyframes chaski-walk-bob{from{transform:translateY(0)}to{transform:translateY(-3px)}}
+@keyframes chaski-sparkle{from{opacity:.35}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){.sprite,.walkSprite,.celebration,.waves,.gulls,.clouds{animation:none!important}.station,.inspectMap,.sceneExits button{transition:none}}
+@media(max-width:640px){.world{border-radius:15px}.compass{right:10px;top:10px}.compass svg{width:28px;height:28px}.station{padding:0 3px 6px}.marker{width:25px;height:25px;border-width:2px;font-size:9px}.stationLabel{font-size:9px;padding:5px 7px;margin-top:5px;border-radius:5px}.stationLabel small{display:none}.you{font-size:6px;bottom:-9px;padding:1px 4px}}
+@media(max-width:650px){.navigation{right:12px;top:12px;width:105px}.miniMap{padding:6px;border-radius:10px}.miniHeading{font-size:6px;letter-spacing:.6px;padding-bottom:4px}.miniCaption{font-size:7px;padding-top:4px}.miniCaption small{font-size:6px;margin-top:2px}.sceneExits{gap:5px;margin-top:6px}.sceneExits button{font-size:8px;padding:6px;gap:4px;border-radius:7px;min-height:44px}.sceneExits svg{width:13px;height:13px}.inspectMap{width:48%}}
+
