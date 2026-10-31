@@ -1,0 +1,414 @@
+/* ── Wrapper: full-size container WITHOUT isolation:isolate
+      so that position:fixed children (dialogue, minimap, prompt) escape correctly ── */
+.worldWrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.world {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: linear-gradient(180deg, #1a3a6e 0%, #2060a0 35%, #6e7fb2 55%, #d4835a 72%, #f5c87f 88%, #f8dda8 100%);
+  /* NO isolation:isolate — it would trap fixed-position children */
+  outline: none;
+  touch-action: manipulation;
+  user-select: none;
+}
+.world:focus-visible { outline: 2px solid #f3c465; outline-offset: -3px; }
+
+.layer {
+  position: absolute;
+  inset: 0 auto auto 0;
+  width: 100%;
+  height: 100%;
+  transform-origin: top left;
+}
+
+.ground, .back, .objects, .front {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.ground { z-index: 0; }
+.back   { z-index: 230; }
+.objects{ z-index: 300; }
+.front  { z-index: 314; }
+
+/* ── Chaski ──────────────────────────────────────────── */
+.player {
+  position: absolute;
+  width: 6.2%; height: 12%;
+  transform: translate(-50%, -100%);
+  pointer-events: none;
+  will-change: left, top;
+}
+.character {
+  height: 100%; width: 100%;
+  transform: scaleX(var(--facing, 1));
+  transform-origin: center bottom;
+}
+.idle {
+  width: 100%; height: 100%;
+  object-fit: contain; object-position: center bottom;
+  animation: breathe 3s ease-in-out infinite;
+}
+.walk {
+  display: none;
+  width: 100%; height: 100%;
+  background: url('/game/chaski-walk-right-user.png') 0 0/800% 100% no-repeat;
+}
+.player[data-moving=true] .idle { display: none; }
+.player[data-moving=true] .walk { display: block; animation: walk .8s steps(8) infinite; }
+.shadow {
+  position: absolute; bottom: -2%; left: 25%;
+  width: 50%; height: 10%;
+  border-radius: 50%;
+  background: rgba(20,30,50,.4);
+  filter: blur(3px);
+}
+
+/* ── NPCs ────────────────────────────────────────────── */
+.npc {
+  position: absolute;
+  width: 7.8%; height: 12.5%;
+  transform: translate(-50%, -100%);
+  border: 0; background: none; padding: 0;
+  cursor: pointer; outline-offset: 4px;
+}
+.npcShadow {
+  position: absolute;
+  bottom: -1%;
+  left: 18%;
+  width: 64%;
+  height: 12%;
+  border-radius: 50%;
+  background: rgba(12, 22, 38, 0.45);
+  filter: blur(3px);
+  pointer-events: none;
+}
+.npc > img {
+  height: 100%; width: 100%;
+  object-fit: contain; object-position: center bottom;
+  filter: drop-shadow(0 4px 3px rgba(10,20,40,.45));
+  animation: breathe 3.8s ease-in-out infinite;
+  transform-origin: center bottom;
+}
+.npc:focus-visible { outline: 2px solid #ffd572; }
+.npc:disabled { cursor: default; }
+
+/* ── Floating NPC interaction signal ─────────────────── */
+.floatingSignal {
+  position: absolute;
+  left: 50%; bottom: 106%;
+  transform: translateX(-50%);
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 4px 8px;
+  border: 1.5px solid rgba(245,197,66,.7);
+  border-radius: 6px;
+  background: rgba(8,20,38,.88);
+  color: #ffd700;
+  box-shadow: 0 0 10px rgba(245,197,66,.45), 0 2px 8px rgba(0,0,0,.5);
+  animation: floatSignal 2.2s ease-in-out infinite;
+  pointer-events: none;
+  font-size: 11px; font-weight: 700;
+  white-space: nowrap;
+}
+.signalNear {
+  border-color: #ffe685;
+  background: rgba(16,40,70,.97);
+  box-shadow: 0 0 20px rgba(255,230,133,.85), 0 3px 10px rgba(0,0,0,.55);
+  transform: translateX(-50%) scale(1.1);
+}
+.signalDone { border-color: #52b788; color: #74c69d; box-shadow: 0 0 8px rgba(82,183,136,.4); }
+.spinningGear { animation: spinSlow 5s linear infinite; }
+.eKey {
+  background: #f5c542; color: #0b1a2d;
+  padding: 0 4px; border-radius: 3px;
+  font-size: 10px; font-weight: 900; line-height: 15px;
+}
+
+/* ── Bus ─────────────────────────────────────────────── */
+.bus {
+  position: absolute;
+  left: 80%; top: 74%;
+  width: 35%; height: 18%;
+  z-index: 548; pointer-events: none;
+}
+.busShadow {
+  position: absolute;
+  bottom: 0%;
+  left: 2%;
+  width: 96%;
+  height: 16%;
+  border-radius: 50%;
+  background: rgba(8, 16, 28, 0.65);
+  filter: blur(5px);
+  pointer-events: none;
+}
+.busDoorLight {
+  position: absolute;
+  left: 6%;
+  bottom: 8%;
+  width: 14%;
+  height: 70%;
+  background: radial-gradient(ellipse at 50% 85%, rgba(255, 230, 140, 0.5), transparent 70%);
+  pointer-events: none;
+}
+.bus img {
+  width: 100%; height: 100%;
+  object-fit: fill;
+  transform: scaleX(-1);
+  filter: drop-shadow(-6px 8px 5px rgba(10,25,45,.5));
+}
+
+/* ── Pigeon ──────────────────────────────────────────── */
+.pigeon { position: absolute; pointer-events: none; font-size: 16px; }
+
+/* ══════════════════════════════════════════════════════
+   MINIMAP — fixed top-right, outside .world
+   ══════════════════════════════════════════════════════ */
+.minimap {
+  position: fixed;
+  right: 18px; top: 18px;
+  width: 162px;
+  padding: 0;
+  background: #050f1e;
+  border: 2px solid #d4af37;
+  border-radius: 8px;
+  z-index: 2000;
+  box-shadow: 0 6px 24px rgba(0,0,0,.65), 0 0 12px rgba(212,175,55,.28);
+  overflow: hidden;
+}
+.minimapHeader {
+  display: flex; align-items: center; gap: 5px;
+  padding: 4px 8px;
+  background: linear-gradient(90deg, #0a1e35, #0d2a48);
+  border-bottom: 1px solid rgba(212,175,55,.35);
+  font-size: 8.5px; font-weight: 800;
+  letter-spacing: 1px; color: #f5c542;
+  text-transform: uppercase;
+}
+.minimapDot {
+  width: 6px; height: 6px;
+  background: #f5c542;
+  border-radius: 50%;
+  flex-shrink: 0;
+  animation: minimapPulse 2s ease-in-out infinite;
+}
+.minimapSvg { display: block; width: 100%; height: auto; }
+
+/* ── Action Prompt ─────────────────────────────────────
+   Fixed at the bottom-center so it's visible above the dialogue ── */
+.prompt {
+  position: fixed;
+  bottom: 160px; left: 50%;
+  transform: translateX(-50%);
+  z-index: 1900;
+  background: rgba(6,18,36,.93);
+  color: #ffd770;
+  border: 1.5px solid #c8931e;
+  border-radius: 7px;
+  padding: 10px 22px;
+  font-size: 13px; font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 6px 22px rgba(0,0,0,.55), 0 0 12px rgba(200,147,30,.25);
+  backdrop-filter: blur(10px);
+  white-space: nowrap;
+}
+.prompt:disabled { opacity: .86; cursor: default; }
+.prompt:focus-visible { outline: 2px solid #f8d396; outline-offset: 2px; }
+
+/* ══════════════════════════════════════════════════════
+   DIALOGUE BOX  — RPG style, fixed at the bottom
+   Outside .world, so position:fixed works without stacking context issues
+   ══════════════════════════════════════════════════════ */
+.dialogueBox {
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  width: min(900px, calc(100vw - 28px));
+  display: flex; gap: 20px;
+  z-index: 2000;
+  background: rgba(5,14,28,.96);
+  border: 2px solid #c8931e;
+  border-radius: 8px;
+  padding: 16px 22px;
+  box-shadow: 0 16px 48px rgba(0,0,0,.8), 0 0 24px rgba(200,147,30,.22);
+  color: #f7fafc;
+  outline: none;
+  backdrop-filter: blur(16px);
+}
+
+/* Pixel-corner brackets */
+.cornerTL,.cornerTR,.cornerBL,.cornerBR {
+  position: absolute;
+  width: 9px; height: 9px;
+  border-color: #d4af37; border-style: solid;
+  pointer-events: none;
+}
+.cornerTL { top: 2px; left: 2px;   border-width: 2px 0 0 2px; }
+.cornerTR { top: 2px; right: 2px;  border-width: 2px 2px 0 0; }
+.cornerBL { bottom: 2px; left: 2px;  border-width: 0 0 2px 2px; }
+.cornerBR { bottom: 2px; right: 2px; border-width: 0 2px 2px 0; }
+
+/* Portrait */
+.portraitContainer {
+  display: flex; flex-direction: column;
+  align-items: center; gap: 8px;
+  flex-shrink: 0;
+}
+.portraitFrame {
+  width: 90px; height: 96px;
+  background: #040d1c;
+  border: 2px solid #c8931e;
+  border-radius: 6px;
+  overflow: hidden;
+  display: flex; align-items: flex-end; justify-content: center;
+  box-shadow: inset 0 0 16px rgba(0,0,0,.85);
+}
+.portraitImg { width: 100%; height: 100%; object-fit: contain; object-position: center bottom; }
+.nameBadge {
+  background: #040d1c;
+  border: 1.5px solid #c8931e;
+  border-radius: 5px;
+  padding: 3px 12px;
+  color: #f5c542;
+  font-size: 13px; font-weight: 800;
+  letter-spacing: 0.7px; text-align: center;
+  min-width: 80px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.45);
+}
+
+/* Dialogue text area */
+.dialogueBody { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.dialogueHeader { display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; }
+.roleSubtitle {
+  font-size: 10.5px; font-weight: 600;
+  color: #8fb3d0; letter-spacing: 0.6px; text-transform: uppercase;
+}
+.closeBtn {
+  background: none; border: none; color: #8090a4; cursor: pointer;
+  padding: 2px; border-radius: 3px; display: flex; align-items: center;
+  transition: color .15s;
+}
+.closeBtn:hover { color: #ffd572; }
+
+.dialogueText {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 15px; line-height: 1.55;
+  color: #f0f4f8;
+  min-height: 44px; margin: 4px 0 10px;
+}
+.blockCursor {
+  display: inline-block; color: #f0f4f8;
+  animation: blink .72s step-end infinite; margin-left: 3px;
+}
+.skipBtn {
+  align-self: flex-start;
+  background: transparent; color: #d4a032;
+  border: 1px dashed rgba(212,160,50,.45);
+  border-radius: 4px; padding: 3px 8px;
+  font-size: 11px; cursor: pointer; margin-bottom: 8px;
+}
+.skipBtn:hover { background: rgba(212,160,50,.12); }
+
+/* ── Choice buttons — 3 columns ── */
+.choicesRow {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px; margin-top: 4px;
+}
+.choiceButton {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; min-height: 50px;
+  background: rgba(10,24,46,.88);
+  border: 1.5px solid #1e3d66;
+  border-radius: 7px;
+  color: #cdd9e5; cursor: pointer; text-align: left;
+  transition: border-color .14s, box-shadow .14s, transform .1s, background .14s;
+  outline: none;
+}
+.choiceButton:hover,
+.choiceButton:focus-visible,
+.choiceSelected {
+  border-color: #f5c542 !important;
+  background: rgba(20,48,90,.97) !important;
+  color: #fff !important;
+  box-shadow: 0 0 16px rgba(245,197,66,.6), inset 0 0 10px rgba(245,197,66,.18);
+  transform: translateY(-2px);
+}
+.choiceIconBadge {
+  display: flex; align-items: center; justify-content: center;
+  color: #f5c542; flex-shrink: 0;
+}
+.choiceLabel {
+  font-size: 12px; line-height: 1.4; font-weight: 500;
+  display: -webkit-box; -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical; overflow: hidden;
+}
+
+/* Continue button */
+.reactionFooter { margin-top: 8px; }
+.continueButton {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(200,147,30,.14);
+  border: 1.5px solid #c8931e;
+  border-radius: 6px; color: #ffd770;
+  padding: 9px 20px; font-size: 13px; font-weight: 700;
+  cursor: pointer; transition: background .15s, box-shadow .15s;
+}
+.continueButton:hover, .continueButton:focus-visible {
+  background: #c8931e; color: #050e1e;
+  box-shadow: 0 0 14px rgba(200,147,30,.65);
+}
+
+/* Scene transition overlay */
+.transition {
+  position: absolute; inset: 0; z-index: 3000;
+  background: #040d1e; color: #f6d48c;
+  display: grid; place-items: center;
+  font-size: 19px; font-weight: 700;
+  animation: fade .5s ease-out;
+}
+
+/* ── Keyframes ── */
+@keyframes breathe { 50% { transform: translateY(-1px) scaleY(1.009); } }
+@keyframes floatSignal {
+  0%,100% { transform: translateX(-50%) translateY(0); }
+  50%      { transform: translateX(-50%) translateY(-6px); }
+}
+@keyframes spinSlow { to { transform: rotate(360deg); } }
+@keyframes minimapPulse { 0%,100%{opacity:1} 50%{opacity:.35} }
+@keyframes blink { 0%,49%{opacity:1} 50%,100%{opacity:0} }
+@keyframes walk { to { background-position: 114.285714% 0; } }
+@keyframes fade { from{opacity:0} to{opacity:1} }
+
+/* ── Responsive ── */
+@media (max-width: 760px) {
+  .dialogueBox { bottom: 8px; padding: 10px 12px; gap: 10px; width: calc(100vw - 16px); }
+  .portraitFrame { width: 58px; height: 64px; }
+  .nameBadge { font-size: 10px; padding: 2px 5px; min-width: 52px; }
+  .dialogueText { font-size: 12px; min-height: 36px; }
+  .choicesRow { grid-template-columns: 1fr; gap: 7px; }
+  .choiceButton { min-height: 40px; padding: 8px 10px; }
+  .minimap { width: 120px; top: 12px; right: 10px; }
+  .prompt { bottom: 130px; }
+}
+
+.world[data-reduced=true] * { animation: none !important; }
+@media (prefers-reduced-motion: reduce) { .world * { animation: none !important; } }
+
+/* HUD belongs to the framed game viewport, including fullscreen mode. */
+.minimap{position:absolute;top:18px;right:18px;width:clamp(125px,15vw,245px);border-color:#22d3ee;border-radius:16px;background:#061d29e9;box-shadow:0 0 18px #00bcd485,0 8px 24px #00131bcc}
+.minimapHeader{color:#eafaff;font-size:11px;padding:8px 10px}.minimapDot{background:#22d3ee}
+.prompt{position:absolute;bottom:19%;max-width:90%;white-space:normal;text-align:center}
+.dialogueBox{position:absolute;bottom:16px;max-height:78%;overflow:auto}
+@media(max-width:700px){.minimap{top:8px;right:8px;width:100px;border-radius:9px}.minimapHeader{font-size:7px;padding:5px}.prompt{bottom:23%;font-size:11px}.dialogueBox{bottom:6px}}
+.minimap{border-color:#d4aa6d;background:#102b3eea;box-shadow:0 8px 24px #071626aa}.minimapHeader{border-bottom-color:#d4aa6d88;background:#163950;color:#f6e6c7}.minimapDot{background:#e7b867}
+.minimap{width:auto;min-width:96px;max-width:220px;border-width:1px;border-radius:11px;overflow:hidden}.minimapExpanded{width:220px}.minimapToggle{display:flex;align-items:center;gap:7px;justify-content:space-between;width:100%;min-height:40px;padding:7px 10px;border:0;background:#102b3ef2;color:#f4e9d6;font-size:11px;font-weight:750;cursor:pointer}.minimapToggle:focus-visible{outline:2px solid #e7b867;outline-offset:-3px}.minimapToggle .minimapDot{flex:none}.minimapSvg{border-top:1px solid #d4aa6d88}
+.npcShadow{left:28%;width:44%;height:7%;bottom:0;background:#152d3b70;filter:blur(2px)}.npc>img{filter:drop-shadow(1px 2px 2px #142b3d66)}.shadow{bottom:0;background:#152d3b70;filter:blur(2px)}
+@media(max-width:700px){.minimap{width:auto;min-width:72px}.minimapExpanded{width:150px}.minimapToggle{min-height:34px;font-size:9px;padding:5px 7px}}

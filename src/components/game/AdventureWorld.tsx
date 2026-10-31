@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import styles from "./AdventureWorld.module.css";
+import PlazaScene, { plazaBlocked } from "./PlazaScene";
+import { plazaNpcs, type PlazaNpcId } from '@/game/plazaNpcs';
 
 interface AdventureWorldProps {
   onVisit: (id: string) => void;
@@ -10,9 +12,28 @@ interface AdventureWorldProps {
   reducedMotion: boolean;
   scene?: string;
   onSceneChange?: (scene: string) => void;
+  npcDecisions: { npcId: PlazaNpcId; choice: number }[];
+  onNpcAnswer: (npcId: PlazaNpcId, choice: number) => void;
 }
 
-const SCENES = [{ id: "barrio", label: "Barrio de los Caminos" }, { id: "colegio", label: "Colegio Horizonte" }, { id: "malecon", label: "Malecón de las Ideas" }];
+const SCENES = [
+  { id: "plaza", label: "Plaza de Lima", clue: "Conversa con una vecina y descubre qué trabajo hace que la plaza cobre vida." },
+  { id: "barrio", label: "Barrio de los Caminos", clue: "Explora el barrio." },
+  { id: "colegio", label: "Colegio Horizonte", clue: "Explora el colegio." },
+  { id: "malecon", label: "Malecón de las Ideas", clue: "Explora el malecón." },
+] as const;
+const SCENE_ACTIVITY_LABELS: Record<string, [string, string, string, string]> = {
+  plaza: ["Puesto de inventos", "Artista de la plaza", "Vecinos de Lima", "Memoria de la ciudad"],
+  colegio: ["Laboratorio", "Taller de arte", "Equipo estudiantil", "Huerto de ciencias"],
+  centro: ["Tienda de tecnología", "Estudio de moda", "Atención al público", "Café y negocios"],
+  feria: ["Ciencia", "Arte", "Emprendimiento", "Tecnología"],
+  barrio: ["Taller barrial", "Mural comunitario", "Organización vecinal", "Retos del barrio"],
+  restaurante: ["Cocina creativa", "Diseño del local", "Equipo de servicio", "Ciencia de alimentos"],
+  clinica: ["Tecnología médica", "Comunicación de salud", "Cuidado de pacientes", "Investigación clínica"],
+  digital: ["Robótica", "Diseño digital", "Trabajo en equipo", "Datos y ciencia"],
+  universidad: ["Laboratorio abierto", "Facultad de artes", "Vida universitaria", "Investigación"],
+  malecon: ["Taller del malecón", "Mural frente al mar", "Parque del encuentro", "Mirador de preguntas"],
+};
 const SCENE_STATION_LABELS: Record<string, Record<string, string>> = {
   colegio: { inventos: "Laboratorio de inventos", mural: "Mural del colegio", comunidad: "Aula de encuentro", observatorio: "Huerto de ciencias" },
   malecon: { inventos: "Taller del malecón", mural: "Mural frente al mar", comunidad: "Parque del encuentro", observatorio: "Mirador de preguntas" },
@@ -125,13 +146,19 @@ function Workshop({ x, y, roof, kind, lit }: { x: number; y: number; roof: strin
   </g>;
 }
 
-export default function AdventureWorld({ onVisit, completed, paused, reducedMotion, scene: providedScene, onSceneChange }: AdventureWorldProps) {
-  const [localScene, setLocalScene] = useState("barrio");
+export default function AdventureWorld({ onVisit, completed, paused, reducedMotion, scene: providedScene, onSceneChange, npcDecisions, onNpcAnswer }: AdventureWorldProps) {
+  const [localScene, setLocalScene] = useState("plaza");
+  const [routeOpen, setRouteOpen] = useState(false);
+  const [dialogueNpc, setDialogueNpc] = useState<PlazaNpcId | null>(null);
   const scene = SCENES.some(item => item.id === providedScene) ? providedScene! : localScene;
-  const sceneLabel = SCENES.find(item => item.id === scene)!.label;
+  const currentScene = SCENES.find(item => item.id === scene)!;
+  const sceneLabel = currentScene.label;
+  const activityLabels = SCENE_ACTIVITY_LABELS[scene];
+  const activeNpc = plazaNpcs.find(npc => npc.id === dialogueNpc);
   const worldRef = useRef<HTMLDivElement>(null);
   const sceneRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<HTMLDivElement>(null);
+  const frontRef = useRef<HTMLDivElement>(null);
   const miniPlayerRef = useRef<SVGCircleElement>(null);
   const position = useRef({ x: 488, y: 415 });
   const target = useRef<{ x: number; y: number } | null>(null);
@@ -140,8 +167,8 @@ export default function AdventureWorld({ onVisit, completed, paused, reducedMoti
   const camera = useRef({ x: 0, y: 0 });
   const latest = useRef({ paused, reducedMotion, onVisit, scene });
 
-  useEffect(() => { latest.current = { paused, reducedMotion, onVisit, scene }; if (paused) { keys.current.clear(); target.current = null; } }, [paused, reducedMotion, onVisit, scene]);
-  useEffect(() => { position.current = { x: 488, y: 415 }; target.current = null; keys.current.clear(); }, [scene]);
+  useEffect(() => { latest.current = { paused: paused || !!dialogueNpc, reducedMotion, onVisit, scene }; if (paused || dialogueNpc) { keys.current.clear(); target.current = null; } }, [paused, reducedMotion, onVisit, scene, dialogueNpc]);
+  useEffect(() => { position.current = { x: 488, y: 415 }; target.current = null; keys.current.clear(); setDialogueNpc(null); }, [scene]);
 
   useEffect(() => {
     const world = worldRef.current;
@@ -174,7 +201,12 @@ export default function AdventureWorld({ onVisit, completed, paused, reducedMoti
     onSceneChange?.(next);
     keys.current.clear();
     target.current = null;
+    setRouteOpen(false);
     worldRef.current?.focus({ preventScroll: true });
+  }
+
+  function boardBus() {
+    setRouteOpen(open => !open);
   }
 
   useEffect(() => {
@@ -200,8 +232,8 @@ export default function AdventureWorld({ onVisit, completed, paused, reducedMoti
           const distance = Math.min(175 * dt, target.current ? length : Infinity);
           const nx = Math.max(30, Math.min(970, position.current.x + dx / length * distance));
           const ny = Math.max(172, Math.min(575, position.current.y + dy / length * distance));
-          if (!blocked(nx, position.current.y, latest.current.scene)) position.current.x = nx;
-          if (!blocked(position.current.x, ny, latest.current.scene)) position.current.y = ny;
+          if (latest.current.scene === 'plaza' ? !plazaBlocked(nx, position.current.y) : !blocked(nx, position.current.y, latest.current.scene)) position.current.x = nx;
+          if (latest.current.scene === 'plaza' ? !plazaBlocked(position.current.x, ny) : !blocked(position.current.x, ny, latest.current.scene)) position.current.y = ny;
         }
       }
       if (playerRef.current) {
@@ -214,6 +246,7 @@ export default function AdventureWorld({ onVisit, completed, paused, reducedMoti
         if (dx) playerRef.current.style.setProperty("--facing", dx < 0 ? "-1" : "1");
       }
       if (miniPlayerRef.current) { miniPlayerRef.current.setAttribute("cx", String(position.current.x)); miniPlayerRef.current.setAttribute("cy", String(position.current.y)); }
+      if (frontRef.current) frontRef.current.style.opacity = latest.current.scene === 'plaza' && position.current.y < 308 ? '1' : '0';
       if (sceneRef.current) {
         const view = viewport.current;
         const aimX = Math.max(0, Math.min(view.sceneWidth - view.width, position.current.x / 1000 * view.sceneWidth - view.width / 2));
@@ -239,17 +272,20 @@ export default function AdventureWorld({ onVisit, completed, paused, reducedMoti
     aria-label={`${sceneLabel}. Muévete con las flechas o WASD, toca un camino o selecciona un taller. Pulsa E cerca de un taller para entrar.`}
     onBlur={event => { if (!event.currentTarget.contains(event.relatedTarget)) { keys.current.clear(); target.current = null; } }}
     onKeyDown={event => {
-      if (paused || event.target !== event.currentTarget) return;
+      if (dialogueNpc && event.key === 'Escape') { setDialogueNpc(null); return; }
+      if (paused || dialogueNpc || event.target !== event.currentTarget) return;
       const key = event.key.toLowerCase();
       if (["arrowup", "arrowdown", "arrowleft", "arrowright", "w", "a", "s", "d"].includes(key)) { event.preventDefault(); keys.current.add(key); }
       if (key === "e" && !event.repeat) {
+        if (Math.hypot(500 - position.current.x, 550 - position.current.y) < 85) { event.preventDefault(); boardBus(); return; }
+        if (scene === 'plaza') { const neighbor = plazaNpcs.find(npc => Math.hypot(npc.x - position.current.x, npc.y - position.current.y) < 92); if (neighbor) { event.preventDefault(); setDialogueNpc(neighbor.id); return; } }
         const nearby = STATIONS.find(station => Math.hypot(station.x - position.current.x, station.y - position.current.y) < 130);
         if (nearby) { event.preventDefault(); onVisit(nearby.id); }
       }
     }}
     onKeyUp={event => keys.current.delete(event.key.toLowerCase())}
     onPointerDown={event => {
-      if (paused || (event.target as Element).closest("button, [data-map-overlay]")) return;
+      if (paused || dialogueNpc || (event.target as Element).closest("button, [data-map-overlay]")) return;
       event.currentTarget.focus({ preventScroll: true });
       const bounds = sceneRef.current?.getBoundingClientRect();
       if (!bounds) return;
@@ -257,6 +293,7 @@ export default function AdventureWorld({ onVisit, completed, paused, reducedMoti
     }}
   >
     <div ref={sceneRef} className={styles.sceneLayer} data-world-scene={scene}>
+    {scene === 'plaza' && <><div className={styles.plazaLayer}><PlazaScene layer="ground" /></div><div className={styles.plazaLayer}><PlazaScene layer="back" /></div><div className={styles.plazaLayer}><PlazaScene layer="objects" /></div></>}
     <svg className={styles.landscape} viewBox="0 0 1000 620" fill="none" aria-hidden="true">
       <defs>
         <linearGradient id="chaski-sky" x2="0" y2="1"><stop stopColor="#b6dce3" /><stop offset="1" stopColor="#eff3cf" /></linearGradient>
@@ -296,7 +333,11 @@ export default function AdventureWorld({ onVisit, completed, paused, reducedMoti
         {[[337, 347, "#b57c85"], [846, 380, "#578a93"], [440, 552, "#c99b62"]].map(([x, y, color], i) => <g key={i} transform={`translate(${x} ${y})`}><ellipse cy="12" rx="9" ry="4" fill="#476345" opacity=".25" /><path d="M-4 6v8m8-8v8" stroke="#53655c" strokeWidth="3" /><path d="M-7-2q7-7 14 0l-1 9H-6Z" fill={String(color)} /><circle cy="-9" r="6" fill={i % 2 ? "#bb8a65" : "#e4b68b"} /><path d="M-6-11q0-8 9-5l3 5" fill="#5c5c4c" /></g>)}
       </g>
     </svg>
-    {STATIONS.map(station => <button
+    <button className={styles.busStop} disabled={paused} onClick={boardBus} onFocus={() => { position.current = { x: 500, y: 550 }; target.current = null; }} aria-label="Subir al Metropolitano y elegir destino" aria-expanded={routeOpen}>
+      <svg viewBox="0 0 140 70" aria-hidden="true"><path d="M0 58h140v12H0Z" fill="#526264"/><rect x="13" y="9" width="114" height="46" rx="9" fill="#eac04e"/><path d="M20 16h78v20H20Z" fill="#386c7b"/><path d="M103 15h15v37h-15Z" fill="#486b6d"/><path d="M46 16v20m26-20v20" stroke="#eac04e" strokeWidth="4"/><circle cx="36" cy="55" r="9" fill="#273b40"/><circle cx="104" cy="55" r="9" fill="#273b40"/><text x="58" y="46" textAnchor="middle" fontSize="6" fill="#344b45">METROPOLITANO</text></svg>
+      <span>Metropolitano · E</span><small>Elegir destino</small>
+    </button>
+    {scene !== 'plaza' && STATIONS.map(station => <button
       key={station.id}
       type="button"
       disabled={paused}
@@ -304,19 +345,24 @@ export default function AdventureWorld({ onVisit, completed, paused, reducedMoti
       style={{ left: `${station.x / 10}%`, top: `${station.y / 6.2}%`, "--station-color": station.color } as CSSProperties}
       onClick={() => onVisit(station.id)}
       onFocus={() => { position.current = { x: station.x, y: station.y }; target.current = null; }}
-      aria-label={`${SCENE_STATION_LABELS[scene]?.[station.id] ?? station.label}. ${station.subtitle}.${completed.includes(station.id) ? " Actividad completada. Puedes volver a explorar." : " Entrar a la actividad."}`}
-    ><span className={styles.marker}>{completed.includes(station.id) ? <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m4 10 4 4 8-8" /></svg> : station.number}</span><span className={styles.stationLabel}>{SCENE_STATION_LABELS[scene]?.[station.id] ?? station.label}<small>{station.subtitle}</small></span></button>)}
+      aria-label={`${activityLabels[STATIONS.findIndex(item => item.id === station.id)]}. ${station.subtitle}.${completed.includes(station.id) ? " Actividad completada. Puedes volver a explorar." : " Entrar a la actividad."}`}
+    ><span className={styles.marker}>{completed.includes(station.id) ? <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m4 10 4 4 8-8" /></svg> : station.number}</span><span className={styles.stationLabel}>{activityLabels[STATIONS.findIndex(item => item.id === station.id)]}</span></button>)}
     <div ref={playerRef} className={styles.player} style={{ left: "48.8%", top: "66.935%" }} aria-hidden="true"><span className={styles.playerShadow} /><span className={styles.character}>{/* The idle pose and the dedicated four-frame walking sheet switch with movement. */}{/* eslint-disable-next-line @next/next/no-img-element */}<img src="/game/chaski-2d.png" alt="" draggable={false} className={`${styles.sprite} ${styles.idleSprite}`} /><span className={styles.walkSprite} /></span><svg className={styles.inspectMap} viewBox="0 0 40 30"><path d="m2 7 12-4 12 4 12-4v21l-12 4-12-4-12 4Z" fill="#ecddb1" stroke="#927e54" strokeWidth="1.5" /><path d="M14 3v21M26 7v21" stroke="#c5ad77" strokeWidth="1.5" /><path d="m6 19 8-9 11 10 7-8" fill="none" stroke="#6eaaa0" strokeWidth="2" /></svg><span className={styles.interactPrompt}>E · Explorar</span><span className={styles.you}>TÚ</span></div>
+    {scene === 'plaza' && <>
+      <div ref={frontRef} className={`${styles.plazaLayer} ${styles.plazaFront}`}><PlazaScene layer="front" /></div>
+      {plazaNpcs.map(npc => <button key={npc.id} type="button" className={styles.npc} style={{ left: `${npc.x / 10}%`, top: `${npc.y / 6.2}%` }} onClick={() => setDialogueNpc(npc.id)} aria-label={`Hablar con ${npc.name}, ${npc.role}`}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}<img src={`/game/npcs/${npc.id}.png`} alt="" draggable={false} /><span>{npc.name} · {npc.role}</span>{npcDecisions.some(entry => entry.npcId === npc.id) && <b aria-label="Conversación registrada">✓</b>}
+      </button>)}
+      {activeNpc && <div className={styles.npcDialogue} role="dialog" aria-label={`Conversación con ${activeNpc.name}`}><strong>{activeNpc.name} · {activeNpc.role}</strong><p>{activeNpc.question}</p><div>{activeNpc.choices.map((choice, index) => <button key={choice} onClick={() => { onNpcAnswer(activeNpc.id, index); setDialogueNpc(null); }}>{choice}</button>)}<button onClick={() => setDialogueNpc(null)}>Seguir caminando</button></div></div>}
+    </>}
     </div>
     <div className={styles.navigation} data-map-overlay>
       <div className={styles.miniMap} aria-label={`Minimapa de ${sceneLabel}`} role="img">
         <div className={styles.miniHeading}><span>MAPA LOCAL</span><span>N ↑</span></div>
-        <svg viewBox="0 0 1000 620" aria-hidden="true"><rect width="1000" height="620" rx="30" fill={scene === "colegio" ? "#c9c7ad" : "#8ba275"} />{scene === "malecon" ? <path d="M0 0h1000v190H0Z" fill="#76b4c1" /> : scene === "barrio" ? <path d="M580 0q-60 150 50 240t-10 380h60q65-270-10-380T650 0" fill="#76b4c1" /> : <rect x="358" y="271" width="288" height="225" fill="#78988a" />}<path d="M205 305 490 380l280-80M245 505l245-95 280 95" stroke="#dfcea5" strokeWidth="38" strokeLinecap="round" />{STATIONS.map(item => <rect key={item.id} x={item.x - 54} y={item.y - 91} width="108" height="65" rx="8" fill={completed.includes(item.id) ? "#c7e3a8" : item.color} />)}<circle ref={miniPlayerRef} cx="488" cy="415" r="24" fill="#fff7cd" stroke="#235a61" strokeWidth="13" /></svg>
-        <span className={styles.miniCaption}>{sceneLabel}<small>Lima imaginada</small></span>
+        <svg viewBox="0 0 1000 620" aria-hidden="true"><rect width="1000" height="620" fill={scene === 'plaza' ? '#c5b697' : '#9aae7f'}/>{scene === 'plaza' ? <><path d="M0 0h1000v245H0Z" fill="#8e7862"/><rect x="324" y="42" width="352" height="188" fill="#dac094"/><ellipse cx="500" cy="355" rx="72" ry="42" fill="#6eabb1"/><rect x="180" y="318" width="168" height="78" fill="#57845d"/><rect x="655" y="319" width="158" height="77" fill="#57845d"/><circle cx="176" cy="294" r="28" fill="#2c654b"/><circle cx="845" cy="297" r="28" fill="#2c654b"/></> : <><path d="M200 300Q500 390 780 300M245 505Q500 390 770 505" stroke="#ddc99a" strokeWidth="35" fill="none"/><rect x="115" y="200" width="180" height="75" fill="#c48c6a"/><rect x="680" y="200" width="180" height="75" fill="#c48c6a"/><rect x="155" y="405" width="180" height="75" fill="#729d80"/><rect x="680" y="405" width="180" height="75" fill="#729d80"/></>}<circle ref={miniPlayerRef} cx="488" cy="415" r="24" fill="#fff7cd" stroke="#1a3244" strokeWidth="12" /></svg>
+        <span className={styles.miniCaption}>{sceneLabel}<small>{currentScene.clue}</small></span>
       </div>
-      <nav className={styles.sceneExits} aria-label="Viajar a otro escenario">
-        {SCENES.filter(item => item.id !== scene).map(item => <button key={item.id} type="button" disabled={paused} onClick={() => changeScene(item.id)}><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 10h13m-5-5 5 5-5 5" /></svg><span>{item.id === "barrio" ? "Ir al barrio" : item.id === "colegio" ? "Ir al colegio" : "Ir al malecón"}</span></button>)}
-      </nav>
+      {routeOpen && <div className={styles.routeStrip} aria-label="Destinos del Metropolitano">{SCENES.map((place, index) => <button key={place.id} type="button" disabled={paused} aria-current={scene === place.id ? "location" : undefined} onClick={() => changeScene(place.id)} title={`Viajar a ${place.label}`}><span>{String(index + 1).padStart(2, "0")}</span>{place.label}</button>)}</div>}
     </div>
   </div>;
 }
