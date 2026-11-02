@@ -1,31 +1,7 @@
 import { plazaScreenY } from '@/game/plazaProjection';
 import type { CSSProperties } from 'react';
 
-// ── Collision areas (kept intact so all tests pass) ──────────────────────────
-export const PLAZA_OBJECTS = [
-  { id: 'catedral',             x: 324, y:  42, w: 352, h: 196 },
-  { id: 'galeria',              x:   0, y:  55, w: 250, h: 185 },
-  { id: 'mirador',              x: 760, y: 170, w: 240, h: 190 },
-  { id: 'fuente',               x: 410, y: 325, w: 180, h:  74 },
-  { id: 'jardin-oeste',         x: 180, y: 340, w: 168, h:  56 },
-  { id: 'jardin-este',          x: 655, y: 340, w: 158, h:  56 },
-  { id: 'banca-oeste',          x: 280, y: 465, w:  84, h:  22 },
-  { id: 'puesto',               x: 610, y: 451, w:  83, h:  30 },
-  { id: 'arbol-oeste',          x: 135, y: 275, w:  32, h:  29 },
-  { id: 'arbol-este',           x: 815, y: 280, w:  32, h:  29 },
-  { id: 'farol-oeste',          x:  81, y: 337, w:  10, h:  16 },
-  { id: 'farol-centro',         x: 630, y: 253, w:  10, h:  16 },
-  { id: 'reja-oeste',           x:   0, y: 576, w: 260, h:  18 },
-  { id: 'reja-este',            x: 710, y: 591, w: 290, h:  16 },
-  { id: 'arbol-frondoso-oeste', x: 288, y: 250, w:  28, h:  31 },
-  { id: 'arbol-frondoso-este',  x: 690, y: 260, w:  28, h:  31 },
-] as const;
-
-export function plazaBlocked(x: number, y: number): boolean {
-  return PLAZA_OBJECTS.some(
-    o => x + 11 > o.x && x - 11 < o.x + o.w && y + 11 > o.y && y - 11 < o.y + o.h
-  );
-}
+export { plazaBlocked } from '@/game/plazaLayout';
 
 // ── Drawable objects (world-space coordinates rendered with depth z-index) ────
 // Tree and planter positions are carefully balanced so the yellow gallery on the left

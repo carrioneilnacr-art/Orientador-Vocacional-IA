@@ -234,6 +234,7 @@ export default function ColegioDashboardPage() {
             </section>
 
             <section id="recursos" className="mt-7" aria-labelledby="resources-title">
+              {['ADMIN','PSICOLOGO'].includes(role)&&<Link href="/colegio/exploraciones" className="mb-5 inline-flex rounded-xl border border-chaski-border bg-white px-5 py-3 font-semibold text-chaski-accent-ink">Ver preferencias de la aventura →</Link>}
               <div className="mb-4">
                 <h2 id="resources-title" className="text-base font-semibold text-chaski-heading">Herramientas del colegio</h2>
                 <p className="mt-1 text-sm text-slate-600">Accesos disponibles para preparar y acompañar el proceso.</p>

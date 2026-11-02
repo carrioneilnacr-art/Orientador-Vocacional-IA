@@ -161,14 +161,13 @@ export default function AdventureWorld({ onVisit, completed, paused, reducedMoti
   const frontRef = useRef<HTMLDivElement>(null);
   const miniPlayerRef = useRef<SVGCircleElement>(null);
   const position = useRef({ x: 488, y: 415 });
-  const target = useRef<{ x: number; y: number } | null>(null);
   const keys = useRef(new Set<string>());
   const viewport = useRef({ width: 1000, height: 620, sceneWidth: 1000, sceneHeight: 620 });
   const camera = useRef({ x: 0, y: 0 });
   const latest = useRef({ paused, reducedMotion, onVisit, scene });
 
-  useEffect(() => { latest.current = { paused: paused || !!dialogueNpc, reducedMotion, onVisit, scene }; if (paused || dialogueNpc) { keys.current.clear(); target.current = null; } }, [paused, reducedMotion, onVisit, scene, dialogueNpc]);
-  useEffect(() => { position.current = { x: 488, y: 415 }; target.current = null; keys.current.clear(); setDialogueNpc(null); }, [scene]);
+  useEffect(() => { latest.current = { paused: paused || !!dialogueNpc, reducedMotion, onVisit, scene }; if (paused || dialogueNpc) keys.current.clear(); }, [paused, reducedMotion, onVisit, scene, dialogueNpc]);
+  useEffect(() => { position.current = { x: 488, y: 415 }; keys.current.clear(); setDialogueNpc(null); }, [scene]);
 
   useEffect(() => {
     const world = worldRef.current;
@@ -200,7 +199,6 @@ export default function AdventureWorld({ onVisit, completed, paused, reducedMoti
     setLocalScene(next);
     onSceneChange?.(next);
     keys.current.clear();
-    target.current = null;
     setRouteOpen(false);
     worldRef.current?.focus({ preventScroll: true });
   }
@@ -221,15 +219,9 @@ export default function AdventureWorld({ onVisit, completed, paused, reducedMoti
       if (!latest.current.paused) {
         dx = Number(held.has("arrowright") || held.has("d")) - Number(held.has("arrowleft") || held.has("a"));
         dy = Number(held.has("arrowdown") || held.has("s")) - Number(held.has("arrowup") || held.has("w"));
-        if (dx || dy) target.current = null;
-        if (target.current) {
-          dx = target.current.x - position.current.x;
-          dy = target.current.y - position.current.y;
-          if (Math.hypot(dx, dy) < 5) { target.current = null; dx = 0; dy = 0; }
-        }
         const length = Math.hypot(dx, dy);
         if (length) {
-          const distance = Math.min(175 * dt, target.current ? length : Infinity);
+          const distance = 175 * dt;
           const nx = Math.max(30, Math.min(970, position.current.x + dx / length * distance));
           const ny = Math.max(172, Math.min(575, position.current.y + dy / length * distance));
           if (latest.current.scene === 'plaza' ? !plazaBlocked(nx, position.current.y) : !blocked(nx, position.current.y, latest.current.scene)) position.current.x = nx;
@@ -258,7 +250,7 @@ export default function AdventureWorld({ onVisit, completed, paused, reducedMoti
       }
       frame = requestAnimationFrame(animate);
     }
-    const clear = () => { keys.current.clear(); target.current = null; };
+    const clear = () => { keys.current.clear(); };
     window.addEventListener("blur", clear);
     frame = requestAnimationFrame(animate);
     return () => { cancelAnimationFrame(frame); window.removeEventListener("blur", clear); };
@@ -269,8 +261,8 @@ export default function AdventureWorld({ onVisit, completed, paused, reducedMoti
     className={`${styles.world} ${reducedMotion ? styles.still : ""}`}
     tabIndex={0}
     role="region"
-    aria-label={`${sceneLabel}. Muévete con las flechas o WASD, toca un camino o selecciona un taller. Pulsa E cerca de un taller para entrar.`}
-    onBlur={event => { if (!event.currentTarget.contains(event.relatedTarget)) { keys.current.clear(); target.current = null; } }}
+    aria-label={`${sceneLabel}. Muévete con las flechas o WASD y selecciona un taller. Pulsa E cerca de un taller para entrar.`}
+    onBlur={event => { if (!event.currentTarget.contains(event.relatedTarget)) keys.current.clear(); }}
     onKeyDown={event => {
       if (dialogueNpc && event.key === 'Escape') { setDialogueNpc(null); return; }
       if (paused || dialogueNpc || event.target !== event.currentTarget) return;
@@ -287,9 +279,6 @@ export default function AdventureWorld({ onVisit, completed, paused, reducedMoti
     onPointerDown={event => {
       if (paused || dialogueNpc || (event.target as Element).closest("button, [data-map-overlay]")) return;
       event.currentTarget.focus({ preventScroll: true });
-      const bounds = sceneRef.current?.getBoundingClientRect();
-      if (!bounds) return;
-      target.current = { x: (event.clientX - bounds.left) / bounds.width * 1000, y: (event.clientY - bounds.top) / bounds.height * 620 };
     }}
   >
     <div ref={sceneRef} className={styles.sceneLayer} data-world-scene={scene}>
@@ -333,7 +322,7 @@ export default function AdventureWorld({ onVisit, completed, paused, reducedMoti
         {[[337, 347, "#b57c85"], [846, 380, "#578a93"], [440, 552, "#c99b62"]].map(([x, y, color], i) => <g key={i} transform={`translate(${x} ${y})`}><ellipse cy="12" rx="9" ry="4" fill="#476345" opacity=".25" /><path d="M-4 6v8m8-8v8" stroke="#53655c" strokeWidth="3" /><path d="M-7-2q7-7 14 0l-1 9H-6Z" fill={String(color)} /><circle cy="-9" r="6" fill={i % 2 ? "#bb8a65" : "#e4b68b"} /><path d="M-6-11q0-8 9-5l3 5" fill="#5c5c4c" /></g>)}
       </g>
     </svg>
-    <button className={styles.busStop} disabled={paused} onClick={boardBus} onFocus={() => { position.current = { x: 500, y: 550 }; target.current = null; }} aria-label="Subir al Metropolitano y elegir destino" aria-expanded={routeOpen}>
+    <button className={styles.busStop} disabled={paused} onClick={boardBus} onFocus={() => { position.current = { x: 500, y: 550 }; }} aria-label="Subir al Metropolitano y elegir destino" aria-expanded={routeOpen}>
       <svg viewBox="0 0 140 70" aria-hidden="true"><path d="M0 58h140v12H0Z" fill="#526264"/><rect x="13" y="9" width="114" height="46" rx="9" fill="#eac04e"/><path d="M20 16h78v20H20Z" fill="#386c7b"/><path d="M103 15h15v37h-15Z" fill="#486b6d"/><path d="M46 16v20m26-20v20" stroke="#eac04e" strokeWidth="4"/><circle cx="36" cy="55" r="9" fill="#273b40"/><circle cx="104" cy="55" r="9" fill="#273b40"/><text x="58" y="46" textAnchor="middle" fontSize="6" fill="#344b45">METROPOLITANO</text></svg>
       <span>Metropolitano · E</span><small>Elegir destino</small>
     </button>
@@ -344,7 +333,7 @@ export default function AdventureWorld({ onVisit, completed, paused, reducedMoti
       className={`${styles.station} ${completed.includes(station.id) ? styles.completed : ""}`}
       style={{ left: `${station.x / 10}%`, top: `${station.y / 6.2}%`, "--station-color": station.color } as CSSProperties}
       onClick={() => onVisit(station.id)}
-      onFocus={() => { position.current = { x: station.x, y: station.y }; target.current = null; }}
+      onFocus={() => { position.current = { x: station.x, y: station.y }; }}
       aria-label={`${activityLabels[STATIONS.findIndex(item => item.id === station.id)]}. ${station.subtitle}.${completed.includes(station.id) ? " Actividad completada. Puedes volver a explorar." : " Entrar a la actividad."}`}
     ><span className={styles.marker}>{completed.includes(station.id) ? <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m4 10 4 4 8-8" /></svg> : station.number}</span><span className={styles.stationLabel}>{activityLabels[STATIONS.findIndex(item => item.id === station.id)]}</span></button>)}
     <div ref={playerRef} className={styles.player} style={{ left: "48.8%", top: "66.935%" }} aria-hidden="true"><span className={styles.playerShadow} /><span className={styles.character}>{/* The idle pose and the dedicated four-frame walking sheet switch with movement. */}{/* eslint-disable-next-line @next/next/no-img-element */}<img src="/game/chaski-2d.png" alt="" draggable={false} className={`${styles.sprite} ${styles.idleSprite}`} /><span className={styles.walkSprite} /></span><svg className={styles.inspectMap} viewBox="0 0 40 30"><path d="m2 7 12-4 12 4 12-4v21l-12 4-12-4-12 4Z" fill="#ecddb1" stroke="#927e54" strokeWidth="1.5" /><path d="M14 3v21M26 7v21" stroke="#c5ad77" strokeWidth="1.5" /><path d="m6 19 8-9 11 10 7-8" fill="none" stroke="#6eaaa0" strokeWidth="2" /></svg><span className={styles.interactPrompt}>E · Explorar</span><span className={styles.you}>TÚ</span></div>

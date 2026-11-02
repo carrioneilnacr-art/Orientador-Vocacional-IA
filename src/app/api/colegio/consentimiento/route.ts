@@ -4,6 +4,7 @@ import { db } from '@/db';
 import { students, auditLog } from '@/db/schema';
 import { and, eq } from 'drizzle-orm';
 import { verifyStudentSession, signStudentSession, STUDENT_COOKIE_NAME } from '@/lib/studentAuth';
+import {linkGuestExploration} from '@/modules/adventure/infrastructure/linkGuestExploration';
 
 const consentSchema = z.object({
   consentGranted: z.boolean(),
@@ -59,6 +60,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'No se pudo guardar el consentimiento. Inténtalo nuevamente.' }, { status: 503 });
     }
 
+    let linkedAdventure=false;
+    if(newStatus==='GRANTED')try{linkedAdventure=await linkGuestExploration(req,session.studentId,session.schoolId);}catch{console.warn('[Consentimiento] El recorrido invitado no pudo vincularse todavía.');}
     // Actualizar cookie con nuevo consentStatus
     const updatedToken = signStudentSession({
       ...session,
@@ -68,6 +71,7 @@ export async function POST(req: NextRequest) {
     const res = NextResponse.json({
       success: true,
       consentStatus: newStatus,
+      linkedAdventure,
       message: parsed.data.consentGranted
         ? 'Consentimiento registrado exitosamente.'
         : 'Consentimiento revocado.',

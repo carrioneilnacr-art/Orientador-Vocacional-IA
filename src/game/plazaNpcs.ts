@@ -1,3 +1,6 @@
+import { plazaPoint } from './plazaLayout';
+import scene from './plaza-reference.json';
+
 export type RiasecDimension = 'R' | 'I' | 'A' | 'S' | 'E' | 'C';
 export type RiasecWeights = Partial<Record<RiasecDimension, number>>;
 export type PlazaChoiceIcon = 'wrench' | 'search' | 'brush' | 'heart' | 'briefcase' | 'archive' | 'gear';
@@ -17,7 +20,7 @@ interface PlazaNpcDefinition {
 export const plazaNpcs = [
   {
     id: 'tecnico', name: 'Luis', role: 'Técnico del Metropolitano', dimension: 'R',
-    sprite: 'tecnico', icon: 'wrench', x: 748, y: 552, color: '#b99c61',
+    sprite: 'tecnico', icon: 'wrench', ...plazaPoint(scene.npcs.tecnico[0], scene.npcs.tecnico[1]), color: '#b99c61',
     question: 'Este indicador de la puerta dejó de encender. Con el bus detenido y el equipo a salvo, ¿qué parte del trabajo te gustaría conocer?',
     choices: ['Probar una pieza y observar qué cambia.', 'Revisar el registro de fallas anteriores.', 'Explicar al equipo lo que vamos descubriendo.'],
     choiceIcons: ['wrench', 'archive', 'heart'],
@@ -27,7 +30,7 @@ export const plazaNpcs = [
   },
   {
     id: 'inventor', name: 'Nayra', role: 'Inventora de la plaza', dimension: 'I',
-    sprite: 'inventor', icon: 'search', x: 385, y: 540, color: '#d6864f',
+    sprite: 'inventor', icon: 'search', ...plazaPoint(scene.npcs.inventor[0], scene.npcs.inventor[1]), color: '#d6864f',
     question: 'Mi robot ordena las piezas por color, pero hoy se volvió loco. ¿Cómo lo resolverías?',
     choices: ['Revisaría los cables y probaría una pieza a la vez.', 'Diseñaría otra forma creativa de usar el robot.', 'Le preguntaría a las personas qué problema necesitan resolver.'],
     choiceIcons: ['wrench', 'search', 'brush'],
@@ -37,7 +40,7 @@ export const plazaNpcs = [
   },
   {
     id: 'artista', name: 'Luna', role: 'Artista del caballete', dimension: 'A',
-    sprite: 'artista', icon: 'brush', x: 105, y: 515, color: '#ad6379',
+    sprite: 'artista', icon: 'brush', ...plazaPoint(scene.npcs.artista[0], scene.npcs.artista[1]), color: '#ad6379',
     question: 'Quiero pintar una historia de esta plaza. ¿Por dónde te gustaría empezar?',
     choices: ['Experimentaría con colores y formas.', 'Investigaría qué cambió en la plaza con el tiempo.', 'Invitaría a los vecinos a contar sus historias.'],
     choiceIcons: ['brush', 'search', 'heart'],
@@ -47,7 +50,7 @@ export const plazaNpcs = [
   },
   {
     id: 'guia', name: 'Valeria', role: 'Guía y voluntaria', dimension: 'S',
-    sprite: 'guia', icon: 'heart', x: 590, y: 552, color: '#9c7154',
+    sprite: 'guia', icon: 'heart', ...plazaPoint(scene.npcs.guia[0], scene.npcs.guia[1]), color: '#9c7154',
     question: 'Un grupo llega por primera vez y quiere conocer los trabajos de la plaza. ¿Qué te gustaría aportar?',
     choices: ['Escuchar qué les interesa y acompañarlos.', 'Proponer una ruta y animar al grupo a participar.', 'Preparar un mapa claro con los puntos de encuentro.'],
     choiceIcons: ['heart', 'briefcase', 'archive'],
@@ -57,7 +60,7 @@ export const plazaNpcs = [
   },
   {
     id: 'emprendedor', name: 'Mateo', role: 'Estudiantes del proyecto', dimension: 'E',
-    sprite: 'estudiantes', icon: 'briefcase', x: 690, y: 500, color: '#c68a4e',
+    sprite: 'estudiantes', icon: 'briefcase', ...plazaPoint(scene.npcs.emprendedor[0], scene.npcs.emprendedor[1]), color: '#c68a4e',
     question: 'Estamos preparando un proyecto para la feria del colegio. ¿Qué parte disfrutarías más?',
     choices: ['Resolver el reto práctico.', 'Crear la presentación visual.', 'Organizar y coordinar al equipo.'],
     choiceIcons: ['wrench', 'brush', 'briefcase'],
@@ -67,7 +70,7 @@ export const plazaNpcs = [
   },
   {
     id: 'vecino', name: 'Don Julián', role: 'Vecino archivista', dimension: 'C',
-    sprite: 'vecino', icon: 'archive', x: 225, y: 478, color: '#75867c',
+    sprite: 'vecino', icon: 'archive', ...plazaPoint(scene.npcs.vecino[0], scene.npcs.vecino[1]), color: '#75867c',
     question: 'Tengo fotos de muchas épocas mezcladas en este álbum. ¿Qué te gustaría hacer con ellas?',
     choices: ['Ordenarlas por fecha y registrar datos.', 'Compararlas para investigar cambios.', 'Reunir vecinos y escuchar recuerdos.'],
     choiceIcons: ['archive', 'search', 'heart'],
@@ -78,3 +81,8 @@ export const plazaNpcs = [
 ] as const satisfies readonly PlazaNpcDefinition[];
 
 export type PlazaNpcId = typeof plazaNpcs[number]['id'];
+
+export function plazaNpcSpritePath(npc: (typeof plazaNpcs)[number]): string {
+  const files = { artista: 'artista', vecino: 'vecino', emprendedor: 'estudiantes', guia: 'guia', inventor: 'inventor', tecnico: 'tecnico' };
+  return `/game/plaza-lima/fiel/${files[npc.id]}.png`;
+}

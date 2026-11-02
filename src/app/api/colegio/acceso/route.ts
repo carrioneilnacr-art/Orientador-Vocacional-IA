@@ -11,6 +11,7 @@ import {
   verifyGuestTestSession,
 } from '@/lib/studentAuth';
 import { checkRateLimit } from '@/lib/rateLimit';
+import {linkGuestExploration} from '@/modules/adventure/infrastructure/linkGuestExploration';
 
 const accessSchema = z.object({
   accessCode: z.string().min(4, 'El código debe tener al menos 4 caracteres').max(30),
@@ -109,6 +110,8 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    let linkedAdventure=false;
+    try{linkedAdventure=await linkGuestExploration(req,studentResult.id,studentResult.schoolId);}catch{console.warn('[Acceso Alumno] No se pudo vincular el recorrido de aventura.');}
     // 5. Registrar en Audit Log (Cumplimiento Ley 29733)
     try {
       await db.insert(auditLog).values({
@@ -120,6 +123,7 @@ export async function POST(req: NextRequest) {
           studentCode: studentResult.studentCode,
           schoolId: studentResult.schoolId,
           linkedTest,
+          linkedAdventure,
           ipAnonymized: ip.substring(0, 7) + '***',
         },
       });
@@ -153,6 +157,7 @@ export async function POST(req: NextRequest) {
         classroom: classroomName,
       },
       linkedTest,
+      linkedAdventure,
     });
 
     // Configurar cookie de sesión (7 días)

@@ -1,0 +1,1906 @@
+{
+  "project": "Orientador Vocacional IA",
+  "scene": "Plaza de Lima",
+  "source": "lámina maestra \"Assets 2D – Plaza de Lima\" (1024x682)",
+  "generated": "2026-10-31",
+  "root": "public/game/plaza-lima/",
+  "notes": [
+    "Los RGB de cada PNG son los píxeles originales de la lámina (sin reescalar ni retocar); solo se creó el canal alfa.",
+    "La lámina original está suavizada/comprimida (no es pixel art nítido), por eso los bordes tienen antialiasing y algunas sombras muy oscuras pueden haberse perdido al quedar iguales al fondo.",
+    "Los tiles tienen tamaños nativos variados (no 32x32 uniforme) y no se reescalaron.",
+    "Los tiles rectangulares son 100% opacos por naturaleza; las esquinas curvas sí tienen transparencia.",
+    "Estados: ok | ok_compuesto (incluye objetos horneados) | ok_frames_limitados (animación con pocas poses) | ok_aprox_alfa (efecto luminoso) | pendiente_regeneracion."
+  ],
+  "assets": [
+    {
+      "id": "catedral_lima",
+      "name": "Catedral de Lima",
+      "category": "edificios",
+      "type": "building",
+      "path": "public/game/plaza-lima/edificios/catedral_lima.png",
+      "url": "/game/plaza-lima/edificios/catedral_lima.png",
+      "width": 307,
+      "height": 151,
+      "status": "ok",
+      "source_bbox_lamina": [
+        40,
+        62,
+        347,
+        213
+      ],
+      "notes": "Recorte sin los árboles laterales (tapados parcialmente por el edificio). Incluye el zócalo/base."
+    },
+    {
+      "id": "palacio_municipal",
+      "name": "Palacio Municipal (colonial)",
+      "category": "edificios",
+      "type": "building",
+      "path": "public/game/plaza-lima/edificios/palacio_municipal.png",
+      "url": "/game/plaza-lima/edificios/palacio_municipal.png",
+      "width": 317,
+      "height": 151,
+      "status": "ok",
+      "source_bbox_lamina": [
+        381,
+        61,
+        698,
+        212
+      ],
+      "notes": "Incluye bandera superior."
+    },
+    {
+      "id": "escalinata_terraza",
+      "name": "Escalinata y terraza",
+      "category": "edificios",
+      "type": "building",
+      "path": "public/game/plaza-lima/edificios/escalinata_terraza.png",
+      "url": "/game/plaza-lima/edificios/escalinata_terraza.png",
+      "width": 279,
+      "height": 121,
+      "status": "ok_compuesto",
+      "source_bbox_lamina": [
+        725,
+        86,
+        1004,
+        207
+      ],
+      "notes": "Vegetación (árboles y jardinera florida) horneada en la imagen; no se puede separar sin regenerar."
+    },
+    {
+      "id": "arbol_jacaranda",
+      "name": "Árbol de flores moradas",
+      "category": "vegetacion",
+      "type": "tree",
+      "path": "public/game/plaza-lima/vegetacion/arbol_jacaranda.png",
+      "url": "/game/plaza-lima/vegetacion/arbol_jacaranda.png",
+      "width": 110,
+      "height": 84,
+      "status": "ok",
+      "source_bbox_lamina": [
+        17,
+        367,
+        127,
+        451
+      ],
+      "notes": ""
+    },
+    {
+      "id": "arbol_grande",
+      "name": "Árbol grande frondoso",
+      "category": "vegetacion",
+      "type": "tree",
+      "path": "public/game/plaza-lima/vegetacion/arbol_grande.png",
+      "url": "/game/plaza-lima/vegetacion/arbol_grande.png",
+      "width": 94,
+      "height": 90,
+      "status": "ok",
+      "source_bbox_lamina": [
+        136,
+        363,
+        230,
+        453
+      ],
+      "notes": ""
+    },
+    {
+      "id": "arbol_mediano",
+      "name": "Árbol mediano",
+      "category": "vegetacion",
+      "type": "tree",
+      "path": "public/game/plaza-lima/vegetacion/arbol_mediano.png",
+      "url": "/game/plaza-lima/vegetacion/arbol_mediano.png",
+      "width": 64,
+      "height": 70,
+      "status": "ok",
+      "source_bbox_lamina": [
+        241,
+        381,
+        305,
+        451
+      ],
+      "notes": ""
+    },
+    {
+      "id": "palmera",
+      "name": "Palmera",
+      "category": "vegetacion",
+      "type": "tree",
+      "path": "public/game/plaza-lima/vegetacion/palmera.png",
+      "url": "/game/plaza-lima/vegetacion/palmera.png",
+      "width": 87,
+      "height": 101,
+      "status": "ok",
+      "source_bbox_lamina": [
+        315,
+        352,
+        402,
+        453
+      ],
+      "notes": ""
+    },
+    {
+      "id": "arbol_pequeno",
+      "name": "Árbol pequeño",
+      "category": "vegetacion",
+      "type": "tree",
+      "path": "public/game/plaza-lima/vegetacion/arbol_pequeno.png",
+      "url": "/game/plaza-lima/vegetacion/arbol_pequeno.png",
+      "width": 50,
+      "height": 65,
+      "status": "ok",
+      "source_bbox_lamina": [
+        409,
+        385,
+        459,
+        450
+      ],
+      "notes": ""
+    },
+    {
+      "id": "jardinera_larga",
+      "name": "Jardinera larga con flores",
+      "category": "vegetacion",
+      "type": "planter",
+      "path": "public/game/plaza-lima/vegetacion/jardinera_larga.png",
+      "url": "/game/plaza-lima/vegetacion/jardinera_larga.png",
+      "width": 100,
+      "height": 51,
+      "status": "ok",
+      "source_bbox_lamina": [
+        469,
+        398,
+        569,
+        449
+      ],
+      "notes": ""
+    },
+    {
+      "id": "jardinera_mediana",
+      "name": "Jardinera mediana con flores",
+      "category": "vegetacion",
+      "type": "planter",
+      "path": "public/game/plaza-lima/vegetacion/jardinera_mediana.png",
+      "url": "/game/plaza-lima/vegetacion/jardinera_mediana.png",
+      "width": 51,
+      "height": 48,
+      "status": "ok",
+      "source_bbox_lamina": [
+        580,
+        400,
+        631,
+        448
+      ],
+      "notes": ""
+    },
+    {
+      "id": "maceta_flores",
+      "name": "Maceta con flores",
+      "category": "vegetacion",
+      "type": "planter",
+      "path": "public/game/plaza-lima/vegetacion/maceta_flores.png",
+      "url": "/game/plaza-lima/vegetacion/maceta_flores.png",
+      "width": 43,
+      "height": 48,
+      "status": "ok",
+      "source_bbox_lamina": [
+        642,
+        397,
+        685,
+        445
+      ],
+      "notes": ""
+    },
+    {
+      "id": "jardinera_baja",
+      "name": "Jardinera baja con flores",
+      "category": "vegetacion",
+      "type": "planter",
+      "path": "public/game/plaza-lima/vegetacion/jardinera_baja.png",
+      "url": "/game/plaza-lima/vegetacion/jardinera_baja.png",
+      "width": 71,
+      "height": 41,
+      "status": "ok",
+      "source_bbox_lamina": [
+        696,
+        405,
+        767,
+        446
+      ],
+      "notes": ""
+    },
+    {
+      "id": "banca_frontal",
+      "name": "Banca (vista frontal)",
+      "category": "mobiliario",
+      "type": "prop",
+      "path": "public/game/plaza-lima/mobiliario/banca_frontal.png",
+      "url": "/game/plaza-lima/mobiliario/banca_frontal.png",
+      "width": 80,
+      "height": 38,
+      "status": "ok",
+      "source_bbox_lamina": [
+        257,
+        271,
+        337,
+        309
+      ],
+      "notes": ""
+    },
+    {
+      "id": "banca_lateral",
+      "name": "Banca (vista 3/4 reducida)",
+      "category": "mobiliario",
+      "type": "prop",
+      "path": "public/game/plaza-lima/mobiliario/banca_lateral.png",
+      "url": "/game/plaza-lima/mobiliario/banca_lateral.png",
+      "width": 61,
+      "height": 40,
+      "status": "ok",
+      "source_bbox_lamina": [
+        348,
+        278,
+        409,
+        318
+      ],
+      "notes": ""
+    },
+    {
+      "id": "farol_simple",
+      "name": "Farol simple",
+      "category": "mobiliario",
+      "type": "prop",
+      "path": "public/game/plaza-lima/mobiliario/farol_simple.png",
+      "url": "/game/plaza-lima/mobiliario/farol_simple.png",
+      "width": 19,
+      "height": 82,
+      "status": "ok",
+      "source_bbox_lamina": [
+        441,
+        248,
+        460,
+        330
+      ],
+      "notes": ""
+    },
+    {
+      "id": "farol_triple",
+      "name": "Farol triple",
+      "category": "mobiliario",
+      "type": "prop",
+      "path": "public/game/plaza-lima/mobiliario/farol_triple.png",
+      "url": "/game/plaza-lima/mobiliario/farol_triple.png",
+      "width": 38,
+      "height": 83,
+      "status": "ok",
+      "source_bbox_lamina": [
+        480,
+        247,
+        518,
+        330
+      ],
+      "notes": ""
+    },
+    {
+      "id": "farol_bandera_roja",
+      "name": "Farol con bandera roja",
+      "category": "mobiliario",
+      "type": "prop",
+      "path": "public/game/plaza-lima/mobiliario/farol_bandera_roja.png",
+      "url": "/game/plaza-lima/mobiliario/farol_bandera_roja.png",
+      "width": 23,
+      "height": 86,
+      "status": "ok",
+      "source_bbox_lamina": [
+        534,
+        244,
+        557,
+        330
+      ],
+      "notes": ""
+    },
+    {
+      "id": "farol_bandera_peru",
+      "name": "Farol con bandera blanquirroja",
+      "category": "mobiliario",
+      "type": "prop",
+      "path": "public/game/plaza-lima/mobiliario/farol_bandera_peru.png",
+      "url": "/game/plaza-lima/mobiliario/farol_bandera_peru.png",
+      "width": 24,
+      "height": 86,
+      "status": "ok",
+      "source_bbox_lamina": [
+        577,
+        244,
+        601,
+        330
+      ],
+      "notes": ""
+    },
+    {
+      "id": "kiosco_vendedor",
+      "name": "Kiosco / carreta de vendedor",
+      "category": "mobiliario",
+      "type": "prop",
+      "path": "public/game/plaza-lima/mobiliario/kiosco_vendedor.png",
+      "url": "/game/plaza-lima/mobiliario/kiosco_vendedor.png",
+      "width": 95,
+      "height": 81,
+      "status": "ok",
+      "source_bbox_lamina": [
+        640,
+        251,
+        735,
+        332
+      ],
+      "notes": ""
+    },
+    {
+      "id": "senal_mapa_metropolitano",
+      "name": "Panel de mapa del Metropolitano",
+      "category": "mobiliario",
+      "type": "prop",
+      "path": "public/game/plaza-lima/mobiliario/senal_mapa_metropolitano.png",
+      "url": "/game/plaza-lima/mobiliario/senal_mapa_metropolitano.png",
+      "width": 32,
+      "height": 60,
+      "status": "ok",
+      "source_bbox_lamina": [
+        768,
+        276,
+        800,
+        336
+      ],
+      "notes": "Separado de la estación (hay ~3 px de aire)."
+    },
+    {
+      "id": "busto_pedestal",
+      "name": "Busto sobre pedestal",
+      "category": "decoracion",
+      "type": "prop",
+      "path": "public/game/plaza-lima/decoracion/busto_pedestal.png",
+      "url": "/game/plaza-lima/decoracion/busto_pedestal.png",
+      "width": 50,
+      "height": 80,
+      "status": "ok",
+      "source_bbox_lamina": [
+        800,
+        369,
+        850,
+        449
+      ],
+      "notes": ""
+    },
+    {
+      "id": "paloma_a",
+      "name": "Paloma A",
+      "category": "decoracion",
+      "type": "sprite",
+      "path": "public/game/plaza-lima/decoracion/paloma_a.png",
+      "url": "/game/plaza-lima/decoracion/paloma_a.png",
+      "width": 36,
+      "height": 33,
+      "status": "ok",
+      "source_bbox_lamina": [
+        865,
+        403,
+        901,
+        436
+      ],
+      "notes": ""
+    },
+    {
+      "id": "paloma_b",
+      "name": "Paloma B",
+      "category": "decoracion",
+      "type": "sprite",
+      "path": "public/game/plaza-lima/decoracion/paloma_b.png",
+      "url": "/game/plaza-lima/decoracion/paloma_b.png",
+      "width": 38,
+      "height": 26,
+      "status": "ok",
+      "source_bbox_lamina": [
+        917,
+        410,
+        955,
+        436
+      ],
+      "notes": ""
+    },
+    {
+      "id": "papelera",
+      "name": "Papelera",
+      "category": "decoracion",
+      "type": "prop",
+      "path": "public/game/plaza-lima/decoracion/papelera.png",
+      "url": "/game/plaza-lima/decoracion/papelera.png",
+      "width": 27,
+      "height": 41,
+      "status": "ok",
+      "source_bbox_lamina": [
+        970,
+        393,
+        997,
+        434
+      ],
+      "notes": ""
+    },
+    {
+      "id": "vallas_poste_a",
+      "name": "Poste/bolardo A",
+      "category": "vallas",
+      "type": "prop",
+      "path": "public/game/plaza-lima/vallas/vallas_poste_a.png",
+      "url": "/game/plaza-lima/vallas/vallas_poste_a.png",
+      "width": 13,
+      "height": 30,
+      "status": "ok_bajo_contraste",
+      "source_bbox_lamina": [
+        288,
+        492,
+        301,
+        522
+      ],
+      "notes": "Objeto oscuro con poco contraste frente al fondo de la lámina: el borde puede verse algo irregular."
+    },
+    {
+      "id": "vallas_poste_b",
+      "name": "Poste/bolardo B",
+      "category": "vallas",
+      "type": "prop",
+      "path": "public/game/plaza-lima/vallas/vallas_poste_b.png",
+      "url": "/game/plaza-lima/vallas/vallas_poste_b.png",
+      "width": 14,
+      "height": 29,
+      "status": "ok_bajo_contraste",
+      "source_bbox_lamina": [
+        314,
+        492,
+        328,
+        521
+      ],
+      "notes": "Objeto oscuro con poco contraste frente al fondo de la lámina: el borde puede verse algo irregular."
+    },
+    {
+      "id": "baranda_balaustrada",
+      "name": "Balaustrada de piedra",
+      "category": "vallas",
+      "type": "prop",
+      "path": "public/game/plaza-lima/vallas/baranda_balaustrada.png",
+      "url": "/game/plaza-lima/vallas/baranda_balaustrada.png",
+      "width": 77,
+      "height": 35,
+      "status": "ok",
+      "source_bbox_lamina": [
+        287,
+        533,
+        364,
+        568
+      ],
+      "notes": ""
+    },
+    {
+      "id": "baranda_remate",
+      "name": "Remate/pilar pequeño",
+      "category": "vallas",
+      "type": "prop",
+      "path": "public/game/plaza-lima/vallas/baranda_remate.png",
+      "url": "/game/plaza-lima/vallas/baranda_remate.png",
+      "width": 18,
+      "height": 22,
+      "status": "ok",
+      "source_bbox_lamina": [
+        372,
+        546,
+        390,
+        568
+      ],
+      "notes": ""
+    },
+    {
+      "id": "muro_borde_a",
+      "name": "Muro/borde A",
+      "category": "vallas",
+      "type": "tile",
+      "path": "public/game/plaza-lima/vallas/muro_borde_a.png",
+      "url": "/game/plaza-lima/vallas/muro_borde_a.png",
+      "width": 105,
+      "height": 37,
+      "status": "ok",
+      "source_bbox_lamina": [
+        287,
+        581,
+        392,
+        618
+      ],
+      "notes": ""
+    },
+    {
+      "id": "muro_borde_b",
+      "name": "Muro/borde B",
+      "category": "vallas",
+      "type": "tile",
+      "path": "public/game/plaza-lima/vallas/muro_borde_b.png",
+      "url": "/game/plaza-lima/vallas/muro_borde_b.png",
+      "width": 105,
+      "height": 33,
+      "status": "ok",
+      "source_bbox_lamina": [
+        287,
+        628,
+        392,
+        661
+      ],
+      "notes": ""
+    },
+    {
+      "id": "adoquin_grande",
+      "name": "Tile adoquin grande",
+      "category": "tiles",
+      "type": "tile",
+      "path": "public/game/plaza-lima/tiles/adoquin_grande.png",
+      "url": "/game/plaza-lima/tiles/adoquin_grande.png",
+      "width": 73,
+      "height": 80,
+      "status": "ok",
+      "source_bbox_lamina": [
+        18,
+        487,
+        91,
+        567
+      ],
+      "notes": "Tile rectangular opaco; tamaño nativo de la lámina (no es 32x32 uniforme)."
+    },
+    {
+      "id": "suelo_gris_a",
+      "name": "Tile suelo gris a",
+      "category": "tiles",
+      "type": "tile",
+      "path": "public/game/plaza-lima/tiles/suelo_gris_a.png",
+      "url": "/game/plaza-lima/tiles/suelo_gris_a.png",
+      "width": 40,
+      "height": 41,
+      "status": "ok",
+      "source_bbox_lamina": [
+        98,
+        486,
+        138,
+        527
+      ],
+      "notes": "Tile rectangular opaco; tamaño nativo de la lámina (no es 32x32 uniforme)."
+    },
+    {
+      "id": "suelo_beige_a",
+      "name": "Tile suelo beige a",
+      "category": "tiles",
+      "type": "tile",
+      "path": "public/game/plaza-lima/tiles/suelo_beige_a.png",
+      "url": "/game/plaza-lima/tiles/suelo_beige_a.png",
+      "width": 31,
+      "height": 41,
+      "status": "ok",
+      "source_bbox_lamina": [
+        146,
+        486,
+        177,
+        527
+      ],
+      "notes": "Tile rectangular opaco; tamaño nativo de la lámina (no es 32x32 uniforme)."
+    },
+    {
+      "id": "suelo_beige_pequeno",
+      "name": "Tile suelo beige pequeno",
+      "category": "tiles",
+      "type": "tile",
+      "path": "public/game/plaza-lima/tiles/suelo_beige_pequeno.png",
+      "url": "/game/plaza-lima/tiles/suelo_beige_pequeno.png",
+      "width": 34,
+      "height": 28,
+      "status": "ok",
+      "source_bbox_lamina": [
+        187,
+        486,
+        221,
+        514
+      ],
+      "notes": "Tile rectangular opaco; tamaño nativo de la lámina (no es 32x32 uniforme)."
+    },
+    {
+      "id": "suelo_beige_franja_amarilla",
+      "name": "Tile suelo beige franja amarilla",
+      "category": "tiles",
+      "type": "tile",
+      "path": "public/game/plaza-lima/tiles/suelo_beige_franja_amarilla.png",
+      "url": "/game/plaza-lima/tiles/suelo_beige_franja_amarilla.png",
+      "width": 31,
+      "height": 28,
+      "status": "ok",
+      "source_bbox_lamina": [
+        229,
+        486,
+        260,
+        514
+      ],
+      "notes": "Tile rectangular opaco; tamaño nativo de la lámina (no es 32x32 uniforme)."
+    },
+    {
+      "id": "suelo_esquina_curva_a",
+      "name": "Tile suelo esquina curva a",
+      "category": "tiles",
+      "type": "tile",
+      "path": "public/game/plaza-lima/tiles/suelo_esquina_curva_a.png",
+      "url": "/game/plaza-lima/tiles/suelo_esquina_curva_a.png",
+      "width": 35,
+      "height": 31,
+      "status": "ok",
+      "source_bbox_lamina": [
+        186,
+        522,
+        221,
+        553
+      ],
+      "notes": "Tile rectangular opaco; tamaño nativo de la lámina (no es 32x32 uniforme). Esquina curva: píxeles de las esquinas transparentes."
+    },
+    {
+      "id": "suelo_franja_amarilla_b",
+      "name": "Tile suelo franja amarilla b",
+      "category": "tiles",
+      "type": "tile",
+      "path": "public/game/plaza-lima/tiles/suelo_franja_amarilla_b.png",
+      "url": "/game/plaza-lima/tiles/suelo_franja_amarilla_b.png",
+      "width": 31,
+      "height": 31,
+      "status": "ok",
+      "source_bbox_lamina": [
+        229,
+        522,
+        260,
+        553
+      ],
+      "notes": "Tile rectangular opaco; tamaño nativo de la lámina (no es 32x32 uniforme)."
+    },
+    {
+      "id": "suelo_marron",
+      "name": "Tile suelo marron",
+      "category": "tiles",
+      "type": "tile",
+      "path": "public/game/plaza-lima/tiles/suelo_marron.png",
+      "url": "/game/plaza-lima/tiles/suelo_marron.png",
+      "width": 39,
+      "height": 38,
+      "status": "ok",
+      "source_bbox_lamina": [
+        99,
+        532,
+        138,
+        570
+      ],
+      "notes": "Tile rectangular opaco; tamaño nativo de la lámina (no es 32x32 uniforme)."
+    },
+    {
+      "id": "suelo_gris_b",
+      "name": "Tile suelo gris b",
+      "category": "tiles",
+      "type": "tile",
+      "path": "public/game/plaza-lima/tiles/suelo_gris_b.png",
+      "url": "/game/plaza-lima/tiles/suelo_gris_b.png",
+      "width": 30,
+      "height": 36,
+      "status": "ok",
+      "source_bbox_lamina": [
+        147,
+        534,
+        177,
+        570
+      ],
+      "notes": "Tile rectangular opaco; tamaño nativo de la lámina (no es 32x32 uniforme)."
+    },
+    {
+      "id": "suelo_gris_c",
+      "name": "Tile suelo gris c",
+      "category": "tiles",
+      "type": "tile",
+      "path": "public/game/plaza-lima/tiles/suelo_gris_c.png",
+      "url": "/game/plaza-lima/tiles/suelo_gris_c.png",
+      "width": 32,
+      "height": 40,
+      "status": "ok",
+      "source_bbox_lamina": [
+        189,
+        566,
+        221,
+        606
+      ],
+      "notes": "Tile rectangular opaco; tamaño nativo de la lámina (no es 32x32 uniforme)."
+    },
+    {
+      "id": "suelo_esquina_curva_b",
+      "name": "Tile suelo esquina curva b",
+      "category": "tiles",
+      "type": "tile",
+      "path": "public/game/plaza-lima/tiles/suelo_esquina_curva_b.png",
+      "url": "/game/plaza-lima/tiles/suelo_esquina_curva_b.png",
+      "width": 31,
+      "height": 38,
+      "status": "ok",
+      "source_bbox_lamina": [
+        229,
+        568,
+        260,
+        606
+      ],
+      "notes": "Tile rectangular opaco; tamaño nativo de la lámina (no es 32x32 uniforme). Esquina curva: píxeles de las esquinas transparentes."
+    },
+    {
+      "id": "suelo_ladrillo_franja",
+      "name": "Tile suelo ladrillo franja",
+      "category": "tiles",
+      "type": "tile",
+      "path": "public/game/plaza-lima/tiles/suelo_ladrillo_franja.png",
+      "url": "/game/plaza-lima/tiles/suelo_ladrillo_franja.png",
+      "width": 73,
+      "height": 34,
+      "status": "ok",
+      "source_bbox_lamina": [
+        18,
+        572,
+        91,
+        606
+      ],
+      "notes": "Tile rectangular opaco; tamaño nativo de la lámina (no es 32x32 uniforme)."
+    },
+    {
+      "id": "suelo_gris_d",
+      "name": "Tile suelo gris d",
+      "category": "tiles",
+      "type": "tile",
+      "path": "public/game/plaza-lima/tiles/suelo_gris_d.png",
+      "url": "/game/plaza-lima/tiles/suelo_gris_d.png",
+      "width": 28,
+      "height": 31,
+      "status": "ok",
+      "source_bbox_lamina": [
+        99,
+        575,
+        127,
+        606
+      ],
+      "notes": "Tile rectangular opaco; tamaño nativo de la lámina (no es 32x32 uniforme)."
+    },
+    {
+      "id": "suelo_gris_e",
+      "name": "Tile suelo gris e",
+      "category": "tiles",
+      "type": "tile",
+      "path": "public/game/plaza-lima/tiles/suelo_gris_e.png",
+      "url": "/game/plaza-lima/tiles/suelo_gris_e.png",
+      "width": 40,
+      "height": 30,
+      "status": "ok",
+      "source_bbox_lamina": [
+        137,
+        576,
+        177,
+        606
+      ],
+      "notes": "Tile rectangular opaco; tamaño nativo de la lámina (no es 32x32 uniforme)."
+    },
+    {
+      "id": "calle_asfalto_a",
+      "name": "Tile calle asfalto a",
+      "category": "tiles",
+      "type": "tile",
+      "path": "public/game/plaza-lima/tiles/calle_asfalto_a.png",
+      "url": "/game/plaza-lima/tiles/calle_asfalto_a.png",
+      "width": 35,
+      "height": 50,
+      "status": "ok",
+      "source_bbox_lamina": [
+        18,
+        612,
+        53,
+        662
+      ],
+      "notes": "Tile rectangular opaco; tamaño nativo de la lámina (no es 32x32 uniforme)."
+    },
+    {
+      "id": "calle_asfalto_b",
+      "name": "Tile calle asfalto b",
+      "category": "tiles",
+      "type": "tile",
+      "path": "public/game/plaza-lima/tiles/calle_asfalto_b.png",
+      "url": "/game/plaza-lima/tiles/calle_asfalto_b.png",
+      "width": 34,
+      "height": 50,
+      "status": "ok",
+      "source_bbox_lamina": [
+        58,
+        612,
+        92,
+        662
+      ],
+      "notes": "Tile rectangular opaco; tamaño nativo de la lámina (no es 32x32 uniforme)."
+    },
+    {
+      "id": "calle_cebra_h",
+      "name": "Tile calle cebra h",
+      "category": "tiles",
+      "type": "tile",
+      "path": "public/game/plaza-lima/tiles/calle_cebra_h.png",
+      "url": "/game/plaza-lima/tiles/calle_cebra_h.png",
+      "width": 36,
+      "height": 50,
+      "status": "ok",
+      "source_bbox_lamina": [
+        101,
+        612,
+        137,
+        662
+      ],
+      "notes": "Tile rectangular opaco; tamaño nativo de la lámina (no es 32x32 uniforme)."
+    },
+    {
+      "id": "calle_cebra_v",
+      "name": "Tile calle cebra v",
+      "category": "tiles",
+      "type": "tile",
+      "path": "public/game/plaza-lima/tiles/calle_cebra_v.png",
+      "url": "/game/plaza-lima/tiles/calle_cebra_v.png",
+      "width": 35,
+      "height": 50,
+      "status": "ok",
+      "source_bbox_lamina": [
+        146,
+        612,
+        181,
+        662
+      ],
+      "notes": "Tile rectangular opaco; tamaño nativo de la lámina (no es 32x32 uniforme)."
+    },
+    {
+      "id": "cesped",
+      "name": "Tile cesped",
+      "category": "tiles",
+      "type": "tile",
+      "path": "public/game/plaza-lima/tiles/cesped.png",
+      "url": "/game/plaza-lima/tiles/cesped.png",
+      "width": 33,
+      "height": 50,
+      "status": "ok",
+      "source_bbox_lamina": [
+        189,
+        612,
+        222,
+        662
+      ],
+      "notes": "Tile rectangular opaco; tamaño nativo de la lámina (no es 32x32 uniforme)."
+    },
+    {
+      "id": "cesped_flores",
+      "name": "Tile cesped flores",
+      "category": "tiles",
+      "type": "tile",
+      "path": "public/game/plaza-lima/tiles/cesped_flores.png",
+      "url": "/game/plaza-lima/tiles/cesped_flores.png",
+      "width": 32,
+      "height": 50,
+      "status": "ok",
+      "source_bbox_lamina": [
+        229,
+        612,
+        261,
+        662
+      ],
+      "notes": "Tile rectangular opaco; tamaño nativo de la lámina (no es 32x32 uniforme)."
+    },
+    {
+      "id": "npc_realista_R",
+      "name": "NPC Realista (R)",
+      "category": "personajes/npcs",
+      "type": "sprite",
+      "path": "public/game/plaza-lima/personajes/npcs/npc_realista_R.png",
+      "url": "/game/plaza-lima/personajes/npcs/npc_realista_R.png",
+      "width": 42,
+      "height": 70,
+      "status": "ok",
+      "source_bbox_lamina": [
+        663,
+        486,
+        705,
+        556
+      ],
+      "notes": "Pose única (no hay animación)."
+    },
+    {
+      "id": "npc_investigador_I",
+      "name": "NPC Investigador (I)",
+      "category": "personajes/npcs",
+      "type": "sprite",
+      "path": "public/game/plaza-lima/personajes/npcs/npc_investigador_I.png",
+      "url": "/game/plaza-lima/personajes/npcs/npc_investigador_I.png",
+      "width": 39,
+      "height": 67,
+      "status": "ok",
+      "source_bbox_lamina": [
+        734,
+        489,
+        773,
+        556
+      ],
+      "notes": "Pose única (no hay animación)."
+    },
+    {
+      "id": "npc_artistico_A",
+      "name": "NPC Artístico (A)",
+      "category": "personajes/npcs",
+      "type": "sprite",
+      "path": "public/game/plaza-lima/personajes/npcs/npc_artistico_A.png",
+      "url": "/game/plaza-lima/personajes/npcs/npc_artistico_A.png",
+      "width": 65,
+      "height": 66,
+      "status": "ok",
+      "source_bbox_lamina": [
+        803,
+        490,
+        868,
+        556
+      ],
+      "notes": "Pose única (no hay animación)."
+    },
+    {
+      "id": "npc_social_S",
+      "name": "NPC Social (S)",
+      "category": "personajes/npcs",
+      "type": "sprite",
+      "path": "public/game/plaza-lima/personajes/npcs/npc_social_S.png",
+      "url": "/game/plaza-lima/personajes/npcs/npc_social_S.png",
+      "width": 33,
+      "height": 68,
+      "status": "ok",
+      "source_bbox_lamina": [
+        661,
+        575,
+        694,
+        643
+      ],
+      "notes": "Pose única (no hay animación)."
+    },
+    {
+      "id": "npc_emprendedor_E",
+      "name": "NPC Emprendedor (E)",
+      "category": "personajes/npcs",
+      "type": "sprite",
+      "path": "public/game/plaza-lima/personajes/npcs/npc_emprendedor_E.png",
+      "url": "/game/plaza-lima/personajes/npcs/npc_emprendedor_E.png",
+      "width": 34,
+      "height": 67,
+      "status": "ok",
+      "source_bbox_lamina": [
+        736,
+        573,
+        770,
+        640
+      ],
+      "notes": "Pose única (no hay animación)."
+    },
+    {
+      "id": "npc_convencional_C",
+      "name": "NPC Convencional (C)",
+      "category": "personajes/npcs",
+      "type": "sprite",
+      "path": "public/game/plaza-lima/personajes/npcs/npc_convencional_C.png",
+      "url": "/game/plaza-lima/personajes/npcs/npc_convencional_C.png",
+      "width": 40,
+      "height": 69,
+      "status": "ok",
+      "source_bbox_lamina": [
+        814,
+        572,
+        854,
+        641
+      ],
+      "notes": "Pose única (no hay animación)."
+    },
+    {
+      "id": "ui_burbuja_dialogo",
+      "name": "UI burbuja dialogo",
+      "category": "ui",
+      "type": "ui",
+      "path": "public/game/plaza-lima/ui/ui_burbuja_dialogo.png",
+      "url": "/game/plaza-lima/ui/ui_burbuja_dialogo.png",
+      "width": 28,
+      "height": 25,
+      "status": "ok",
+      "source_bbox_lamina": [
+        902,
+        495,
+        930,
+        520
+      ],
+      "notes": ""
+    },
+    {
+      "id": "ui_burbuja_exclamacion",
+      "name": "UI burbuja exclamacion",
+      "category": "ui",
+      "type": "ui",
+      "path": "public/game/plaza-lima/ui/ui_burbuja_exclamacion.png",
+      "url": "/game/plaza-lima/ui/ui_burbuja_exclamacion.png",
+      "width": 28,
+      "height": 25,
+      "status": "ok",
+      "source_bbox_lamina": [
+        940,
+        495,
+        968,
+        520
+      ],
+      "notes": ""
+    },
+    {
+      "id": "ui_burbuja_pregunta",
+      "name": "UI burbuja pregunta",
+      "category": "ui",
+      "type": "ui",
+      "path": "public/game/plaza-lima/ui/ui_burbuja_pregunta.png",
+      "url": "/game/plaza-lima/ui/ui_burbuja_pregunta.png",
+      "width": 27,
+      "height": 25,
+      "status": "ok",
+      "source_bbox_lamina": [
+        980,
+        495,
+        1007,
+        520
+      ],
+      "notes": ""
+    },
+    {
+      "id": "ui_burbuja_alerta_amarilla",
+      "name": "UI burbuja alerta amarilla",
+      "category": "ui",
+      "type": "ui",
+      "path": "public/game/plaza-lima/ui/ui_burbuja_alerta_amarilla.png",
+      "url": "/game/plaza-lima/ui/ui_burbuja_alerta_amarilla.png",
+      "width": 28,
+      "height": 27,
+      "status": "ok",
+      "source_bbox_lamina": [
+        904,
+        535,
+        932,
+        562
+      ],
+      "notes": ""
+    },
+    {
+      "id": "ui_burbuja_check",
+      "name": "UI burbuja check",
+      "category": "ui",
+      "type": "ui",
+      "path": "public/game/plaza-lima/ui/ui_burbuja_check.png",
+      "url": "/game/plaza-lima/ui/ui_burbuja_check.png",
+      "width": 25,
+      "height": 23,
+      "status": "ok",
+      "source_bbox_lamina": [
+        942,
+        538,
+        967,
+        561
+      ],
+      "notes": ""
+    },
+    {
+      "id": "ui_marcador_diamante",
+      "name": "UI marcador diamante",
+      "category": "ui",
+      "type": "ui",
+      "path": "public/game/plaza-lima/ui/ui_marcador_diamante.png",
+      "url": "/game/plaza-lima/ui/ui_marcador_diamante.png",
+      "width": 28,
+      "height": 34,
+      "status": "ok",
+      "source_bbox_lamina": [
+        978,
+        536,
+        1006,
+        570
+      ],
+      "notes": ""
+    },
+    {
+      "id": "ui_anillo_brillo",
+      "name": "Anillo de brillo azul",
+      "category": "ui",
+      "type": "effect",
+      "path": "public/game/plaza-lima/ui/ui_anillo_brillo.png",
+      "url": "/game/plaza-lima/ui/ui_anillo_brillo.png",
+      "width": 66,
+      "height": 30,
+      "status": "ok_aprox_alfa",
+      "source_bbox_lamina": [
+        908,
+        575,
+        974,
+        605
+      ],
+      "notes": "Efecto luminoso: el alpha se estimó por diferencia contra el fondo; los bordes de brillo son aproximados."
+    },
+    {
+      "id": "fuente_f0",
+      "name": "Fuente (fotograma 0)",
+      "category": "agua",
+      "type": "animation_frame",
+      "path": "public/game/plaza-lima/agua/fuente_f0.png",
+      "url": "/game/plaza-lima/agua/fuente_f0.png",
+      "width": 76,
+      "height": 77,
+      "status": "ok_frames_limitados",
+      "source_bbox_lamina": [
+        17,
+        253,
+        89,
+        328
+      ],
+      "notes": "Fotograma alineado al centro de la taza y apoyado en la base. La lámina solo entrega 3 poses.",
+      "frame_index": 0,
+      "pivot": [
+        38,
+        77
+      ]
+    },
+    {
+      "id": "fuente_f1",
+      "name": "Fuente (fotograma 1)",
+      "category": "agua",
+      "type": "animation_frame",
+      "path": "public/game/plaza-lima/agua/fuente_f1.png",
+      "url": "/game/plaza-lima/agua/fuente_f1.png",
+      "width": 76,
+      "height": 77,
+      "status": "ok_frames_limitados",
+      "source_bbox_lamina": [
+        92,
+        251,
+        161,
+        328
+      ],
+      "notes": "Fotograma alineado al centro de la taza y apoyado en la base. La lámina solo entrega 3 poses.",
+      "frame_index": 1,
+      "pivot": [
+        38,
+        77
+      ]
+    },
+    {
+      "id": "fuente_f2",
+      "name": "Fuente (fotograma 2)",
+      "category": "agua",
+      "type": "animation_frame",
+      "path": "public/game/plaza-lima/agua/fuente_f2.png",
+      "url": "/game/plaza-lima/agua/fuente_f2.png",
+      "width": 76,
+      "height": 77,
+      "status": "ok_frames_limitados",
+      "source_bbox_lamina": [
+        162,
+        251,
+        232,
+        328
+      ],
+      "notes": "Fotograma alineado al centro de la taza y apoyado en la base. La lámina solo entrega 3 poses.",
+      "frame_index": 2,
+      "pivot": [
+        38,
+        77
+      ]
+    },
+    {
+      "id": "chaski_abajo_0",
+      "name": "Chaski abajo fotograma 0",
+      "category": "personajes/jugador",
+      "type": "animation_frame",
+      "path": "public/game/plaza-lima/personajes/jugador/chaski_abajo_0.png",
+      "url": "/game/plaza-lima/personajes/jugador/chaski_abajo_0.png",
+      "width": 32,
+      "height": 36,
+      "status": "ok_frames_limitados",
+      "source_bbox_lamina": [
+        473,
+        485,
+        500,
+        518
+      ],
+      "notes": "Canvas uniforme; pivote en la base central (pies).",
+      "direction": "abajo",
+      "frame_index": 0,
+      "pivot": [
+        16,
+        36
+      ]
+    },
+    {
+      "id": "chaski_abajo_1",
+      "name": "Chaski abajo fotograma 1",
+      "category": "personajes/jugador",
+      "type": "animation_frame",
+      "path": "public/game/plaza-lima/personajes/jugador/chaski_abajo_1.png",
+      "url": "/game/plaza-lima/personajes/jugador/chaski_abajo_1.png",
+      "width": 32,
+      "height": 36,
+      "status": "ok_frames_limitados",
+      "source_bbox_lamina": [
+        510,
+        486,
+        536,
+        518
+      ],
+      "notes": "Canvas uniforme; pivote en la base central (pies).",
+      "direction": "abajo",
+      "frame_index": 1,
+      "pivot": [
+        16,
+        36
+      ]
+    },
+    {
+      "id": "chaski_abajo_2",
+      "name": "Chaski abajo fotograma 2",
+      "category": "personajes/jugador",
+      "type": "animation_frame",
+      "path": "public/game/plaza-lima/personajes/jugador/chaski_abajo_2.png",
+      "url": "/game/plaza-lima/personajes/jugador/chaski_abajo_2.png",
+      "width": 32,
+      "height": 36,
+      "status": "ok_frames_limitados",
+      "source_bbox_lamina": [
+        547,
+        485,
+        574,
+        518
+      ],
+      "notes": "Canvas uniforme; pivote en la base central (pies).",
+      "direction": "abajo",
+      "frame_index": 2,
+      "pivot": [
+        16,
+        36
+      ]
+    },
+    {
+      "id": "chaski_abajo_3",
+      "name": "Chaski abajo fotograma 3",
+      "category": "personajes/jugador",
+      "type": "animation_frame",
+      "path": "public/game/plaza-lima/personajes/jugador/chaski_abajo_3.png",
+      "url": "/game/plaza-lima/personajes/jugador/chaski_abajo_3.png",
+      "width": 32,
+      "height": 36,
+      "status": "ok_frames_limitados",
+      "source_bbox_lamina": [
+        585,
+        486,
+        613,
+        517
+      ],
+      "notes": "Canvas uniforme; pivote en la base central (pies).",
+      "direction": "abajo",
+      "frame_index": 3,
+      "pivot": [
+        16,
+        36
+      ]
+    },
+    {
+      "id": "chaski_izquierda_0",
+      "name": "Chaski izquierda fotograma 0",
+      "category": "personajes/jugador",
+      "type": "animation_frame",
+      "path": "public/game/plaza-lima/personajes/jugador/chaski_izquierda_0.png",
+      "url": "/game/plaza-lima/personajes/jugador/chaski_izquierda_0.png",
+      "width": 32,
+      "height": 36,
+      "status": "ok_frames_limitados",
+      "source_bbox_lamina": [
+        473,
+        521,
+        501,
+        553
+      ],
+      "notes": "Canvas uniforme; pivote en la base central (pies).",
+      "direction": "izquierda",
+      "frame_index": 0,
+      "pivot": [
+        16,
+        36
+      ]
+    },
+    {
+      "id": "chaski_izquierda_1",
+      "name": "Chaski izquierda fotograma 1",
+      "category": "personajes/jugador",
+      "type": "animation_frame",
+      "path": "public/game/plaza-lima/personajes/jugador/chaski_izquierda_1.png",
+      "url": "/game/plaza-lima/personajes/jugador/chaski_izquierda_1.png",
+      "width": 32,
+      "height": 36,
+      "status": "ok_frames_limitados",
+      "source_bbox_lamina": [
+        512,
+        519,
+        536,
+        553
+      ],
+      "notes": "Canvas uniforme; pivote en la base central (pies).",
+      "direction": "izquierda",
+      "frame_index": 1,
+      "pivot": [
+        16,
+        36
+      ]
+    },
+    {
+      "id": "chaski_izquierda_2",
+      "name": "Chaski izquierda fotograma 2",
+      "category": "personajes/jugador",
+      "type": "animation_frame",
+      "path": "public/game/plaza-lima/personajes/jugador/chaski_izquierda_2.png",
+      "url": "/game/plaza-lima/personajes/jugador/chaski_izquierda_2.png",
+      "width": 32,
+      "height": 36,
+      "status": "ok_frames_limitados",
+      "source_bbox_lamina": [
+        549,
+        521,
+        575,
+        553
+      ],
+      "notes": "Canvas uniforme; pivote en la base central (pies).",
+      "direction": "izquierda",
+      "frame_index": 2,
+      "pivot": [
+        16,
+        36
+      ]
+    },
+    {
+      "id": "chaski_izquierda_3",
+      "name": "Chaski izquierda fotograma 3",
+      "category": "personajes/jugador",
+      "type": "animation_frame",
+      "path": "public/game/plaza-lima/personajes/jugador/chaski_izquierda_3.png",
+      "url": "/game/plaza-lima/personajes/jugador/chaski_izquierda_3.png",
+      "width": 32,
+      "height": 36,
+      "status": "ok_frames_limitados",
+      "source_bbox_lamina": [
+        588,
+        522,
+        614,
+        553
+      ],
+      "notes": "Canvas uniforme; pivote en la base central (pies).",
+      "direction": "izquierda",
+      "frame_index": 3,
+      "pivot": [
+        16,
+        36
+      ]
+    },
+    {
+      "id": "chaski_derecha_0",
+      "name": "Chaski derecha fotograma 0",
+      "category": "personajes/jugador",
+      "type": "animation_frame",
+      "path": "public/game/plaza-lima/personajes/jugador/chaski_derecha_0.png",
+      "url": "/game/plaza-lima/personajes/jugador/chaski_derecha_0.png",
+      "width": 32,
+      "height": 36,
+      "status": "ok_frames_limitados",
+      "source_bbox_lamina": [
+        474,
+        553,
+        501,
+        589
+      ],
+      "notes": "Canvas uniforme; pivote en la base central (pies).",
+      "direction": "derecha",
+      "frame_index": 0,
+      "pivot": [
+        16,
+        36
+      ]
+    },
+    {
+      "id": "chaski_derecha_1",
+      "name": "Chaski derecha fotograma 1",
+      "category": "personajes/jugador",
+      "type": "animation_frame",
+      "path": "public/game/plaza-lima/personajes/jugador/chaski_derecha_1.png",
+      "url": "/game/plaza-lima/personajes/jugador/chaski_derecha_1.png",
+      "width": 32,
+      "height": 36,
+      "status": "ok_frames_limitados",
+      "source_bbox_lamina": [
+        512,
+        555,
+        537,
+        589
+      ],
+      "notes": "Canvas uniforme; pivote en la base central (pies).",
+      "direction": "derecha",
+      "frame_index": 1,
+      "pivot": [
+        16,
+        36
+      ]
+    },
+    {
+      "id": "chaski_derecha_2",
+      "name": "Chaski derecha fotograma 2",
+      "category": "personajes/jugador",
+      "type": "animation_frame",
+      "path": "public/game/plaza-lima/personajes/jugador/chaski_derecha_2.png",
+      "url": "/game/plaza-lima/personajes/jugador/chaski_derecha_2.png",
+      "width": 32,
+      "height": 36,
+      "status": "ok_frames_limitados",
+      "source_bbox_lamina": [
+        550,
+        556,
+        576,
+        589
+      ],
+      "notes": "Canvas uniforme; pivote en la base central (pies).",
+      "direction": "derecha",
+      "frame_index": 2,
+      "pivot": [
+        16,
+        36
+      ]
+    },
+    {
+      "id": "chaski_derecha_3",
+      "name": "Chaski derecha fotograma 3",
+      "category": "personajes/jugador",
+      "type": "animation_frame",
+      "path": "public/game/plaza-lima/personajes/jugador/chaski_derecha_3.png",
+      "url": "/game/plaza-lima/personajes/jugador/chaski_derecha_3.png",
+      "width": 32,
+      "height": 36,
+      "status": "ok_frames_limitados",
+      "source_bbox_lamina": [
+        588,
+        553,
+        614,
+        588
+      ],
+      "notes": "Canvas uniforme; pivote en la base central (pies).",
+      "direction": "derecha",
+      "frame_index": 3,
+      "pivot": [
+        16,
+        36
+      ]
+    },
+    {
+      "id": "chaski_arriba_0",
+      "name": "Chaski arriba fotograma 0",
+      "category": "personajes/jugador",
+      "type": "animation_frame",
+      "path": "public/game/plaza-lima/personajes/jugador/chaski_arriba_0.png",
+      "url": "/game/plaza-lima/personajes/jugador/chaski_arriba_0.png",
+      "width": 32,
+      "height": 36,
+      "status": "ok_frames_limitados",
+      "source_bbox_lamina": [
+        473,
+        589,
+        501,
+        624
+      ],
+      "notes": "Canvas uniforme; pivote en la base central (pies).",
+      "direction": "arriba",
+      "frame_index": 0,
+      "pivot": [
+        16,
+        36
+      ]
+    },
+    {
+      "id": "chaski_arriba_1",
+      "name": "Chaski arriba fotograma 1",
+      "category": "personajes/jugador",
+      "type": "animation_frame",
+      "path": "public/game/plaza-lima/personajes/jugador/chaski_arriba_1.png",
+      "url": "/game/plaza-lima/personajes/jugador/chaski_arriba_1.png",
+      "width": 32,
+      "height": 36,
+      "status": "ok_frames_limitados",
+      "source_bbox_lamina": [
+        511,
+        592,
+        537,
+        624
+      ],
+      "notes": "Canvas uniforme; pivote en la base central (pies).",
+      "direction": "arriba",
+      "frame_index": 1,
+      "pivot": [
+        16,
+        36
+      ]
+    },
+    {
+      "id": "chaski_arriba_2",
+      "name": "Chaski arriba fotograma 2",
+      "category": "personajes/jugador",
+      "type": "animation_frame",
+      "path": "public/game/plaza-lima/personajes/jugador/chaski_arriba_2.png",
+      "url": "/game/plaza-lima/personajes/jugador/chaski_arriba_2.png",
+      "width": 32,
+      "height": 36,
+      "status": "ok_frames_limitados",
+      "source_bbox_lamina": [
+        549,
+        592,
+        576,
+        624
+      ],
+      "notes": "Canvas uniforme; pivote en la base central (pies).",
+      "direction": "arriba",
+      "frame_index": 2,
+      "pivot": [
+        16,
+        36
+      ]
+    },
+    {
+      "id": "chaski_arriba_3",
+      "name": "Chaski arriba fotograma 3",
+      "category": "personajes/jugador",
+      "type": "animation_frame",
+      "path": "public/game/plaza-lima/personajes/jugador/chaski_arriba_3.png",
+      "url": "/game/plaza-lima/personajes/jugador/chaski_arriba_3.png",
+      "width": 32,
+      "height": 36,
+      "status": "ok_frames_limitados",
+      "source_bbox_lamina": [
+        588,
+        589,
+        614,
+        624
+      ],
+      "notes": "Canvas uniforme; pivote en la base central (pies).",
+      "direction": "arriba",
+      "frame_index": 3,
+      "pivot": [
+        16,
+        36
+      ]
+    },
+    {
+      "id": "chaski_interaccion_0",
+      "name": "Chaski interaccion fotograma 0",
+      "category": "personajes/jugador",
+      "type": "animation_frame",
+      "path": "public/game/plaza-lima/personajes/jugador/chaski_interaccion_0.png",
+      "url": "/game/plaza-lima/personajes/jugador/chaski_interaccion_0.png",
+      "width": 32,
+      "height": 36,
+      "status": "ok_frames_limitados",
+      "source_bbox_lamina": [
+        472,
+        629,
+        500,
+        663
+      ],
+      "notes": "Canvas uniforme; pivote en la base central (pies).",
+      "direction": "interaccion",
+      "frame_index": 0,
+      "pivot": [
+        16,
+        36
+      ]
+    },
+    {
+      "id": "chaski_interaccion_1",
+      "name": "Chaski interaccion fotograma 1",
+      "category": "personajes/jugador",
+      "type": "animation_frame",
+      "path": "public/game/plaza-lima/personajes/jugador/chaski_interaccion_1.png",
+      "url": "/game/plaza-lima/personajes/jugador/chaski_interaccion_1.png",
+      "width": 32,
+      "height": 36,
+      "status": "ok_frames_limitados",
+      "source_bbox_lamina": [
+        511,
+        629,
+        537,
+        663
+      ],
+      "notes": "Canvas uniforme; pivote en la base central (pies).",
+      "direction": "interaccion",
+      "frame_index": 1,
+      "pivot": [
+        16,
+        36
+      ]
+    },
+    {
+      "id": "chaski_interaccion_2",
+      "name": "Chaski interaccion fotograma 2",
+      "category": "personajes/jugador",
+      "type": "animation_frame",
+      "path": "public/game/plaza-lima/personajes/jugador/chaski_interaccion_2.png",
+      "url": "/game/plaza-lima/personajes/jugador/chaski_interaccion_2.png",
+      "width": 32,
+      "height": 36,
+      "status": "ok_frames_limitados",
+      "source_bbox_lamina": [
+        549,
+        629,
+        576,
+        663
+      ],
+      "notes": "Canvas uniforme; pivote en la base central (pies).",
+      "direction": "interaccion",
+      "frame_index": 2,
+      "pivot": [
+        16,
+        36
+      ]
+    },
+    {
+      "id": "chaski_interaccion_3",
+      "name": "Chaski interaccion fotograma 3",
+      "category": "personajes/jugador",
+      "type": "animation_frame",
+      "path": "public/game/plaza-lima/personajes/jugador/chaski_interaccion_3.png",
+      "url": "/game/plaza-lima/personajes/jugador/chaski_interaccion_3.png",
+      "width": 32,
+      "height": 36,
+      "status": "ok_frames_limitados",
+      "source_bbox_lamina": [
+        587,
+        628,
+        612,
+        663
+      ],
+      "notes": "Canvas uniforme; pivote en la base central (pies).",
+      "direction": "interaccion",
+      "frame_index": 3,
+      "pivot": [
+        16,
+        36
+      ]
+    }
+  ],
+  "animations": [
+    {
+      "id": "fuente_anim",
+      "frames": [
+        "fuente_f0",
+        "fuente_f1",
+        "fuente_f2"
+      ],
+      "frame_size": [
+        76,
+        77
+      ],
+      "pivot": [
+        38,
+        77
+      ],
+      "fps": null,
+      "warnings": [
+        "Solo 3 fotogramas en la lámina; no se verifica que formen un ciclo continuo sin saltos. Velocidad (fps) sin definir."
+      ]
+    },
+    {
+      "id": "chaski_abajo",
+      "frames": [
+        "chaski_abajo_0",
+        "chaski_abajo_1",
+        "chaski_abajo_2",
+        "chaski_abajo_3"
+      ],
+      "frame_size": [
+        32,
+        36
+      ],
+      "pivot": [
+        16,
+        36
+      ],
+      "fps": null,
+      "warnings": []
+    },
+    {
+      "id": "chaski_izquierda",
+      "frames": [
+        "chaski_izquierda_0",
+        "chaski_izquierda_1",
+        "chaski_izquierda_2",
+        "chaski_izquierda_3"
+      ],
+      "frame_size": [
+        32,
+        36
+      ],
+      "pivot": [
+        16,
+        36
+      ],
+      "fps": null,
+      "warnings": []
+    },
+    {
+      "id": "chaski_derecha",
+      "frames": [
+        "chaski_derecha_0",
+        "chaski_derecha_1",
+        "chaski_derecha_2",
+        "chaski_derecha_3"
+      ],
+      "frame_size": [
+        32,
+        36
+      ],
+      "pivot": [
+        16,
+        36
+      ],
+      "fps": null,
+      "warnings": []
+    },
+    {
+      "id": "chaski_arriba",
+      "frames": [
+        "chaski_arriba_0",
+        "chaski_arriba_1",
+        "chaski_arriba_2",
+        "chaski_arriba_3"
+      ],
+      "frame_size": [
+        32,
+        36
+      ],
+      "pivot": [
+        16,
+        36
+      ],
+      "fps": null,
+      "warnings": []
+    },
+    {
+      "id": "chaski_interaccion",
+      "frames": [
+        "chaski_interaccion_0",
+        "chaski_interaccion_1",
+        "chaski_interaccion_2",
+        "chaski_interaccion_3"
+      ],
+      "frame_size": [
+        32,
+        36
+      ],
+      "pivot": [
+        16,
+        36
+      ],
+      "fps": null,
+      "warnings": []
+    }
+  ],
+  "pending": [
+    {
+      "id": "estacion_metropolitano_con_bus_REF",
+      "name": "Estación del Metropolitano + bus (compuesto, solo referencia)",
+      "status": "pendiente_regeneracion",
+      "reason": "El bus articulado tapa la parte baja de la estación y ambos están cortados por el borde derecho de la lámina. No se pueden separar sin inventar píxeles ocultos. Hay que regenerar estación y bus por separado y completos.",
+      "reference_path": "public/game/plaza-lima/_pendientes/estacion_metropolitano_con_bus_REF.png",
+      "width": 210,
+      "height": 91,
+      "source_bbox_lamina": [
+        802,
+        245,
+        1012,
+        336
+      ]
+    },
+    {
+      "id": "arbol_izq_catedral_PARCIAL_REF",
+      "name": "Árbol a la izquierda de la catedral (parcial)",
+      "status": "pendiente_regeneracion",
+      "reason": "La catedral tapa el lado derecho de su copa; el árbol está incompleto. Regenerar si se quiere como sprite independiente.",
+      "reference_path": "public/game/plaza-lima/_pendientes/arbol_izq_catedral_PARCIAL_REF.png",
+      "width": 25,
+      "height": 61,
+      "source_bbox_lamina": [
+        16,
+        149,
+        41,
+        210
+      ]
+    },
+    {
+      "id": "arbusto_der_catedral_PARCIAL_REF",
+      "name": "Arbusto a la derecha de la catedral (parcial)",
+      "status": "pendiente_regeneracion",
+      "reason": "La catedral tapa su lado izquierdo; el arbusto está incompleto. Regenerar si se quiere como sprite independiente.",
+      "reference_path": "public/game/plaza-lima/_pendientes/arbusto_der_catedral_PARCIAL_REF.png",
+      "width": 11,
+      "height": 25,
+      "source_bbox_lamina": [
+        346,
+        186,
+        357,
+        211
+      ]
+    },
+    {
+      "id": "estacion_metropolitano",
+      "name": "Estación del Metropolitano",
+      "status": "pendiente_regeneracion",
+      "reason": "Ver estacion_metropolitano_con_bus_REF.",
+      "reference_path": null
+    },
+    {
+      "id": "bus_metropolitano",
+      "name": "Bus articulado del Metropolitano",
+      "status": "pendiente_regeneracion",
+      "reason": "Ver estacion_metropolitano_con_bus_REF.",
+      "reference_path": null
+    },
+    {
+      "id": "chaski_animacion_lateral",
+      "name": "Animación lateral del Chaski (izquierda/derecha)",
+      "status": "pendiente_regeneracion",
+      "reason": "Las filas \"Izquierda\" y \"Derecha\" de la lámina se ven prácticamente de frente; no son perfiles reales ni un ciclo de caminata.",
+      "reference_path": null
+    },
+    {
+      "id": "chaski_ciclos_caminata",
+      "name": "Ciclos de caminata completos del Chaski",
+      "status": "pendiente_regeneracion",
+      "reason": "Solo hay 4 poses por dirección con muy poca variación; no alcanzan para una animación completa de caminar.",
+      "reference_path": null
+    },
+    {
+      "id": "vallas_cadena",
+      "name": "Dos postes con cadena",
+      "status": "pendiente_regeneracion",
+      "reason": "La cadena y los postes tienen casi el mismo color oscuro que el fondo; la máscara queda rota e irregular y no se puede recortar limpiamente sin inventar píxeles.",
+      "reference_path": "public/game/plaza-lima/_pendientes/vallas_cadena_REF.png",
+      "width": 53,
+      "height": 29,
+      "source_bbox_lamina": [
+        341,
+        492,
+        394,
+        521
+      ]
+    }
+  ]
+}

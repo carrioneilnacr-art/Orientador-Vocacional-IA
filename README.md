@@ -1,5 +1,7 @@
 <div align="center">
 
+<!-- Arquitectura vigente: docs/architecture/ARQUITECTURA_MONOLITO_MODULAR.md -->
+
 # 🧭 Orientador Vocacional IA
 
 **Plataforma inteligente de orientación vocacional y exploración académica basada en IA con datos oficiales verificados.**
@@ -206,8 +208,50 @@ npm run build
 
 ---
 
+## Aventura Chaski — versión actual
+
+**Recorrido:** Inicio → Comenzar aventura → Plaza de Lima → Metropolitano → Colegio → Descubrimientos exploratorios.
+
+- Plaza con cinco NPC obligatorios, profundidad por pies, colisiones y diálogos versionados.
+- Colegio con patio, escalera y tres aulas: laboratorio, taller creativo y tecnología.
+- Desafíos por etapas, pistas, reintentos y reflexión independiente del acierto.
+- Botón **Volver a la plaza** en el colegio; regreso al colegio mediante el Metropolitano. Conserva actividades y conversaciones completadas.
+- Partida nueva comienza en la plaza; una partida guardada reanuda su capítulo. WASD/flechas: mover; E: interactuar; B: bitácora.
+- El avance intermedio se guarda en este navegador. Al terminar los capítulos disponibles, se guarda una copia validada en el servidor y se abre `/aventura/resultados`.
+- Las respuestas anteriores conservan su significado por versión de contenido. No es obligatorio contestar otro cuestionario al acabar la aventura.
+
+### Arquitectura y límites
+
+Monolito modular en migración hacia Clean Architecture: `src/modules/adventure`, `assessment`, `chaski-ai` y `school-portal`, con dominio, casos de uso y adaptadores. Parte del renderizado y de las funcionalidades anteriores permanece en `src/game`, `src/components` y `src/lib`.
+
+Los descubrimientos de los dos capítulos son preferencias exploratorias, **no un diagnóstico ni un instrumento psicométrico validado**. Los escenarios posteriores, la sincronización intermedia entre dispositivos y la calibración del perfil final siguen pendientes. La IA conversacional y las pistas programadas del juego son integraciones diferentes.
+
+Documentación:
+
+- [Arquitectura vigente](docs/architecture/ARQUITECTURA_MONOLITO_MODULAR.md)
+- [Investigación de diálogos y desafíos](docs/game/INVESTIGACION_CONTENIDO_AVENTURA_V2.md)
+- [Ruta entre escenarios](docs/game/RUTA_CHASKI_IA_ESCENARIOS.md)
+- [Verificación de la migración](docs/architecture/VERIFICACION_REFACTOR_2026_11_02.md)
+- [Inventario de archivos candidatos a depuración](docs/architecture/INVENTARIO_DEPURACION.md)
+
+### Instalación reproducible y producción
+
+Usar `npm ci` con el lockfile. Copiar `.env.example` y configurar las variables del servidor en el proveedor de despliegue. `STUDENT_AUTH_SECRET` debe ser un secreto propio de producción, de al menos 32 caracteres; nunca publicar `.env.local` ni reutilizar claves del navegador para firmar sesiones. Consultar `.env.example` para proveedores de IA y acceso escolar.
+
+Los cambios de navegación y los catálogos versionados no requieren nuevas tablas. Los SQL operativos de endurecimiento/vinculación de `user_sessions` están documentados; **no ejecutar indiscriminadamente migraciones históricas ni seeds**. Falta reconciliar ese SQL con el historial canónico antes de recrear otra base de datos.
+
+Verificación local de esta entrega: 156 pruebas y TypeScript sin errores. El workflow Quality verifica pruebas, tipos, lint de módulos y build en GitHub; su resultado remoto se revisa por separado.
+
+```bash
+npx vitest run
+npx tsc --noEmit
+npm run build
+```
+
+---
+
 ## 📄 Licencia y Autores
 
-Este proyecto ha sido desarrollado siguiendo principios de Arquitectura Limpia (*Clean Architecture*), accesibilidad web y estándares de IA Verificable (*Grounded AI*).
+Este proyecto evoluciona hacia una arquitectura modular con separación de responsabilidades, accesibilidad web y trazabilidad de datos. La migración y validación están en curso.
 
 Licencia bajo los términos acordados para el proyecto **Orientador Vocacional IA**.

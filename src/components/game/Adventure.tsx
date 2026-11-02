@@ -3,13 +3,21 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ArrowLeft, ArrowRight, BookOpen, Check, Compass, Leaf, Zap, RotateCcw, Settings2, X, Users, Gamepad2, Landmark, MapPin, Maximize2 } from 'lucide-react';
-import { initialProgress, missions, readProgress, recordPreference, recordNpcChoice, reflectionLabels, SAVE_KEY, type Mission, type Progress } from '@/game/adventure';
+import { ArrowLeft, ArrowRight, BookOpen, Check, Compass, Leaf, Zap, RotateCcw, X, Users, Gamepad2, Landmark, MapPin, Maximize2 } from 'lucide-react';
+import { initialProgress, missions, recordPreference, recordNpcChoice, reflectionLabels, SAVE_KEY, type Mission, type Progress } from '@/game/adventure';
 import { plazaNpcs, type PlazaNpcId } from '@/game/plazaNpcs';
 import AdventureWorld from './AdventureWorld';
-import PlazaWorld from './PlazaWorld';
+import PlazaPlayable from './PlazaPlayable';
+import ColegioPatio from './ColegioPatio';
+import {SCHOOL_ACTIVITY_KEY,recordSchoolEvidence,schoolActivityName,preferenceLabels,explorationAreas,type SchoolEvidence} from '@/game/schoolActivities';
+import PlazaRpgDialogue from './PlazaRpgDialogue';
+import {rpgNpcs,allPlazaNpcsCompleted,plazaConversationPercent,type RpgNpcId} from '@/game/plazaRpgNpcs';
+import {recordRpgChoice,RPG_SAVE_KEY,type RpgDecision} from '@/game/plazaRpgDialogues';
+import {JOURNEY_SAVE_KEY,readJourney,newJourney,recordSchoolAnswer,type SchoolAnswers,type SchoolContentVersions} from '@/game/adventureJourney';
+import {CURRENT_NARRATIVE_VERSION,getPlazaDialogue,getSchoolDialogue} from '@/modules/adventure/domain/narrativeContent';
 import s from './Adventure.module.css';
 import './AdventureShell.css';
+import CompleteExplorationButton,{SUBMISSION_KEY} from '@/modules/adventure/presentation/CompleteExplorationButton';
 
 function Overlay({ title, onClose, children, returnTo }: { title: string; onClose: () => void; children: React.ReactNode; returnTo?: HTMLElement | null }) {
   const ref = useRef<HTMLDialogElement>(null);
@@ -115,6 +123,12 @@ function MissionPlay({ mission, onFinish, onClose, returnTo }: { mission: Missio
 export default function Adventure() {
   const [progress, setProgress] = useState<Progress>(initialProgress);
   const [loaded, setLoaded] = useState(false);
+  const [rpgEntries,setRpgEntries]=useState<RpgDecision[]>([]);
+  const [schoolEntries,setSchoolEntries]=useState<SchoolEvidence[]>([]);
+  const [schoolAnswers,setSchoolAnswers]=useState<SchoolAnswers>({});
+  const [schoolContentVersions,setSchoolContentVersions]=useState<SchoolContentVersions>({});
+  const [worldVersion,setWorldVersion]=useState(0);
+  const [activeNpc,setActiveNpc]=useState<RpgNpcId|null>(null);
   const [scene, setScene] = useState('plaza');
   const [saveState, setSaveState] = useState('Preparando aventura…');
   const [mission, setMission] = useState<Mission | null>(null);
@@ -126,13 +140,13 @@ export default function Adventure() {
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
-      if (event.key.toLowerCase() !== 'b' || event.repeat || mission || panel || event.target instanceof HTMLInputElement) return;
+      if (event.key.toLowerCase() !== 'b' || event.repeat || mission || panel || activeNpc || event.target instanceof HTMLInputElement) return;
       event.preventDefault();
       openPanel('journal');
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [mission, panel]);
+  }, [mission, panel, activeNpc]);
 
   useEffect(() => {
     if (!notice) return;
@@ -142,24 +156,38 @@ export default function Adventure() {
 
   function openPanel(value: 'journal' | 'settings') {
     setOpener(document.activeElement instanceof HTMLElement ? document.activeElement : null);
+    setActiveNpc(null);
     setPanel(value);
   }
 
   useEffect(() => {
-    try { setProgress(readProgress(localStorage.getItem(SAVE_KEY))); }
+    let cancelled=false;
+    // Hydrate browser storage after mount; Strict Mode can cancel its first pass.
+    queueMicrotask(()=>{
+    if(cancelled)return;
+    try {
+      const saved=readJourney(localStorage.getItem(JOURNEY_SAVE_KEY),{progress:localStorage.getItem(SAVE_KEY),rpg:localStorage.getItem(RPG_SAVE_KEY),school:localStorage.getItem(SCHOOL_ACTIVITY_KEY)});
+      setProgress(saved.progress);setRpgEntries(saved.rpgEntries);setSchoolEntries(saved.schoolEntries);setSchoolAnswers(saved.schoolAnswers);setSchoolContentVersions(saved.schoolContentVersions);setScene(saved.scene);
+    }
     catch { setSaveState('Guardado no disponible en este navegador'); }
+    if (process.env.NODE_ENV === 'development' && new URLSearchParams(window.location.search).get('vista') === 'colegio') setScene('colegio');
     setLoaded(true);
+    });
+    return ()=>{cancelled=true;};
   }, []);
 
   useEffect(() => {
     if (!loaded) return;
+    let cancelled=false;
+    const report=(message:string)=>queueMicrotask(()=>{if(!cancelled)setSaveState(message);});
     try {
-      localStorage.setItem(SAVE_KEY, JSON.stringify(progress));
-      setSaveState('Guardado en este dispositivo');
+      localStorage.setItem(JOURNEY_SAVE_KEY,JSON.stringify({version:1,progress,rpgEntries,schoolEntries,schoolAnswers,schoolContentVersions,scene:scene==='colegio'?'colegio':'plaza'}));
+      report('Guardado en este dispositivo');
     } catch {
-      setSaveState('No se pudo guardar. Conserva esta pestaña abierta.');
+      report('No se pudo guardar. Conserva esta pestaña abierta.');
     }
-  }, [progress, loaded]);
+    return ()=>{cancelled=true;};
+  }, [progress, rpgEntries, schoolEntries, schoolAnswers, schoolContentVersions, scene, loaded]);
 
   const visit = useCallback((id: string) => {
     const found = missions.find(m => m.id === id);
@@ -184,16 +212,19 @@ export default function Adventure() {
   }
 
   const reduced = progress.reducedMotion;
-  const explored = progress.npcDecisions.filter(entry => entry.evidenceVersion === 1).length;
-  const progressPercent = Math.round(((explored + completed.length) / (plazaNpcs.length + missions.length)) * 100);
-  const location = ({ plaza: 'Plaza de Lima', colegio: 'Colegio Horizonte', barrio: 'Barrio de los Caminos', malecon: 'Malecón de las Ideas' } as Record<string, string>)[scene] ?? 'Chaski Adventure';
+  const explored = rpgEntries.length;
+  const plazaComplete=allPlazaNpcsCompleted(rpgEntries.map(entry=>entry.npcId));
+  const plazaHint=plazaComplete?'El Metropolitano ya puede llevarte al colegio.':explored===4?'Habla con el personaje que falta para continuar.':`Habla con los ${rpgNpcs.length-explored} personajes que faltan para continuar.`;
+  const progressPercent = plazaConversationPercent(rpgEntries.map(entry=>entry.npcId));
+  const chapterProgressPercent = scene === 'colegio' ? Math.round(schoolEntries.length/3*100) : progressPercent;
+  const location = ({ plaza: 'Plaza de Lima', colegio: 'Colegio José de la Riva Agüero', barrio: 'Barrio de los Caminos', malecon: 'Malecón de las Ideas' } as Record<string, string>)[scene] ?? 'Chaski Adventure';
   const dimensions = [
     ['R', 'Realista', '#69e8a4'], ['I', 'Investigador', '#64d7ff'], ['A', 'Artístico', '#ff9ed8'],
     ['S', 'Social', '#ffda69'], ['E', 'Emprendedor', '#ffa86b'], ['C', 'Convencional', '#bba5ff'],
   ];
 
   return (
-    <main className={`${s.adventure} adventure`} data-reduced={reduced}>
+    <main className={`${s.adventure} adventure`} data-reduced={reduced} data-plaza-phase={scene === 'plaza' ? 'playable' : undefined}>
       <header className="adventureHeader">
         <Link className="productBrand" href="/" aria-label="Ir a la portada de Orientador Vocacional IA">
           <Image src="/game/chaski-2d.png" alt="" width={58} height={58} />
@@ -207,14 +238,9 @@ export default function Adventure() {
       <div className="playLayout">
       <div ref={screenRef} className={`${s.gameScreen} gameScreen`}>
         {scene === 'plaza' ? (
-          <PlazaWorld
-            key="plaza-perspectiva-v4"
-            onSceneChange={setScene}
-            npcDecisions={progress.npcDecisions}
-            onNpcAnswer={answerNpc}
-            paused={!!mission || !!panel || !loaded}
-            reducedMotion={reduced}
-          />
+          <PlazaPlayable key={`plaza-${worldVersion}`} paused={!!mission || !!panel || !!activeNpc || !loaded} reducedMotion={reduced} activeNpc={activeNpc} completedNpcs={rpgEntries.map(e=>e.npcId)} onTalk={setActiveNpc} onBoard={()=>{if(plazaComplete)setScene('colegio');}} />
+        ) : scene === 'colegio' ? (
+          <ColegioPatio key={`colegio-${worldVersion}`} paused={!!panel || !loaded} reducedMotion={reduced} answers={schoolAnswers} contentVersions={schoolContentVersions} onAnswer={(id,choice)=>{if(schoolAnswers[id]!==undefined)return;setSchoolAnswers(old=>recordSchoolAnswer(old,id,choice));setSchoolContentVersions(old=>({...old,[id]:CURRENT_NARRATIVE_VERSION}));setNotice('Conversación guardada en la bitácora.');}} onActivity={entry=>{setSchoolEntries(old=>recordSchoolEvidence(old,entry));setNotice('Chaski guardó tu descubrimiento en la bitácora.');}} />
         ) : (
           <AdventureWorld
             scene={scene}
@@ -227,20 +253,21 @@ export default function Adventure() {
             reducedMotion={reduced}
           />
         )}
+        {activeNpc && <PlazaRpgDialogue key={activeNpc} npcId={activeNpc} contentVersion={rpgEntries.find(e=>e.npcId===activeNpc)?.contentVersion??(rpgEntries.some(e=>e.npcId===activeNpc)?'legacy-v1':CURRENT_NARRATIVE_VERSION)} savedChoice={rpgEntries.find(e=>e.npcId===activeNpc)?.choice} reducedMotion={reduced} onAnswer={choice=>setRpgEntries(old=>recordRpgChoice(old,activeNpc,choice))} onClose={()=>setActiveNpc(null)} />}
         <div className={`${s.gameTop} gameTop`}>
           <Link href="/" aria-label="Volver a la portada">
             <ArrowLeft size={19} />
           </Link>
-          <div><MapPin size={24} /><span><strong>{location}</strong><small>Capítulo 1 · Descubre tu camino</small></span></div>
+          <div><MapPin size={24} /><span><strong>{location}</strong><small>{scene === 'colegio' ? 'Capítulo 2 · Descubre tus habilidades' : 'Capítulo 1 · Descubre tu camino'}</small></span></div>
         </div>
         <div className={`${s.gameTools} gameTools`}>
+          {scene==='colegio'&&<button className={s.returnTravel} disabled={!loaded||!!panel} onClick={()=>{setActiveNpc(null);setScene('plaza');setNotice('Volviste a la Plaza de Lima. Tu bitácora y actividades completadas se conservan. Usa el Metropolitano para regresar al colegio.');}} aria-label="Volver a la Plaza de Lima conservando el progreso" title="Volver a la Plaza de Lima">
+            <ArrowLeft size={20}/><span>Volver a la plaza</span>
+          </button>}
           <button onClick={() => openPanel('journal')} aria-label="Abrir bitácora">
             <BookOpen size={23} />
             <span>Bitácora</span>
-            <b>{completed.length + progress.npcDecisions.length}</b>
-          </button>
-          <button onClick={() => openPanel('settings')} aria-label="Ajustes de accesibilidad">
-            <Settings2 size={21} />
+            <b>{completed.length + progress.npcDecisions.length + rpgEntries.length + schoolEntries.length + Object.keys(schoolAnswers).length}</b>
           </button>
           <button onClick={() => { if (document.fullscreenElement) void document.exitFullscreen(); else void screenRef.current?.requestFullscreen(); }} aria-label="Alternar pantalla completa"><Maximize2 size={21} /></button>
         </div>
@@ -254,13 +281,14 @@ export default function Adventure() {
       <section className="belowGame" aria-label="Orientación y progreso">
         <div className="assistantCard">
           <Image src="/game/chaski-2d.png" alt="Chaski" width={120} height={125} />
-          <div className="assistantCopy"><span className="cardKicker">TU COMPAÑERO DE RUTA</span><h2>Chaski <span>✦</span></h2><p>{scene === 'plaza' ? explored ? `Ya conversaste con ${explored} de las 6 personas de la plaza. Sigue explorando y guarda tus ideas en la bitácora.` : '¡Bienvenido a la Plaza de Lima! Explora el lugar, conversa con sus habitantes y descubre qué actividades despiertan tu curiosidad.' : `Estás en ${location}. Explora los encuentros y registra lo que descubras en tu bitácora.`}</p><small>{explored ? `${explored} pistas guardadas` : 'Tu camino empieza aquí'}</small></div>
+          <div className="assistantCopy"><span className="cardKicker">CHASKI IA · TU GUÍA</span><h2>Chaski <span>✦</span></h2><p>{scene === 'plaza' ? explored ? `He guardado ${explored} ${explored===1?'pista':'pistas'} de tus conversaciones. ${plazaHint}` : 'Habla con los 5 personajes de la plaza. Acércate y pulsa E; guardaré lo que descubras.' : `Estamos en ${location}. Sigue explorando y yo guardaré las pistas de tu camino.`}</p><small>{explored ? `${explored} ${explored===1?'pista guardada':'pistas guardadas'}` : 'Tu camino empieza aquí'}</small></div>
         </div>
         <div className="progressCard">
-          <span className="cardKicker">CAPÍTULO 01 · EXPLORACIÓN</span><h2>Tu camino se va dibujando</h2>
-          <div className="progressLine"><div role="progressbar" aria-valuenow={progressPercent} aria-valuemin={0} aria-valuemax={100} aria-label="Progreso de la aventura"><i style={{ width: `${progressPercent}%` }} /></div><strong>{progressPercent}%</strong></div>
-          <p className="progressCaption">{explored} de 6 conversaciones en la plaza</p>
+          <span className="cardKicker">{scene === 'colegio' ? 'CAPÍTULO 02 · EL COLEGIO' : 'CAPÍTULO 01 · EXPLORACIÓN'}</span><h2>{scene === 'colegio' ? 'Descubre qué disfrutas hacer' : 'Tu camino se va dibujando'}</h2>
+          <div className="progressLine"><div role="progressbar" aria-valuenow={chapterProgressPercent} aria-valuemin={0} aria-valuemax={100} aria-label="Progreso del capítulo"><i style={{ width: `${chapterProgressPercent}%` }} /></div><strong>{chapterProgressPercent}%</strong></div>
+          <p className="progressCaption">{scene === 'colegio' ? `${schoolEntries.length} de 3 actividades de aula exploradas. Acércate a cada NPC y pulsa E.` : `${explored} de ${rpgNpcs.length} conversaciones en la plaza`}</p>
           <div className="progressBottom"><div className="dimensionList">{dimensions.map(([letter, label, color]) => <span key={letter} title={label} aria-label={label} style={{ '--dimension-color': color } as React.CSSProperties}>{letter}</span>)}</div><button onClick={() => openPanel('journal')}>Ver bitácora <BookOpen size={16} /></button></div>
+          {scene==='colegio'&&plazaComplete&&schoolEntries.length===3&&<CompleteExplorationButton input={{version:1,rpgEntries,schoolEntries,schoolAnswers,schoolContentVersions}}/>}
         </div>
       </section>
       </div>
@@ -277,16 +305,20 @@ export default function Adventure() {
 
       {panel === 'journal' && (
         <Overlay returnTo={opener} title="Tu bitácora" onClose={() => setPanel(null)}>
-          <span className={s.eyebrow}>TU HISTORIA, A TU RITMO</span>
-          <h2>Lo que descubriste en el camino.</h2>
-          <p className={s.modalIntro}>Estas son tus preferencias durante la aventura. Puedes cambiarlas al volver a un taller.</p>
-          {!completed.length && !progress.npcDecisions.length && (
+          <div className={s.journalGuide}><Image src="/game/chaski-2d.png" alt="" width={60} height={68} /><div><span className={s.eyebrow}>BITÁCORA DE CHASKI IA</span><h2>Las pistas que encontraste</h2></div></div>
+          <p className={s.modalIntro}>Chaski guarda lo que te llamó la atención. Cada pista puede ayudarte a elegir qué explorar después.</p>
+          {!completed.length && !progress.npcDecisions.length && !rpgEntries.length && !schoolEntries.length && !Object.keys(schoolAnswers).length && (
             <div className={s.emptyJournal}>
               <BookOpen size={42} />
               <p>Tu primera página está por escribirse.</p>
               <small>Conversa con alguien en la plaza y cuéntale a Chaski qué te pareció.</small>
             </div>
           )}
+          <div className={s.journalEntries}>
+            {(['elena','sofia'] as const).filter(id=>schoolAnswers[id]!==undefined).map(id=><article key={id}><span>Colegio · {id==='elena'?'Bienvenida':'Trabajo en equipo'}</span><h3>{id==='elena'?'Profesora Elena':'Sofía'}</h3><p>{getSchoolDialogue(id,schoolContentVersions[id]??'legacy-v1').notes[schoolAnswers[id]!]}</p></article>)}
+            {schoolEntries.map(entry=><article key={entry.activityId}><span>Colegio · {explorationAreas[entry.activityId]}</span><h3>{schoolActivityName(entry.activityId,entry.contentVersion)}</h3><p>{preferenceLabels[entry.preference]}</p></article>)}
+            {rpgEntries.map(entry=>{const npc=rpgNpcs.find(n=>n.id===entry.npcId)!;const dialogue=getPlazaDialogue(entry.npcId,entry.contentVersion??'legacy-v1');return <article key={entry.npcId}><span>Plaza de Lima · {npc.role}</span><h3>{npc.name}</h3><p>{dialogue.notes[entry.choice]}</p></article>;})}
+          </div>
           <div className={s.journalEntries}>
             {progress.npcDecisions.map(entry => {
               const npc = plazaNpcs.find(item => item.id === entry.npcId)!;
@@ -319,8 +351,9 @@ export default function Adventure() {
           </div>
           <div className={s.journalDisclaimer}>
             <Compass size={21} />
-            <p>Tu curiosidad puede cambiar. Esta bitácora es exploratoria y no calcula un diagnóstico ni una compatibilidad profesional.</p>
+            <p>Estas pistas muestran intereses que estás explorando; no son un resultado definitivo.</p>
           </div>
+          <button className={s.reset} onClick={() => { setPanel(null); openPanel('settings'); }}>Ajustes y reinicio</button>
           {completed.length === 4 && (
             <Link className={s.primary} href="/cuestionario">
               Seguir descubriendo mis intereses <ArrowRight size={17} />
@@ -334,7 +367,7 @@ export default function Adventure() {
           <span className={s.eyebrow}>JUEGA A TU MANERA</span>
           <h2>Tu aventura, tu ritmo.</h2>
           <p>{saveState}</p>
-          <p className={s.modalIntro}>Todas las decisiones están disponibles desde los botones de los talleres. No necesitas moverte por el mapa.</p>
+          <p className={s.modalIntro}>Aquí puedes reducir las animaciones o comenzar una aventura nueva.</p>
           <label className={s.setting}>
             <span>
               <strong>Reducir movimiento</strong>
@@ -355,7 +388,12 @@ export default function Adventure() {
               <p>¿Borrar la bitácora de esta aventura en este navegador?</p>
               <button
                 onClick={() => {
-                  setProgress({ ...initialProgress, decisions: [], npcDecisions: [] });
+                  const fresh=newJourney();
+                  try{localStorage.removeItem(SUBMISSION_KEY);}catch{/* Reset must still work if browser storage is unavailable. */}
+                  setProgress(fresh.progress);setRpgEntries(fresh.rpgEntries);setSchoolEntries(fresh.schoolEntries);setSchoolAnswers(fresh.schoolAnswers);setSchoolContentVersions(fresh.schoolContentVersions);
+                  setScene(fresh.scene);setWorldVersion(version=>version+1);setActiveNpc(null);setMission(null);
+                  // Remove development preview override so a subsequent reload stays reset.
+                  const url=new URL(window.location.href);url.searchParams.delete('vista');window.history.replaceState(null,'',url);
                   setConfirmReset(false);
                   setPanel(null);
                   setNotice('Aventura reiniciada.');

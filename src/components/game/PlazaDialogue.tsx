@@ -12,7 +12,7 @@ import {
   X,
   ArrowRight,
 } from 'lucide-react';
-import { plazaNpcs, type PlazaChoiceIcon } from '@/game/plazaNpcs';
+import { plazaNpcs, plazaNpcSpritePath, type PlazaChoiceIcon } from '@/game/plazaNpcs';
 import styles from './PlazaWorld.module.css';
 
 type Npc = typeof plazaNpcs[number];
@@ -135,7 +135,7 @@ export default function PlazaDialogue({
       <div className={styles.portraitContainer}>
         <div className={styles.portraitFrame}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={npc.id === 'tecnico' ? '/game/npcs/tecnico-cutout-v2.png' : `/game/npcs/${npc.sprite}.png`} className={styles.portraitImg} alt="" />
+          <img src={plazaNpcSpritePath(npc)} className={styles.portraitImg} alt="" />
         </div>
         <div className={styles.nameBadge}>{npc.name}</div>
       </div>

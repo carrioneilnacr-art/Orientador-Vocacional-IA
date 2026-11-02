@@ -30,3 +30,21 @@
 .assistantCard::after{content:"";position:absolute;top:11px;right:11px;width:48px;height:48px;border-top:1px solid #d8b27666;border-right:1px solid #d8b27666;border-radius:0 12px 0 0;pointer-events:none}
 .assistantCard img{position:relative;z-index:1;filter:drop-shadow(0 9px 10px #06182baa)}.assistantCopy{position:relative;z-index:1}.cardKicker{display:block;color:#f1c983;font-size:10px;font-weight:800;letter-spacing:.14em;margin-bottom:8px}.assistantCard h2,.progressCard h2{color:#fff4df;font-size:clamp(19px,1.4vw,23px);line-height:1.2}.assistantCard p{font-size:clamp(13px,1vw,15px)}.assistantCopy small{display:inline-block;margin-top:12px;padding:5px 10px;border:1px solid #d7ba8f7d;border-radius:20px;color:#f3d99f;font-size:11px}.progressCaption{color:#d9e9ed;font-size:12px;margin:9px 0 0}.progressLine>div{background:#0d2b43;border:1px solid #7192a2}.progressLine i{background:linear-gradient(90deg,#c18b49,#ffd38e)}.progressBottom button{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:40px;padding:8px 12px;border:1px solid #e7b867;border-radius:20px;background:#153650;color:#ffe4ad;font:650 12px inherit;cursor:pointer}.progressBottom button:hover,.progressBottom button:focus-visible{background:#2c6284;outline-color:#ffe4ad}
 @media(max-width:760px){.cardKicker{font-size:8px;margin-bottom:4px}.assistantCopy small{margin-top:5px;font-size:9px}.assistantCard h2,.progressCard h2{font-size:15px}.progressCaption{font-size:10px;margin:4px 0}.progressBottom button{min-height:31px;font-size:10px;padding:5px 7px}}
+/* Phase 1 approval view: show the complete clean base at its original aspect ratio. */
+.adventure[data-plaza-phase="base"] .playLayout{grid-template-columns:minmax(0,1fr)}
+.adventure[data-plaza-phase="base"] .belowGame,
+.adventure[data-plaza-phase="base"] .gameTop,
+.adventure[data-plaza-phase="base"] .gameTools,
+.adventure[data-plaza-phase="base"] .gameControls,
+.adventure[data-plaza-phase="base"] .gameNotice{display:none}
+.adventure[data-plaza-phase="playable"]{background:#222b35}
+.adventure[data-plaza-phase="playable"] .adventureHeader{background:#192630}
+.adventure[data-plaza-phase="playable"] .assistantCard,.adventure[data-plaza-phase="playable"] .progressCard{background:linear-gradient(155deg,#334755,#202e3b);border-color:#b89c68}
+.adventure[data-plaza-phase="playable"] .gameTop,.adventure[data-plaza-phase="playable"] .gameControls,.adventure[data-plaza-phase="playable"] .gameNotice{display:none}
+.adventure[data-plaza-phase="playable"] .gameTools{top:10px;bottom:auto;right:10px}
+.adventure[data-plaza-phase="playable"] .assistantCard{flex:1.3;background:linear-gradient(155deg,#205359,#10343e);border-color:#c5a373}
+.adventure[data-plaza-phase="playable"] .assistantCard img{width:min(53%,142px);height:clamp(100px,18vh,170px)}
+.adventure[data-plaza-phase="playable"] .assistantCard h2{font-size:clamp(21px,1.6vw,26px)}
+.adventure[data-plaza-phase="playable"] .progressCard{flex:.7}
+.adventure[data-plaza-phase="playable"] .gameTools{gap:6px}
+.adventure[data-plaza-phase="playable"] .gameTools button{min-width:42px}

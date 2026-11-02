@@ -1,0 +1,420 @@
+{
+  "reference": {
+    "width": 1672,
+    "height": 941
+  },
+  "objects": {
+    "palacio": {
+      "file": "fiel/palacio.png",
+      "x": -22,
+      "foot": 414,
+      "width": 650,
+      "height": 362,
+      "collider": null,
+      "sway": false
+    },
+    "catedral": {
+      "file": "fiel/catedral.png",
+      "x": 608,
+      "foot": 356,
+      "width": 530,
+      "height": 362,
+      "collider": null,
+      "sway": false
+    },
+    "terraza": {
+      "file": "fiel/terraza.png",
+      "x": 1330,
+      "foot": 405,
+      "width": 360,
+      "height": 235,
+      "collider": null,
+      "sway": false
+    },
+    "arbol-entrada": {
+      "file": "fiel/arbol-grande.png",
+      "x": -89,
+      "foot": 518,
+      "width": 560,
+      "height": 530,
+      "collider": [
+        128,
+        480,
+        60,
+        39
+      ],
+      "sway": true
+    },
+    "jacaranda": {
+      "file": "fiel/jacaranda.png",
+      "x": -25,
+      "foot": 558,
+      "width": 230,
+      "height": 287,
+      "collider": [
+        54,
+        518,
+        51,
+        37
+      ],
+      "sway": true
+    },
+    "arbol-fondo-este": {
+      "file": "fiel/arbol-secundario.png",
+      "x": 1475,
+      "foot": 340,
+      "width": 255,
+      "height": 240,
+      "collider": null,
+      "sway": true
+    },
+    "palmera-este": {
+      "file": "fiel/palmera.png",
+      "x": 1215,
+      "foot": 440,
+      "width": 215,
+      "height": 365,
+      "collider": [
+        1300,
+        408,
+        40,
+        36
+      ],
+      "sway": true
+    },
+    "arbol-este": {
+      "file": "fiel/arbol-secundario.png",
+      "x": 1016,
+      "foot": 449,
+      "width": 205,
+      "height": 232,
+      "collider": [
+        1105,
+        415,
+        41,
+        35
+      ],
+      "sway": true
+    },
+    "jardin-oeste": {
+      "file": "fiel/jardinera.png",
+      "x": 202,
+      "foot": 482,
+      "width": 186,
+      "height": 84,
+      "collider": [
+        214,
+        450,
+        164,
+        31
+      ],
+      "sway": false
+    },
+    "jardin-este": {
+      "file": "fiel/jardinera.png",
+      "x": 1257,
+      "foot": 492,
+      "width": 222,
+      "height": 80,
+      "collider": [
+        1266,
+        456,
+        198,
+        36
+      ],
+      "sway": false
+    },
+    "flores-oeste": {
+      "file": "fiel/jardinera.png",
+      "x": -26,
+      "foot": 738,
+      "width": 266,
+      "height": 137,
+      "collider": [
+        0,
+        688,
+        226,
+        50
+      ],
+      "sway": false
+    },
+    "flores-este": {
+      "file": "fiel/jardinera.png",
+      "x": 1510,
+      "foot": 845,
+      "width": 205,
+      "height": 108,
+      "collider": [
+        1520,
+        810,
+        152,
+        35
+      ],
+      "sway": false
+    },
+    "jardin-arbol-sur": {
+      "file": "fiel/arbusto.png",
+      "x": 384,
+      "foot": 841,
+      "width": 270,
+      "height": 185,
+      "collider": [
+        398,
+        805,
+        240,
+        36
+      ],
+      "sway": false
+    },
+    "jardin-arbol-paradero": {
+      "file": "fiel/arbusto.png",
+      "x": 1025,
+      "foot": 841,
+      "width": 166,
+      "height": 180,
+      "collider": [
+        1036,
+        806,
+        149,
+        35
+      ],
+      "sway": false
+    },
+    "busto": {
+      "file": "fiel/busto.png",
+      "x": 49,
+      "foot": 661,
+      "width": 125,
+      "height": 181,
+      "collider": [
+        62,
+        620,
+        102,
+        41
+      ],
+      "sway": false
+    },
+    "banca-oeste": {
+      "file": "fiel/banca.png",
+      "x": 415,
+      "foot": 482,
+      "width": 150,
+      "height": 67,
+      "collider": [
+        426,
+        456,
+        128,
+        26
+      ],
+      "sway": false
+    },
+    "banca-este": {
+      "file": "fiel/banca.png",
+      "x": 995,
+      "foot": 465,
+      "width": 147,
+      "height": 66,
+      "collider": [
+        1004,
+        438,
+        128,
+        27
+      ],
+      "sway": false
+    },
+    "caballete": {
+      "file": "fiel/caballete.png",
+      "x": 272,
+      "foot": 654,
+      "width": 77,
+      "height": 126,
+      "collider": [
+        285,
+        625,
+        55,
+        29
+      ],
+      "sway": false
+    },
+    "farol-oeste": {
+      "file": "fiel/farol-bandera.png",
+      "x": 204,
+      "foot": 594,
+      "width": 75,
+      "height": 206,
+      "collider": [
+        228,
+        571,
+        24,
+        23
+      ],
+      "sway": false
+    },
+    "farol-centro": {
+      "file": "fiel/farol-bandera.png",
+      "x": 619,
+      "foot": 460,
+      "width": 68,
+      "height": 199,
+      "collider": [
+        642,
+        438,
+        20,
+        22
+      ],
+      "sway": false
+    },
+    "farol-este": {
+      "file": "fiel/farol.png",
+      "x": 1303,
+      "foot": 591,
+      "width": 68,
+      "height": 195,
+      "collider": [
+        1326,
+        570,
+        20,
+        21
+      ],
+      "sway": false
+    },
+    "farol-borde": {
+      "file": "fiel/farol-bandera.png",
+      "x": 657,
+      "foot": 872,
+      "width": 44,
+      "height": 178,
+      "collider": [
+        672,
+        851,
+        15,
+        21
+      ],
+      "sway": false
+    },
+    "puesto": {
+      "file": "fiel/kiosco.png",
+      "x": 1372,
+      "foot": 554,
+      "width": 169,
+      "height": 147,
+      "collider": [
+        1388,
+        515,
+        140,
+        39
+      ],
+      "sway": false
+    },
+    "vendedor": {
+      "file": "fiel/vendedor.png",
+      "x": 1532,
+      "foot": 556,
+      "width": 66,
+      "height": 104,
+      "collider": [
+        1550,
+        532,
+        28,
+        24
+      ],
+      "sway": false
+    },
+    "mapa-paradero": {
+      "file": "mobiliario/senal_mapa_metropolitano.png",
+      "x": 1124,
+      "foot": 832,
+      "width": 72,
+      "height": 137,
+      "collider": [
+        1142,
+        811,
+        37,
+        21
+      ],
+      "sway": false
+    },
+    "paloma-oeste": {
+      "file": "fiel/paloma.png",
+      "x": 480,
+      "foot": 562,
+      "width": 40,
+      "height": 39,
+      "collider": null,
+      "sway": false
+    },
+    "paloma-este": {
+      "file": "fiel/paloma.png",
+      "x": 979,
+      "foot": 693,
+      "width": 43,
+      "height": 35,
+      "collider": null,
+      "sway": false
+    },
+    "estacion": {
+      "file": "fiel/estacion.png",
+      "x": 1163,
+      "foot": 806,
+      "width": 515,
+      "height": 208,
+      "collider": null,
+      "sway": false
+    },
+    "bus": {
+      "file": "fiel/bus.png",
+      "x": 1324,
+      "foot": 819,
+      "width": 380,
+      "height": 133,
+      "collider": null,
+      "sway": false
+    }
+  },
+  "fountain": {
+    "x": 606,
+    "foot": 626,
+    "width": 500,
+    "height": 332,
+    "collider": [
+      856,
+      577,
+      225,
+      49
+    ]
+  },
+  "spawn": [
+    850,
+    752
+  ],
+  "door": [
+    1300,
+    825
+  ],
+  "npcs": {
+    "tecnico": [
+      1280,
+      755
+    ],
+    "inventor": [
+      975,
+      705
+    ],
+    "artista": [
+      390,
+      660
+    ],
+    "guia": [
+      1200,
+      492
+    ],
+    "emprendedor": [
+      477,
+      865
+    ],
+    "vecino": [
+      468,
+      500
+    ]
+  }
+}

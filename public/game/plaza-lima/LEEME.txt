@@ -1,0 +1,3 @@
+Plaza de Lima - assets extraidos de la lamina maestra.
+Ver manifest.json (assets, animations, pending).
+Carpeta _pendientes/: recortes de REFERENCIA, no usar en el juego; requieren regeneracion.

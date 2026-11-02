@@ -1,0 +1,286 @@
+[
+  {
+    "name": "Plaza",
+    "step": 5,
+    "reachable": 22253,
+    "free": 22253,
+    "unreachableCount": 0,
+    "unreachableSample": [],
+    "objects": [
+      {
+        "id": "npc-mateo",
+        "baseBlocked": true
+      },
+      {
+        "id": "npc-ernesto",
+        "baseBlocked": true
+      },
+      {
+        "id": "npc-valeria",
+        "baseBlocked": true
+      },
+      {
+        "id": "npc-luis",
+        "baseBlocked": true
+      },
+      {
+        "id": "npc-estudiantes",
+        "baseBlocked": true
+      },
+      {
+        "id": "palacio",
+        "baseBlocked": true
+      },
+      {
+        "id": "catedral",
+        "baseBlocked": true
+      },
+      {
+        "id": "escalinata",
+        "baseBlocked": true
+      },
+      {
+        "id": "fuente",
+        "baseBlocked": true
+      },
+      {
+        "id": "arbol-grande",
+        "baseBlocked": true
+      },
+      {
+        "id": "jacaranda",
+        "baseBlocked": true
+      },
+      {
+        "id": "palmera",
+        "baseBlocked": true
+      },
+      {
+        "id": "arbol-este",
+        "baseBlocked": true
+      },
+      {
+        "id": "arbol-sur",
+        "baseBlocked": true
+      },
+      {
+        "id": "arbol-paradero",
+        "baseBlocked": true
+      },
+      {
+        "id": "jardin-izq",
+        "baseBlocked": true
+      },
+      {
+        "id": "jardin-busto",
+        "baseBlocked": true
+      },
+      {
+        "id": "busto",
+        "baseBlocked": true
+      },
+      {
+        "id": "jardin-sur-atras",
+        "baseBlocked": true
+      },
+      {
+        "id": "jardin-sur-frente",
+        "baseBlocked": true
+      },
+      {
+        "id": "jardin-escalera-izq",
+        "baseBlocked": true
+      },
+      {
+        "id": "jardin-escalera-der",
+        "baseBlocked": true
+      },
+      {
+        "id": "jardin-puesto-der",
+        "baseBlocked": true
+      },
+      {
+        "id": "jardin-puesto-izq",
+        "baseBlocked": true
+      },
+      {
+        "id": "banca-oeste",
+        "baseBlocked": true
+      },
+      {
+        "id": "banca-centro",
+        "baseBlocked": true
+      },
+      {
+        "id": "banca-este",
+        "baseBlocked": true
+      },
+      {
+        "id": "cuadros",
+        "baseBlocked": true
+      },
+      {
+        "id": "caballete",
+        "baseBlocked": true
+      },
+      {
+        "id": "puesto",
+        "baseBlocked": true
+      },
+      {
+        "id": "estacion",
+        "baseBlocked": true
+      },
+      {
+        "id": "bus",
+        "baseBlocked": true
+      },
+      {
+        "id": "farol-poste-0",
+        "baseBlocked": true
+      },
+      {
+        "id": "farol-poste-1",
+        "baseBlocked": true
+      },
+      {
+        "id": "farol-poste-2",
+        "baseBlocked": true
+      },
+      {
+        "id": "farol-poste-3",
+        "baseBlocked": true
+      },
+      {
+        "id": "farol-poste-4",
+        "baseBlocked": true
+      },
+      {
+        "id": "farol-poste-5",
+        "baseBlocked": true
+      },
+      {
+        "id": "farol-poste-6",
+        "baseBlocked": true
+      },
+      {
+        "id": "farol-poste-7",
+        "baseBlocked": true
+      },
+      {
+        "id": "farol-poste-8",
+        "baseBlocked": true
+      },
+      {
+        "id": "farol-poste-9",
+        "baseBlocked": true
+      }
+    ]
+  },
+  {
+    "name": "Patio",
+    "step": 5,
+    "reachable": 14823,
+    "free": 14823,
+    "unreachableCount": 0,
+    "unreachableSample": [],
+    "objects": [
+      {
+        "id": "fachada",
+        "baseBlocked": true
+      },
+      {
+        "id": "escalera",
+        "baseBlocked": true
+      },
+      {
+        "id": "jardin-arbol",
+        "baseBlocked": true
+      },
+      {
+        "id": "jardin-fondo-izq",
+        "baseBlocked": true
+      },
+      {
+        "id": "jardin-fondo-der",
+        "baseBlocked": true
+      },
+      {
+        "id": "jardin-derecho",
+        "baseBlocked": true
+      },
+      {
+        "id": "jardin-derecho-fondo",
+        "baseBlocked": true
+      },
+      {
+        "id": "arbol-izquierdo",
+        "baseBlocked": true
+      },
+      {
+        "id": "arbol-derecho",
+        "baseBlocked": true
+      },
+      {
+        "id": "banca-fondo-izq",
+        "baseBlocked": true
+      },
+      {
+        "id": "banca-fondo-der",
+        "baseBlocked": true
+      },
+      {
+        "id": "banca-frente-izq",
+        "baseBlocked": true
+      },
+      {
+        "id": "banca-frente-der",
+        "baseBlocked": true
+      },
+      {
+        "id": "busto",
+        "baseBlocked": true
+      },
+      {
+        "id": "tablero",
+        "baseBlocked": true
+      },
+      {
+        "id": "farol",
+        "baseBlocked": true
+      },
+      {
+        "id": "pedestal-farol",
+        "baseBlocked": true
+      },
+      {
+        "id": "reciclaje",
+        "baseBlocked": true
+      },
+      {
+        "id": "maceta-izquierda",
+        "baseBlocked": true
+      },
+      {
+        "id": "maceta-tablon",
+        "baseBlocked": true
+      },
+      {
+        "id": "npc-entrada",
+        "baseBlocked": true
+      },
+      {
+        "id": "maceta-entrada-derecha",
+        "baseBlocked": true
+      },
+      {
+        "id": "jardin-frente-izq-remate",
+        "baseBlocked": true
+      },
+      {
+        "id": "jardin-frente-der-remate",
+        "baseBlocked": true
+      }
+    ]
+  }
+]

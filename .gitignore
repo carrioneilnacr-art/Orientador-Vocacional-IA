@@ -55,3 +55,7 @@ scripts/
 # agent local files
 skills-lock.json
 
+
+# Local development and audit output
+.next-dev.log
+/artifacts/

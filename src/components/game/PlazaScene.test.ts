@@ -1,16 +1,32 @@
 import { describe, expect, it } from 'vitest';
 import { plazaBlocked } from './PlazaScene';
+import { PLAZA_ARCHITECTURE, PLAZA_FOUNTAIN, PLAZA_PROPS, PLAZA_REFERENCE, PLAZA_WORLD, plazaPoint, plazaSpriteSize } from '@/game/plazaLayout';
 
-describe('Plaza de Lima: suelo transitable', () => {
-  it('bloquea la fuente, los jardines, una banca, un edificio y el tronco', () => {
-    for (const [x, y] of [[500, 350], [240, 350], [320, 475], [500, 180], [150, 290], [655, 465]]) {
-      expect(plazaBlocked(x, y)).toBe(true);
+describe('Plaza de Lima: coordenadas de la referencia', () => {
+  it('normaliza los puntos sobre 1672 × 941 y escala sprites sin deformarlos', () => {
+    expect(plazaPoint(836, 470).x).toBe(PLAZA_WORLD.width / 2);
+    expect(plazaPoint(836, 470).y).toBeCloseTo(470 / PLAZA_REFERENCE.height * PLAZA_WORLD.height);
+    const size = plazaSpriteSize(120, 120);
+    expect(size.width).toBe(size.height);
+    for (const item of [...PLAZA_PROPS, ...PLAZA_ARCHITECTURE]) {
+      expect(item.y + item.height).toBeCloseTo(item.foot);
     }
   });
 
-  it('deja un recorrido alrededor de la fuente y detrás de la palmera', () => {
-    for (const [x, y] of [[500, 415], [405, 415], [405, 295], [500, 289], [176, 256]]) {
-      expect(plazaBlocked(x, y)).toBe(false);
+  it('bloquea la base de fuente, jardines, bancas, edificios y troncos', () => {
+    expect(plazaBlocked(PLAZA_FOUNTAIN.collider.x, PLAZA_FOUNTAIN.collider.y)).toBe(true);
+    for (const id of ['jardin-oeste', 'jardin-este', 'banca-oeste', 'arbol-entrada', 'puesto']) {
+      const shape = PLAZA_PROPS.find(item => item.id === id)?.collider;
+      expect(shape?.kind, id).toBe('rect');
+      if (shape?.kind === 'rect') expect(plazaBlocked(shape.x + shape.width / 2, shape.y + shape.height / 2), id).toBe(true);
+    }
+    expect(plazaBlocked(plazaPoint(850, 354).x, plazaPoint(850, 354).y)).toBe(true);
+  });
+
+  it('mantiene suelo transitable delante y detrás de la fuente', () => {
+    for (const [rx, ry] of [[856, 680], [856, 480], [580, 620], [1150, 620]]) {
+      const point = plazaPoint(rx, ry);
+      expect(plazaBlocked(point.x, point.y), `${rx},${ry}`).toBe(false);
     }
   });
 });

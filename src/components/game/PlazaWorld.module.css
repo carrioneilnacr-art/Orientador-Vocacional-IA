@@ -4,6 +4,7 @@
   position: relative;
   width: 100%;
   height: 100%;
+  isolation: isolate;
 }
 
 .world {
@@ -40,19 +41,19 @@
 /* ── Chaski ──────────────────────────────────────────── */
 .player {
   position: absolute;
-  width: 6.2%; height: 12%;
+  width: 6.4%; height: 12%;
   transform: translate(-50%, -100%);
   pointer-events: none;
   will-change: left, top;
 }
 .character {
   height: 100%; width: 100%;
-  transform: scaleX(var(--facing, 1));
   transform-origin: center bottom;
 }
 .idle {
   width: 100%; height: 100%;
   object-fit: contain; object-position: center bottom;
+  image-rendering: pixelated;
   animation: breathe 3s ease-in-out infinite;
 }
 .walk {
@@ -60,8 +61,8 @@
   width: 100%; height: 100%;
   background: url('/game/chaski-walk-right-user.png') 0 0/800% 100% no-repeat;
 }
-.player[data-moving=true] .idle { display: none; }
-.player[data-moving=true] .walk { display: block; animation: walk .8s steps(8) infinite; }
+.player[data-moving=true] .idle { display: block; animation: none; }
+.player[data-moving=true] .walk { display: none; }
 .shadow {
   position: absolute; bottom: -2%; left: 25%;
   width: 50%; height: 10%;
@@ -73,7 +74,7 @@
 /* ── NPCs ────────────────────────────────────────────── */
 .npc {
   position: absolute;
-  width: 7.8%; height: 12.5%;
+  width: 4.8%; height: 11.3%;
   transform: translate(-50%, -100%);
   border: 0; background: none; padding: 0;
   cursor: pointer; outline-offset: 4px;
@@ -89,9 +90,12 @@
   filter: blur(3px);
   pointer-events: none;
 }
+.collisionDebug{position:absolute;inset:0;width:100%;height:100%;z-index:1000;pointer-events:none;fill:#f44a;stroke:#ed3030;stroke-width:2}
+.collisionDebug .interactionDebug{fill:#4af2;stroke:#24d4d4;stroke-width:2}
 .npc > img {
   height: 100%; width: 100%;
   object-fit: contain; object-position: center bottom;
+  image-rendering: pixelated;
   filter: drop-shadow(0 4px 3px rgba(10,20,40,.45));
   animation: breathe 3.8s ease-in-out infinite;
   transform-origin: center bottom;
@@ -115,8 +119,13 @@
   pointer-events: none;
   font-size: 11px; font-weight: 700;
   white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .18s ease, visibility .18s ease;
 }
 .signalNear {
+  opacity: 1;
+  visibility: visible;
   border-color: #ffe685;
   background: rgba(16,40,70,.97);
   box-shadow: 0 0 20px rgba(255,230,133,.85), 0 3px 10px rgba(0,0,0,.55);
@@ -165,7 +174,8 @@
 }
 
 /* ── Pigeon ──────────────────────────────────────────── */
-.pigeon { position: absolute; pointer-events: none; font-size: 16px; }
+.pigeon { position: absolute; pointer-events: none; width: 3.5%; height: 5.4%; }
+.pigeon img { display: block; width: 100%; height: 100%; object-fit: contain; }
 
 /* ══════════════════════════════════════════════════════
    MINIMAP — fixed top-right, outside .world

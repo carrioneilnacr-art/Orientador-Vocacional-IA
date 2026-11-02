@@ -1,7 +1,7 @@
 # Dashboard de Seguimiento de Proyecto: Orientador Vocacional IA
 
-**Última actualización:** 02/09/2026  
-**Líder Técnico:** Senior Full-Stack Lead  
+**Última actualización:** 02/11/2026
+**Líder Técnico:** Senior Full-Stack Lead
 **Estado General:** EN CURSO (Fase 1: Configuración y Gobernanza Completada | Fase 2: Base de Datos en Supabase Completada)
 
 ---
@@ -19,6 +19,7 @@
 ## 2. Tablero de Tareas (Kanban)
 
 ### 🔵 Hecho (DONE)
+- [x] **ADV-CONTENT-02:** Investigar y renovar diálogos y desafíos de Plaza/Colegio, separar interés de desempeño, versionar contenido para conservar el significado de respuestas anteriores y verificar guardado/resumen. Prerrequisitos: escenarios y persistencia exploratoria existentes. Alcance: contenido y minijuegos actuales; no reconstruir mapas ni modificar el cuestionario formal. Finalizado 02/11/2026: catálogos versionados, tres retos por etapas, bitácora y resumen compatibles; 156 pruebas, TypeScript sin errores. Investigación en docs/game/INVESTIGACION_CONTENIDO_AVENTURA_V2.md. Pendiente pilotaje con alumnado y validación psicométrica.
 - [x] **GOV-01:** Definición de Reglas de Proyecto (`docs/rules/PROJECT_RULES.md` y `.agents/rules/AGENTS.md`).
 - [x] **GOV-02:** Definición de Skills de seguimiento y gobernanza (`.agents/skills/project-tracker`, `git-workflow`, `db-governor`).
 - [x] **DB-01:** Completar diseño de esquema relacional (`docs/architecture/DATABASE_SCHEMA.md`).
