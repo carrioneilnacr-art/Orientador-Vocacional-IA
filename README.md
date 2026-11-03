@@ -36,9 +36,9 @@
 
 **Orientador Vocacional IA** es una solución web integral diseñada para guiar a estudiantes de educación secundaria y postulantes preuniversitarios en la elección de su carrera profesional y universidad ideal.
 
-A diferencia de los tests vocacionales convencionales o los chatbots con riesgo de alucinación, esta plataforma combina:
-1. **Psicometría Rigurosa:** Evaluación de 16 preguntas basada en el modelo **RIASEC** (*Realista, Investigador, Artístico, Social, Emprendedor, Convencional*) de John Holland complementado con factores de afinidad tecnológica y lógica.
-2. **Grounded AI (Cero Alucinaciones):** Toda recomendación, duración de carrera, malla curricular ciclo a ciclo, créditos, sedes, costos y tasas de empleabilidad proviene estrictamente de registros auditados en nuestra base de datos relacional PostgreSQL en Supabase.
+La plataforma combina:
+1. **Exploración estructurada:** Cuestionario propio de 16 preguntas inspirado en el modelo **RIASEC** (*Realista, Investigador, Artístico, Social, Emprendedor, Convencional*) de John Holland complementado con factores de afinidad tecnológica y lógica.
+2. **IA con información verificable:** Toda recomendación, duración de carrera, malla curricular ciclo a ciclo, créditos, sedes, costos y tasas de empleabilidad proviene estrictamente de registros auditados en nuestra base de datos relacional PostgreSQL en Supabase.
 3. **Experiencia Gamificada y Accesible:** Interfaz interactiva acompañada por el avatar guía **Chaski**, transiciones fluidas, feedback en tiempo real y descarga de informe vocacional personalizado en formato PDF.
 
 ---
@@ -209,6 +209,12 @@ npm run build
 ```
 
 ---
+
+## Lectura importante: dirección de Chaski
+
+**[LEER IMPORTANTE — Fundamento científico y ruta de Chaski](docs/game/LEER_IMPORTANTE_RUTA_CIENTIFICA_CHASKI.md)**
+
+Esta guía reúne las fuentes sobre RIASEC y videojuegos de orientación, la adaptación al contexto limeño, el ciclo NPC → actividad → reflexión, los escenarios propuestos y el plan de evaluación con estudiantes. Debe consultarse antes de crear contenidos o resultados. Separa evidencia publicada, funciones implementadas y propuestas futuras; no promete porcentajes de acierto de carrera.
 
 ## Aventura Chaski — versión actual
 

@@ -1,8 +1,10 @@
 # Ruta de Chaski IA: de la plaza a la devolución final
 
+> Dirección científica y criterios de diseño: [LEER IMPORTANTE — Ruta de Chaski](LEER_IMPORTANTE_RUTA_CIENTIFICA_CHASKI.md).
+
 ## Propósito
 
-Chaski acompaña la exploración y devuelve al estudiante sus propias pistas. Las opciones del juego son preferencias narrativas; el resultado vocacional final debe apoyarse en el cuestionario estructurado y en datos de carreras y universidades verificados por la base de datos. No se deben presentar los puntos ocultos del juego como diagnóstico.
+Chaski acompaña la exploración y devuelve al estudiante sus propias pistas. Las opciones del juego son preferencias narrativas; el perfil final requiere definir y validar la evidencia evaluable de la aventura, complementada con datos de carreras y rutas formativas verificados por la base de datos. El cuestionario separado es una alternativa, no un requisito posterior al juego. No se deben presentar los puntos ocultos del juego como diagnóstico.
 
 ## Escenarios siguientes
 
@@ -12,7 +14,7 @@ Chaski acompaña la exploración y devuelve al estudiante sus propias pistas. La
 4. **Centro comercial y restaurante — mirar el trabajo de cerca.** Diseño, atención, logística, cocina y gestión aparecen como tareas concretas. El estudiante puede conversar con trabajadores y descubrir actividades detrás de cada lugar.
 5. **Clínica y ciudad digital — ampliar posibilidades.** Entrevistas y tareas seguras de cuidado, investigación, software y operación. Chaski diferencia interés por una actividad de una decisión de carrera.
 6. **Universidad e institutos — investigar opciones.** Solo se muestran programas, requisitos, costos y datos de instituciones existentes en las fuentes oficiales registradas. Cuando falta un dato, se indica su ausencia.
-7. **Bitácora final — conversación con Chaski IA.** Chaski resume las preferencias guardadas, invita a revisarlas y compara patrones con el cuestionario estructurado. Se muestran rutas para seguir explorando y fuentes de la información. El estudiante puede corregir o descartar pistas; no recibe una profesión impuesta.
+7. **Bitácora final — conversación con Chaski IA.** Chaski resume las preferencias guardadas, invita a revisarlas y contrasta patrones entre actividades. La comparación con un instrumento de referencia podrá formar parte del estudio de validación, sin imponer otro cuestionario al flujo del producto. Se muestran rutas para seguir explorando y fuentes de la información. El estudiante puede corregir o descartar pistas; no recibe una profesión impuesta.
 
 ## Secuencia de producto
 

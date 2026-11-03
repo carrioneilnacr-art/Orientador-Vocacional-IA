@@ -6,6 +6,7 @@ Título académico comunicado por el autor el 02/11/2026. Nombre del producto: C
 
 | Apartado | Material del repositorio |
 |---|---|
+| Fundamento, fuentes y ruta del producto — lectura importante | [Guía científica de Chaski](game/LEER_IMPORTANTE_RUTA_CIENTIFICA_CHASKI.md) |
 | Descripción, instalación y tecnologías | [README](../README.md) |
 | Arquitectura vigente y responsabilidades | [Monolito modular](architecture/ARQUITECTURA_MONOLITO_MODULAR.md) |
 | Verificación técnica y límites | [Verificación del refactor](architecture/VERIFICACION_REFACTOR_2026_11_02.md) |
