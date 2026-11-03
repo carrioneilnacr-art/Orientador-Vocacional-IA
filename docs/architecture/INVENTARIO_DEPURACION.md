@@ -45,7 +45,6 @@ Se revisaron imports, nombres en código, URLs de CSS, plantillas de ruta de ass
 | Paquete | Evidencia local | Siguiente comprobación |
 |---|---|---|
 | `html2canvas`, `dom-to-image-more` | No se encontró import ejecutable en `src`/`scripts`; `pdfPrint.ts` explica el cambio a impresión del navegador. README aún los menciona. | Revisar scripts externos, actualizar README y retirar uno por vez con build y prueba PDF. |
-| `@google/genai` | No apareció import consumidor en la búsqueda del repositorio excluyendo dependencias/build; el chat usa `@ai-sdk/google`. | Revisar experimentos fuera de repo antes de retirar. |
 | `react-is` | Sin import directo encontrado. | Inspeccionar árbol de dependencias y requisitos de pares; no asumir innecesario. |
 | `jspdf`, `exceljs`, `pdf-parse`, `recharts` | Hay imports en pruebas, parser de notas o resultados. | Mantener; no borrar por parecer repetidos respecto de otras bibliotecas. |
 

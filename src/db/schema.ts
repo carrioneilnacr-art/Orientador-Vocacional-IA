@@ -24,6 +24,13 @@ const tsvector = customType<{ data: string }>({
 });
 
 // 1. Sources
+// Server-only, shared quota counters. No student content or raw IPs are stored.
+export const rateLimitBuckets = pgTable('rate_limit_buckets', {
+  bucketKey: text('bucket_key').primaryKey(),
+  hits: integer('hits').notNull(),
+  expiresAt: timestamp('expires_at', {withTimezone:true}).notNull(),
+}, table => [index('idx_rate_limit_expiry').on(table.expiresAt)]);
+
 export const sources = pgTable('sources', {
   id: bigserial('id', { mode: 'number' }).primaryKey(),
   sourceName: text('source_name').notNull(),

@@ -68,7 +68,7 @@ El motor estructurado se extrae del endpoint vocacional a dominio y aplicación.
 
 Implementación de esa separación: `modules/assessment/domain/assessment.ts`, `application/completeAssessment.ts` e `infrastructure/assessmentRepository.ts`. El caso de uso recibe un `AssessmentRepository`; `/api/vocacional` conserva su contrato de preguntas/opciones y resultados para el frontend existente. La validación exige las 16 respuestas, cuatro misiones de cuatro preguntas con cuatro opciones, y rechaza opciones cruzadas o repetidas. El fallback de catálogo se toma completo para evitar mezclar parcialmente BD y datos locales.
 
-Límites actuales del cuestionario: todavía no hay una versión de catálogo fijada entre GET y POST; cambiar el catálogo mientras se responde puede causar rechazo de validación. Su persistencia en `user_sessions` conserva el comportamiento heredado de mejor esfuerzo; la ruta de aventura, en cambio, requiere guardado confirmado antes de presentar su resultado persistido. No confundir ambos comportamientos ni prometer sincronización universal.
+Límites actuales del cuestionario: todavía no hay una versión de catálogo fijada entre GET y POST; cambiar el catálogo mientras se responde puede causar rechazo de validación. La API devuelve `saved` y la interfaz avisa si falla el guardado; los errores HTTP conservan las respuestas para reintentar. La aventura exige guardado confirmado mediante INSERT DO NOTHING RETURNING: una operación para un resultado nuevo, conservando el resultado original al reintentar y autorizando siempre el registro devuelto.
 
 Separar:
 
@@ -118,7 +118,7 @@ El CLI de Supabase no estaba instalado: el SQL quedó como registro operativo au
 1. Unificar mecanismos repetidos de canvas, entrada, física, carga y transiciones; cada escenario aportará datos y actividades. Mantener el mapa aprobado mientras se prueba cada extracción.
 2. Extender las vistas B2B solo cuando corresponda, conservando la separación entre evidencia exploratoria y perfil estructurado, y probar aislamiento entre colegios y cambios de consentimiento.
 3. Completar la auditoría de políticas RLS y grants de las demás tablas. Reconciliar el endurecimiento remoto de `user_sessions` con la historia canónica de migraciones.
-4. Sustituir límites de peticiones en memoria si se despliegan varias instancias; definir cuotas por sesión y presupuesto del proveedor de IA.
+4. Supervisar cuotas compartidas ya implementadas, presupuesto GPT, conexiones totales y limpieza acotada de contadores expirados. Dimensionar timeout de consultas para el rol dedicado de BD; el plazo HTTP no cancela automáticamente una consulta PostgreSQL en vuelo.
 5. Consolidar la secuencia de migraciones antes de mover SQL histórico. No ejecutar scripts antiguos indiscriminadamente.
 6. Completar pruebas HTTP de propiedad, aislamiento entre colegios, reintentos y fallos de infraestructura; mantener pruebas de dominio y recorrido UI. Ejecutar y revisar CI en GitHub antes de publicar.
 7. Calibrar las interacciones evaluables de los próximos escenarios para llegar a un perfil final defendible; no declarar validación psicométrica porque compilan los tipos.
@@ -126,6 +126,12 @@ El CLI de Supabase no estaba instalado: el SQL quedó como registro operativo au
 ## Criterio para futuros cambios
 
 Un caso de uso tiene una razón para cambiar; una ruta HTTP adapta entrada/salida; un repositorio almacena; un componente muestra e interactúa. Extraer responsabilidades por estos límites, no por un número arbitrario de líneas. Los scripts diagnósticos y las imágenes de referencia se inventarían por separado del runtime: ver `INVENTARIO_DEPURACION.md`.
+
+## Actualización de concurrencia del3/11/2026
+
+Chaski utiliza exclusivamente GPT con OPENAI_API_KEY y OPENAI_MODEL. Servidor y cliente verifican finalización del stream; HTTP200 por sí solo no acredita una respuesta válida. Catálogo público: caché acotada de30s y coalescencia de solicitudes. Contexto oficial: lecturas agrupadas y máximo64 claves por términos normalizados/díaUTC, sin mensajes completos ni identidades. Los errores de BD no se cachean; datos privados, consentimiento y propiedad se verifican sin caché compartida.
+
+Cuotas IP/sesión por operación mediante un solo UPSERT atómico en PostgreSQL. `rate_limit_buckets` tiene RLS y privilegios públicos revocados; SQL operativo `ADD_SHARED_RATE_LIMIT.sql` aplicado y verificado. Pooler de transacciones con prepare:false y límites configurables por instancia:6 conexiones,20s de inactividad y10s de conexión por defecto. La capacidad global depende del número de instancias y del plan;6 por instancia no equivale a6 conexiones en todo el despliegue. Evidencia y límites: `PRUEBA_AULAS_SIMULTANEAS.md` e informes JSON de capacidad.
 
 ## Contenido exploratorio versionado
 

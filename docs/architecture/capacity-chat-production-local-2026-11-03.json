@@ -1,0 +1,26 @@
+{
+  "base": "http://localhost:3001",
+  "mode": "chat",
+  "writes": false,
+  "startedAt": "2026-11-03T20:42:32.257Z",
+  "stages": [
+    {
+      "users": 3,
+      "requests": 3,
+      "elapsedSeconds": 8.0097168,
+      "statuses": {
+        "200": 3
+      },
+      "unexpected": 0,
+      "streamErrors": 0,
+      "p50ms": 4895.9973,
+      "p95ms": 5006.4821999999995,
+      "maxMs": 5006.4821999999995,
+      "p95ttfbMs": 1622.2264,
+      "stopped": false,
+      "p95firstTextMs": 3768.0793
+    }
+  ],
+  "scope": "HTTP only; no browser rendering or FPS. Closed workload, not maximum capacity. Writes only when WRITE_RESULTS=true, with synthetic anonymous exploration evidence.",
+  "finishedAt": "2026-11-03T20:42:40.268Z"
+}

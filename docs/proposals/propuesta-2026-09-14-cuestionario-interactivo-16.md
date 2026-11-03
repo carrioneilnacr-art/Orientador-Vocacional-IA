@@ -318,7 +318,7 @@ El backend actual ya está construido alrededor de `POST /api/vocacional`, `scor
 
 ### Regla crítica
 
-**Gemini no decide el porcentaje de match.**
+**GPT no decide el porcentaje de match.**
 
 La IA debe:
 
@@ -648,7 +648,7 @@ TypeScript
 Tailwind CSS
 PostgreSQL / Supabase
 Drizzle ORM
-Google Gemini / AI SDK
+GPT de OpenAI / AI SDK
 Framer Motion
 Vitest
 ```
@@ -669,7 +669,7 @@ No mover la lógica de puntuación al frontend.
 
 ### IA
 
-No usar Gemini como calculadora del match.
+No usar GPT como calculadora del match.
 
 ### Diseño
 

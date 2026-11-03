@@ -43,7 +43,7 @@
 2. **Prompt que instruye a inventar datos** ("actúa como si hubieras buscado en internet") → Cambiar a honestidad: "si no está en la BD, decirlo"
 3. **RLS inefectivo** con rol `postgres` → Validar autorización por colegio y rol en rutas API
 4. **Rate limiting** → Agregar a `/api/chat` y `/api/vocacional`
-5. **README vs código** → Ya actualizado (OpenAI en producción, Gemini para tests)
+5. **README vs código** → Actualizado: GPT de OpenAI es el único proveedor de IA.
 
 ---
 

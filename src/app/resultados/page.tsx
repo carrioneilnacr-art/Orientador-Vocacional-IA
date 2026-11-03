@@ -89,6 +89,11 @@ export default function ResultadosPage() {
       />
 
       <main id="report-content" className="w-full max-w-[1400px] mx-auto px-6 md:px-10 lg:px-12 py-8 space-y-12">
+        {results.saved === false && (
+          <p role="alert" className="rounded-xl border border-amber-300 bg-amber-50 px-5 py-4 text-sm text-amber-950">
+            Tu resultado está disponible en este navegador, pero no pudimos guardarlo en el servidor. Descarga una copia del informe para conservarlo.
+          </p>
+        )}
 
         {/* ENCABEZADO INSTITUCIONAL DEL REPORTE */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-[#D6E5EF]/60">

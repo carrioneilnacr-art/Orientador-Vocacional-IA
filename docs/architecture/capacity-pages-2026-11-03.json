@@ -1,0 +1,84 @@
+{
+  "base": "https://orientador-vocacional-ia.vercel.app",
+  "mode": "pages",
+  "startedAt": "2026-11-03T20:29:11.745Z",
+  "stages": [
+    {
+      "users": 1,
+      "requests": 3,
+      "elapsedSeconds": 10.2272573,
+      "statuses": {
+        "200": 3
+      },
+      "unexpected": 0,
+      "streamErrors": 0,
+      "p50ms": 513.5431000000003,
+      "p95ms": 569.778,
+      "maxMs": 569.778,
+      "p95ttfbMs": 548.1636000000001,
+      "stopped": false
+    },
+    {
+      "users": 10,
+      "requests": 40,
+      "elapsedSeconds": 12.770368099999997,
+      "statuses": {
+        "200": 40
+      },
+      "unexpected": 0,
+      "streamErrors": 0,
+      "p50ms": 115.2355000000025,
+      "p95ms": 343.64559999999983,
+      "maxMs": 357.46610000000146,
+      "p95ttfbMs": 329.90959999999905,
+      "stopped": false
+    },
+    {
+      "users": 30,
+      "requests": 120,
+      "elapsedSeconds": 13.010389199999997,
+      "statuses": {
+        "200": 120
+      },
+      "unexpected": 0,
+      "streamErrors": 0,
+      "p50ms": 115.47499999999854,
+      "p95ms": 365.82120000000214,
+      "maxMs": 387.3842999999979,
+      "p95ttfbMs": 319.0571000000018,
+      "stopped": false
+    },
+    {
+      "users": 60,
+      "requests": 202,
+      "elapsedSeconds": 13.0462422,
+      "statuses": {
+        "200": 202
+      },
+      "unexpected": 0,
+      "streamErrors": 0,
+      "p50ms": 182.95090000000346,
+      "p95ms": 626.948900000003,
+      "maxMs": 649.8997000000018,
+      "p95ttfbMs": 525.8686000000016,
+      "stopped": false
+    },
+    {
+      "users": 100,
+      "requests": 308,
+      "elapsedSeconds": 12.762496599999999,
+      "statuses": {
+        "200": 308
+      },
+      "unexpected": 0,
+      "streamErrors": 0,
+      "p50ms": 180.41519999999582,
+      "p95ms": 1181.3660999999993,
+      "maxMs": 1207.7024999999994,
+      "p95ttfbMs": 821.0872000000018,
+      "stopped": false
+    }
+  ],
+  "scope": "HTTP only; no browser rendering or FPS. Closed workload, not maximum capacity. No student result writes.",
+  "finishedAt": "2026-11-03T20:30:13.568Z"
+}

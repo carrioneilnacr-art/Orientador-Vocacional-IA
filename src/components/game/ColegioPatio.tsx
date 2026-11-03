@@ -31,14 +31,15 @@ export default function ColegioPatio({paused=false,reducedMotion=false,onActivit
   art.onload=()=>{for(const object of patioForeground){const [x,y,w,h]=patioForegroundBounds(object);const layer=document.createElement('canvas');layer.width=w;layer.height=h;const lc=layer.getContext('2d');if(!lc)continue;
    lc.translate(-x,-y);tracePatioForeground(lc,object);lc.clip();lc.drawImage(art,0,0);cutouts.set(object.id,layer);
   }};
-  art.src='/game/colegio/patio-referencia.png';
-  const sheets=loadChaskiSheets();const p={x:835,y:747};let face:ChaskiFacing=0,phase=0,vx=0,vy=0,last=0,frame=0;
+  art.src='/game/colegio/patio-referencia.webp';
+  const sheets=loadChaskiSheets();const p={x:835,y:747};let face:ChaskiFacing=0,phase=0,vx=0,vy=0,last=0,lastPaint=0,frame=0;
   const npcImage=new Image();npcImage.src=schoolCharacters.elena.src;
   const sofiaImage=new Image();sofiaImage.src=schoolCharacters.sofia.src;
   let floor:'patio'|'stairs'|'upper'='patio',stairDistance=0,approachingStairs=false;
   const clear=()=>keys.current.clear();window.addEventListener('blur',clear);
   const render=(time:number)=>{
-   if(roomOpen.current){last=time;frame=requestAnimationFrame(render);return;}
+   if(document.hidden||roomOpen.current||(settings.current.paused&&time-lastPaint<100)){last=time;frame=requestAnimationFrame(render);return;}
+   lastPaint=time;
    const dt=Math.min((time-(last||time))/1000,.035);last=time;
    let dx=Number(keys.current.has('d')||keys.current.has('arrowright'))-Number(keys.current.has('a')||keys.current.has('arrowleft'));
    let dy=Number(keys.current.has('s')||keys.current.has('arrowdown'))-Number(keys.current.has('w')||keys.current.has('arrowup'));

@@ -18,11 +18,11 @@ const isStaffRole = (role: string): role is StaffRole =>
 
 export async function POST(req: NextRequest) {
   const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
-  const rateCheck = checkRateLimit(`staff_login:${ip}`, 10, 60);
+  const rateCheck = await checkRateLimit(`staff_login:${ip}`, 10, 60);
   if (!rateCheck.allowed) {
     return NextResponse.json(
       { error: 'Demasiados intentos. Espera un momento antes de volver a intentar.' },
-      { status: 429, headers: { 'Retry-After': String(rateCheck.retryAfter || 60) } }
+      { status: rateCheck.status, headers: { 'Retry-After': String(rateCheck.retryAfter || 60) } }
     );
   }
 

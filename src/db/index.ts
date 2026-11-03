@@ -1,6 +1,7 @@
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 import * as schema from './schema';
+import {postgresPoolConfig} from './poolConfig';
 
 const connectionString =
   process.env.DATABASE_URL ||
@@ -8,7 +9,7 @@ const connectionString =
   'postgres://postgres:postgres@localhost:5432/postgres';
 
 // Disable prefetch as it is not supported for "Transaction" pooler mode
-const client = postgres(connectionString, { prepare: false });
+const client = postgres(connectionString, postgresPoolConfig());
 
 export const db = drizzle(client, { schema });
 export * from './schema';

@@ -42,7 +42,7 @@ El sistema utiliza una paleta fuertemente arraigada en los tonos **Slate** (piza
   - **Caja de Insights**: Las justificaciones ("¿Por qué hace match contigo?") se presentan en bloques de color integrados que simulan terminales de código o citas de la IA.
   - **Pills**: Uso de etiquetas redondeadas (`rounded-full`) para datos rápidos (Sedes, Costo).
 
-### D. Chatbot Flotante (Gemini IA)
+### D. Chatbot Flotante (GPT de OpenAI)
 - **Comportamiento**: Oculto durante todo el proceso de evaluación; se revela **únicamente en la pantalla final**.
 - **Interfaz del Chat**: Mantiene la paleta Teal/Slate, promoviendo respuestas concisas, profesionales y sin emojis, alineándose con el perfil serio de la plataforma.
 

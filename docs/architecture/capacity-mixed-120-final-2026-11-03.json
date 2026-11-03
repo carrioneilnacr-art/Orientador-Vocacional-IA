@@ -1,0 +1,132 @@
+{
+  "runId": "591c38eb-2dab-49cf-82b9-d52025e89e72",
+  "startedAt": "2026-11-03T21:08:13.189Z",
+  "config": {
+    "base": "http://localhost:3004",
+    "stages": [
+      120
+    ],
+    "rounds": 1,
+    "thinkMs": 3000,
+    "chatFraction": 1,
+    "chatMax": 120,
+    "writes": true,
+    "timeoutMs": 30000,
+    "topics": [
+      "Ingeniería de Software",
+      "Ingeniería de Sistemas de Información",
+      "Ciencias de la Computación",
+      "Administración",
+      "Administración y Marketing",
+      "Administración y Finanzas",
+      "Psicología",
+      "Derecho"
+    ]
+  },
+  "stages": [
+    {
+      "users": 120,
+      "elapsedSeconds": 35.3086093,
+      "completedUsers": 0,
+      "persistedSessionsConfirmed": 120,
+      "stopReason": "chat: HTTP 503",
+      "requests": 720,
+      "statuses": {
+        "0": 119,
+        "200": 600,
+        "503": 1
+      },
+      "unexpected": 1,
+      "cancelled": 119,
+      "p50ms": 6594.3955000000005,
+      "p95ms": 9054.084000000003,
+      "p95firstTextMs": null,
+      "p95quotaMs": 4355.9,
+      "p95contextMs": 5007.1,
+      "operations": {
+        "page": {
+          "requests": 120,
+          "statuses": {
+            "200": 120
+          },
+          "unexpected": 0,
+          "cancelled": 0,
+          "p50ms": 1362.0646,
+          "p95ms": 1449.3152,
+          "p95firstTextMs": null,
+          "p95quotaMs": null,
+          "p95contextMs": null
+        },
+        "session": {
+          "requests": 120,
+          "statuses": {
+            "200": 120
+          },
+          "unexpected": 0,
+          "cancelled": 0,
+          "p50ms": 2940.2302,
+          "p95ms": 4790.726699999999,
+          "p95firstTextMs": null,
+          "p95quotaMs": null,
+          "p95contextMs": null
+        },
+        "catalog": {
+          "requests": 120,
+          "statuses": {
+            "200": 120
+          },
+          "unexpected": 0,
+          "cancelled": 0,
+          "p50ms": 7268.681700000001,
+          "p95ms": 9099.1469,
+          "p95firstTextMs": null,
+          "p95quotaMs": null,
+          "p95contextMs": null
+        },
+        "save": {
+          "requests": 120,
+          "statuses": {
+            "200": 120
+          },
+          "unexpected": 0,
+          "cancelled": 0,
+          "p50ms": 7407.6232,
+          "p95ms": 9219.858699999999,
+          "p95firstTextMs": null,
+          "p95quotaMs": null,
+          "p95contextMs": null
+        },
+        "recover": {
+          "requests": 120,
+          "statuses": {
+            "200": 120
+          },
+          "unexpected": 0,
+          "cancelled": 0,
+          "p50ms": 8742.166000000001,
+          "p95ms": 8809.5095,
+          "p95firstTextMs": null,
+          "p95quotaMs": null,
+          "p95contextMs": null
+        },
+        "chat": {
+          "requests": 120,
+          "statuses": {
+            "0": 119,
+            "503": 1
+          },
+          "unexpected": 1,
+          "cancelled": 119,
+          "p50ms": 7301.296000000002,
+          "p95ms": 9270.6276,
+          "p95firstTextMs": null,
+          "p95quotaMs": 4355.9,
+          "p95contextMs": 5007.1
+        }
+      }
+    }
+  ],
+  "scope": "HTTP closed workloads; no rendering/FPS. Per-user cookies; no spoofed IPs. Synthetic anonymous results when writes=true. Chat budget shared across stages.",
+  "chatCalls": 120,
+  "finishedAt": "2026-11-03T21:08:48.523Z"
+}

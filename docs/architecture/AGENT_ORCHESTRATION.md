@@ -34,11 +34,11 @@ graph TD
 
 | Subagente | Modelo Recomendado | Scope de Archivos | Herramientas Clave | Responsabilidad Primaria |
 | :--- | :--- | :--- | :--- | :--- |
-| **`supervisor-orchestrator`** | Gemini Pro / Inherit | Global | `invoke_subagent`, `manage_subagents` | Planificación de tareas, asignación y verificación final. |
-| **`grounded-ai-dba`** | Gemini Flash / Pro | `src/db/`, `scripts/`, `src/app/api/chat/` | `view_file`, `replace_file_content`, `run_command` | Garantizar cero alucinaciones y validar queries contra Supabase. |
-| **`frontend-chaski-ui`** | Gemini Flash | `src/components/`, `src/app/`, `public/` | `replace_file_content`, `write_to_file` | UI/UX responsiva con Tailwind v4, Recharts y avatar Chaski. |
-| **`psychometrics-qa`** | Gemini Flash | `src/data/`, `src/constants/`, `src/__tests__/` | `run_command` (`vitest`, `tsc`) | Calibrar 16 preguntas RIASEC y ejecutar tests unitarios. |
-| **`security-compliance`** | Gemini Flash Lite | `.env.example`, `docs/rules/`, configs | `view_file` | Auditar variables de entorno, permisos y sandboxing. |
+| **`supervisor-orchestrator`** | GPT / Inherit | Global | `invoke_subagent`, `manage_subagents` | Planificación de tareas, asignación y verificación final. |
+| **`grounded-ai-dba`** | GPT / Inherit | `src/db/`, `scripts/`, `src/app/api/chat/` | `view_file`, `replace_file_content`, `run_command` | Garantizar cero alucinaciones y validar queries contra Supabase. |
+| **`frontend-chaski-ui`** | GPT / Inherit | `src/components/`, `src/app/`, `public/` | `replace_file_content`, `write_to_file` | UI/UX responsiva con Tailwind v4, Recharts y avatar Chaski. |
+| **`psychometrics-qa`** | GPT / Inherit | `src/data/`, `src/constants/`, `src/__tests__/` | `run_command` (`vitest`, `tsc`) | Calibrar 16 preguntas RIASEC y ejecutar tests unitarios. |
+| **`security-compliance`** | GPT / Inherit | `.env.example`, `docs/rules/`, configs | `view_file` | Auditar variables de entorno, permisos y sandboxing. |
 
 ---
 

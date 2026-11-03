@@ -1,0 +1,57 @@
+{
+  "base": "https://orientador-vocacional-ia.vercel.app",
+  "mode": "adventure",
+  "startedAt": "2026-11-03T20:29:27.788Z",
+  "stages": [
+    {
+      "users": 1,
+      "requests": 6,
+      "elapsedSeconds": 11.4045489,
+      "statuses": {
+        "200": 3,
+        "404": 3
+      },
+      "unexpected": 0,
+      "streamErrors": 0,
+      "p50ms": 268.6958000000004,
+      "p95ms": 730.0349,
+      "maxMs": 730.0349,
+      "p95ttfbMs": 716.311,
+      "stopped": false
+    },
+    {
+      "users": 5,
+      "requests": 30,
+      "elapsedSeconds": 11.484917300000001,
+      "statuses": {
+        "200": 15,
+        "404": 15
+      },
+      "unexpected": 0,
+      "streamErrors": 0,
+      "p50ms": 263.99479999999676,
+      "p95ms": 871.8824999999997,
+      "maxMs": 981.7575000000015,
+      "p95ttfbMs": 867.0892000000003,
+      "stopped": false
+    },
+    {
+      "users": 10,
+      "requests": 60,
+      "elapsedSeconds": 11.065297699999995,
+      "statuses": {
+        "200": 30,
+        "404": 30
+      },
+      "unexpected": 0,
+      "streamErrors": 0,
+      "p50ms": 259.1313999999984,
+      "p95ms": 450.2646999999997,
+      "maxMs": 632.6575999999986,
+      "p95ttfbMs": 442.79279999999926,
+      "stopped": false
+    }
+  ],
+  "scope": "HTTP only; no browser rendering or FPS. Closed workload, not maximum capacity. No student result writes.",
+  "finishedAt": "2026-11-03T20:30:01.750Z"
+}

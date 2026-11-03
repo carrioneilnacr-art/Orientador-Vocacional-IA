@@ -19,12 +19,16 @@ export default function PlazaPlayable({paused=false,reducedMotion=false,onTalk,o
   const scene=document.createElement('canvas');scene.width=1671;scene.height=941;const ctx=scene.getContext('2d');if(!ctx)return;
   const npcs=createNpcRenderer();
   const cutouts=new Map<string,HTMLCanvasElement>();
-  const art=new window.Image();art.onload=()=>{for(const o of solids){if(!o.canopy)continue;const [x,y,w,h]=o.canopy;const layer=document.createElement('canvas');layer.width=w;layer.height=h;const lc=layer.getContext('2d');if(!lc)continue;lc.drawImage(art,x,y,w,h,0,0,w,h);const pixels=lc.getImageData(0,0,w,h);for(let i=0;i<pixels.data.length;i+=4){if(!insideForegroundShape(o.id,(i/4)%w,Math.floor(i/4/w),w,h)||!keepForegroundPixel(o.id,pixels.data[i],pixels.data[i+1],pixels.data[i+2]))pixels.data[i+3]=0;}fillForegroundPinholes(pixels.data,w,h);lc.putImageData(pixels,0,0);cutouts.set(o.id,layer);}};art.src='/game/plaza-lima/base/plaza-sin-bus.png';
+  const art=new window.Image();art.onload=()=>{for(const o of solids){if(!o.canopy)continue;const [x,y,w,h]=o.canopy;const layer=document.createElement('canvas');layer.width=w;layer.height=h;const lc=layer.getContext('2d');if(!lc)continue;lc.drawImage(art,x,y,w,h,0,0,w,h);const pixels=lc.getImageData(0,0,w,h);for(let i=0;i<pixels.data.length;i+=4){if(!insideForegroundShape(o.id,(i/4)%w,Math.floor(i/4/w),w,h)||!keepForegroundPixel(o.id,pixels.data[i],pixels.data[i+1],pixels.data[i+2]))pixels.data[i+3]=0;}fillForegroundPinholes(pixels.data,w,h);lc.putImageData(pixels,0,0);cutouts.set(o.id,layer);}};art.src='/game/plaza-lima/base/plaza-sin-bus.webp';
   const bus=new window.Image();bus.src='/game/plaza-lima/base/bus-pista.png';
   const sheets=loadChaskiSheets();
-  let frame=0,last=0,phase=0,vx=0,vy=0;const p={x:850,y:749};let face:ChaskiFacing=0;
+  let frame=0,last=0,lastPaint=0,phase=0,vx=0,vy=0;const p={x:850,y:749};let face:ChaskiFacing=0;
   const clear=()=>keys.current.clear();window.addEventListener('blur',clear);
   const draw=(now:number)=>{
+   // Keep overlays responsive without redrawing a paused full-resolution scene
+   // every refresh. Reset the clock while skipped to avoid a resume movement jump.
+   if(document.hidden||(settings.current.paused&&now-lastPaint<100)){last=now;frame=requestAnimationFrame(draw);return;}
+   lastPaint=now;
    const dt=Math.min((now-(last||now))/1000,.035);last=now;
    const k=keys.current;let x=Number(k.has('d')||k.has('arrowright'))-Number(k.has('a')||k.has('arrowleft')),y=Number(k.has('s')||k.has('arrowdown'))-Number(k.has('w')||k.has('arrowup'));
    if(settings.current.paused){x=0;y=0;vx=0;vy=0;}

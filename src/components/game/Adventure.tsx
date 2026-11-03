@@ -2,13 +2,12 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ArrowLeft, ArrowRight, BookOpen, Check, Compass, Leaf, Zap, RotateCcw, X, Users, Gamepad2, Landmark, MapPin, Maximize2 } from 'lucide-react';
 import { initialProgress, missions, recordPreference, recordNpcChoice, reflectionLabels, SAVE_KEY, type Mission, type Progress } from '@/game/adventure';
 import { plazaNpcs, type PlazaNpcId } from '@/game/plazaNpcs';
-import AdventureWorld from './AdventureWorld';
 import PlazaPlayable from './PlazaPlayable';
-import ColegioPatio from './ColegioPatio';
 import {SCHOOL_ACTIVITY_KEY,recordSchoolEvidence,schoolActivityName,preferenceLabels,explorationAreas,type SchoolEvidence} from '@/game/schoolActivities';
 import PlazaRpgDialogue from './PlazaRpgDialogue';
 import {rpgNpcs,allPlazaNpcsCompleted,plazaConversationPercent,type RpgNpcId} from '@/game/plazaRpgNpcs';
@@ -18,6 +17,9 @@ import {CURRENT_NARRATIVE_VERSION,getPlazaDialogue,getSchoolDialogue} from '@/mo
 import s from './Adventure.module.css';
 import './AdventureShell.css';
 import CompleteExplorationButton,{SUBMISSION_KEY} from '@/modules/adventure/presentation/CompleteExplorationButton';
+
+const ColegioPatio = dynamic(() => import('./ColegioPatio'));
+const AdventureWorld = dynamic(() => import('./AdventureWorld'));
 
 function Overlay({ title, onClose, children, returnTo }: { title: string; onClose: () => void; children: React.ReactNode; returnTo?: HTMLElement | null }) {
   const ref = useRef<HTMLDialogElement>(null);

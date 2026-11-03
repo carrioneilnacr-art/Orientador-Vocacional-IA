@@ -180,7 +180,7 @@ export default function ComoFunciona() {
                 </div>
                 <div className="bg-white/5 hover:bg-white/10 transition-colors p-5 rounded-xl border border-white/10 backdrop-blur-sm">
                   <div className="text-[12px] text-[#00C2E0] font-bold uppercase tracking-wider mb-1.5">Cerebro de Inteligencia Artificial</div>
-                  <div className="font-semibold text-[16px] text-white">Google Gemini 2.5 Flash + Vercel AI SDK</div>
+                  <div className="font-semibold text-[16px] text-white">GPT de OpenAI + Vercel AI SDK</div>
                 </div>
               </div>
             </div>

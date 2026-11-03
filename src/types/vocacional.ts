@@ -16,6 +16,8 @@ export interface CareerResult {
 }
 
 export interface VocationalResults {
+  /** Absent for legacy local reports; false means server persistence failed. */
+  saved?: boolean;
   testId?: string;
   createdAt?: string;
   dimensionScores: Record<string, number>;

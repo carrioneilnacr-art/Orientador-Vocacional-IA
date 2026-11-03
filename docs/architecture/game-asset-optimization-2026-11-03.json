@@ -1,0 +1,51 @@
+{
+  "generatedAt": "2026-11-03T20:36:49.019Z",
+  "encoder": "sharp WebP lossless, effort 6",
+  "results": [
+    {
+      "source": "public/game/plaza-lima/base/plaza-sin-bus.png",
+      "target": "public/game/plaza-lima/base/plaza-sin-bus.webp",
+      "before": 2939873,
+      "after": 2444072,
+      "reductionPercent": 16.86,
+      "identicalRGBA": true
+    },
+    {
+      "source": "public/game/colegio/patio-referencia.png",
+      "target": "public/game/colegio/patio-referencia.webp",
+      "before": 3353175,
+      "after": 2446612,
+      "reductionPercent": 27.04,
+      "identicalRGBA": true
+    },
+    {
+      "source": "public/game/colegio/laboratorio-compacto.png",
+      "target": "public/game/colegio/laboratorio-compacto.webp",
+      "before": 2358379,
+      "after": 1838118,
+      "reductionPercent": 22.06,
+      "identicalRGBA": true
+    },
+    {
+      "source": "public/game/colegio/taller-compacto.png",
+      "target": "public/game/colegio/taller-compacto.webp",
+      "before": 2614836,
+      "after": 2193382,
+      "reductionPercent": 16.12,
+      "identicalRGBA": true
+    },
+    {
+      "source": "public/game/colegio/tecnologia-compacto.png",
+      "target": "public/game/colegio/tecnologia-compacto.webp",
+      "before": 2228120,
+      "after": 1804068,
+      "reductionPercent": 19.03,
+      "identicalRGBA": true
+    }
+  ],
+  "total": {
+    "before": 13494383,
+    "after": 10726252,
+    "reductionPercent": 20.51
+  }
+}

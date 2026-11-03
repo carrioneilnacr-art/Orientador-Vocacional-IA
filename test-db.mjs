@@ -1,4 +1,6 @@
-import 'dotenv/config';
+import dotenv from 'dotenv';
+dotenv.config({path:'.env'});
+dotenv.config({path:'.env.local',override:true});
 import postgres from 'postgres';
 
 async function runDiagnostic() {
@@ -55,23 +57,23 @@ async function runDiagnostic() {
     }
   }
 
-  // 3. Google Gemini API
-  const geminiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
-  if (!geminiKey || geminiKey.includes('your_')) {
-    console.log('❌ [Google Gemini API] Error: GOOGLE_GENERATIVE_AI_API_KEY no configurada.');
+  // 3. GPT de OpenAI
+  const openaiKey = process.env.OPENAI_API_KEY;
+  if (!openaiKey || openaiKey.includes('your_')) {
+    console.log('❌ [OpenAI API] Error: OPENAI_API_KEY no configurada.');
     allOk = false;
   } else {
     try {
-      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${geminiKey}`);
+      const res = await fetch('https://api.openai.com/v1/models',{headers:{Authorization:`Bearer ${openaiKey}`},signal:AbortSignal.timeout(10000)});
       const data = await res.json();
       if (res.ok) {
-        console.log(`✅ [Google Gemini API] Conexión exitosa. Modelos disponibles: ${data.models?.length}.`);
+        console.log(`✅ [OpenAI API] Conexión exitosa. Modelos disponibles: ${data.data?.length}.`);
       } else {
-        console.log(`❌ [Google Gemini API] Error: ${res.status} - ${data.error?.message}`);
+        console.log(`❌ [OpenAI API] Error HTTP ${res.status}; código: ${data.error?.code || 'no disponible'}`);
         allOk = false;
       }
     } catch (e) {
-      console.log(`❌ [Google Gemini API] Error: ${e.message}`);
+      console.log(`❌ [OpenAI API] Error de conexión: ${e.name}`);
       allOk = false;
     }
   }

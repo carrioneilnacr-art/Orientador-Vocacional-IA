@@ -19,13 +19,13 @@ const accessSchema = z.object({
 
 export async function POST(req: NextRequest) {
   try {
-    // 1. Rate Limiting por IP (30 req/min)
+    // Shared school NAT: coarse burst limit; each credential has its own quota.
     const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || '127.0.0.1';
-    const rateCheck = checkRateLimit(ip);
+    const rateCheck = await checkRateLimit(`student_access:ip:${ip}`,300,60);
     if (!rateCheck.allowed) {
       return NextResponse.json(
         { error: 'Demasiados intentos. Espera un momento antes de volver a intentar.' },
-        { status: 429, headers: { 'Retry-After': String(rateCheck.retryAfter || 60) } }
+        { status: rateCheck.status, headers: { 'Retry-After': String(rateCheck.retryAfter || 60) } }
       );
     }
 
@@ -42,11 +42,13 @@ export async function POST(req: NextRequest) {
     const { accessCode } = parsed.data;
     const guestTest = verifyGuestTestSession(req.cookies.get(GUEST_TEST_COOKIE_NAME)?.value);
     const codeHash = hashAccessCode(accessCode);
+    const credentialLimit=await checkRateLimit(`student_access:credential:${codeHash}`,5,60);
+    if(!credentialLimit.allowed)return NextResponse.json({error:'Demasiados intentos para este código. Inténtalo en unos momentos.'},{status:credentialLimit.status,headers:{'Retry-After':String(credentialLimit.retryAfter||60)}});
 
     // 3. Búsqueda en base de datos
-    let studentResult: any = null;
-    let schoolResult: any = null;
-    let classroomResult: any = null;
+    let studentResult: typeof students.$inferSelect | null = null;
+    let schoolResult: typeof schools.$inferSelect | null = null;
+    let classroomResult: typeof classrooms.$inferSelect | null = null;
 
     try {
       const foundStudents = await db
@@ -76,8 +78,9 @@ export async function POST(req: NextRequest) {
           classroomResult = foundClassrooms[0] || null;
         }
       }
-    } catch (dbError) {
-      console.warn('[Acceso Alumno] Error al consultar base de datos, usando simulación segura:', dbError);
+    } catch {
+      console.warn('[Acceso Alumno] Consulta no disponible');
+      return NextResponse.json({error:'No pudimos validar el acceso. Inténtalo nuevamente.'},{status:503});
     }
 
     // Si no se encuentra en BD
@@ -173,11 +176,11 @@ export async function POST(req: NextRequest) {
     response.cookies.delete(GUEST_TEST_COOKIE_NAME);
 
     return response;
-  } catch (error: any) {
-    console.error('[Acceso Alumno Error]', error);
+  } catch {
+    console.error('[Acceso Alumno] Request unavailable');
     return NextResponse.json(
       { error: 'Ocurrió un error inesperado al procesar tu código.' },
-      { status: 500 }
+      { status: 503 }
     );
   }
 }

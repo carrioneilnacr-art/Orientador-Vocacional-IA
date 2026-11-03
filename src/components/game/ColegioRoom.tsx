@@ -19,15 +19,17 @@ export default function ColegioRoom({room,onExit,paused,reducedMotion,onActivity
  useEffect(()=>{
   const element=canvas.current,screen=element?.getContext('2d');if(!element||!screen)return;
   const scene=document.createElement('canvas');scene.width=1672;scene.height=941;const ctx=scene.getContext('2d');if(!ctx)return;
-  const art=new Image();art.src=`/game/colegio/${room}-compacto.png`;
+  const art=new Image();art.src=`/game/colegio/${room}-compacto.webp`;
   const npc=new Image();npc.src=data.npc.src;const sheets=loadChaskiSheets();
-  const p={x:835,y:880};let last=0,phase=0,frame=0,vx=0,vy=0,face:ChaskiFacing=3;
+  const p={x:835,y:880};let last=0,lastPaint=0,phase=0,frame=0,vx=0,vy=0,face:ChaskiFacing=3;
   const pressedKeys=keys.current;
   const clear=()=>pressedKeys.clear();window.addEventListener('blur',clear);
   const blocked=(x:number,y:number)=>schoolRoomBlocked(room,x,y,colliders.current.objects);
   const world=element.parentElement;
   world?.focus({preventScroll:true});
   const render=(time:number)=>{
+   if(document.hidden||((settings.current.paused||settings.current.talking)&&time-lastPaint<100)){last=time;frame=requestAnimationFrame(render);return;}
+   lastPaint=time;
    const dt=Math.min((time-(last||time))/1000,.035);last=time;
    let dx=Number(keys.current.has('d')||keys.current.has('arrowright'))-Number(keys.current.has('a')||keys.current.has('arrowleft'));
    let dy=Number(keys.current.has('s')||keys.current.has('arrowdown'))-Number(keys.current.has('w')||keys.current.has('arrowup'));

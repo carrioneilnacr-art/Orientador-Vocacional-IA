@@ -15,7 +15,6 @@
 [![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL-3ecf8e?style=for-the-badge&logo=supabase)](https://supabase.com/)
 [![Drizzle ORM](https://img.shields.io/badge/Drizzle_ORM-0.39-c5f74f?style=for-the-badge&logo=drizzle)](https://orm.drizzle.team/)
 [![OpenAI](https://img.shields.io/badge/OpenAI-GPT--4o_Mini-412991?style=for-the-badge&logo=openai)](https://openai.com/)
-[![Google Gemini](https://img.shields.io/badge/Google_Gemini-2.0_Flash_(Test)-orange?style=for-the-badge&logo=google)](https://ai.google.dev/)
 [![Vitest](https://img.shields.io/badge/Vitest-5.0-729b1b?style=for-the-badge&logo=vitest)](https://vitest.dev/)
 
 ---
@@ -76,7 +75,6 @@ La plataforma combina:
 | **Drizzle ORM & Drizzle Kit** | ORM TypeScript-first para modelado seguro de esquemas relacionales y migraciones. |
 | **Vercel AI SDK (`ai`)** | Abstracción para streaming de IA, tool calling y manejo de prompts estructurados. |
 | **OpenAI API (`@ai-sdk/openai`)** | **Motor principal en producción** (GPT-4o-mini / GPT-4o) para el copiloto Chaski, comparativas y síntesis vocacional. |
-| **Google Gemini API (`@google/genai`)** | Modelos Gemini 2.0 Flash / Pro para experimentación interna, testing y fallback. |
 | **Zod & drizzle-zod** | Validación declarativa de esquemas, tipos y payloads de API en runtime. |
 | **postgres.js** | Driver nativo de PostgreSQL de alto rendimiento para scripts de migración y seeding. |
 
@@ -153,7 +151,7 @@ El proyecto garantiza trazabilidad absoluta respaldada en documentos de pregrado
 - **Node.js:** Versión `18.18.0` o superior (recomendado Node 20 LTS o 22 LTS).
 - **npm** o **pnpm** instalado.
 - Cuenta activa en [Supabase](https://supabase.com/) con un proyecto PostgreSQL creado.
-- Llave API de [Google AI Studio](https://aistudio.google.com/app/apikey) para Gemini.
+- Llave API de [OpenAI](https://platform.openai.com/api-keys) con acceso al modelo GPT configurado.
 
 ### 2. Clonar el Repositorio
 ```bash
@@ -179,8 +177,9 @@ NEXT_PUBLIC_SUPABASE_URL="https://tu-proyecto.supabase.co"
 NEXT_PUBLIC_SUPABASE_ANON_KEY="tu-clave-publica-anon"
 DATABASE_URL="postgresql://postgres.<project-ref>:<password>@aws-0-<region>.pooler.supabase.com:6543/postgres"
 
-# Google Gemini AI Key
-GOOGLE_GENERATIVE_AI_API_KEY="tu_clave_gemini_api"
+# GPT de OpenAI (sólo servidor)
+OPENAI_API_KEY="tu_clave_openai_api"
+OPENAI_MODEL="gpt-4o-mini"
 ```
 
 ### 5. Iniciar Servidor de Desarrollo
@@ -198,7 +197,7 @@ Para ejecutar la suite de pruebas unitarias psicométricas con Vitest:
 npm run test -- --run
 ```
 
-Para verificar el diagnóstico de conexión con Supabase y Google Gemini:
+Para verificar el diagnóstico de conexión con Supabase y OpenAI:
 ```bash
 node test-db.mjs
 ```

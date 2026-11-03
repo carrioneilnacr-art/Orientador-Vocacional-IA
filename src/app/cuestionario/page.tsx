@@ -29,6 +29,7 @@ export default function CuestionarioPage() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [completedInterludeMission, setCompletedInterludeMission] = useState<number>(1);
   const [calculatedProfileKey, setCalculatedProfileKey] = useState<string>('LOGIC');
+  const [submitError, setSubmitError] = useState('');
 
   // Cargar preguntas y opciones desde el endpoint
   useEffect(() => {
@@ -82,6 +83,7 @@ export default function CuestionarioPage() {
   const submitAnswers = useCallback(
     async (finalAnswers: Record<number, number>) => {
       setViewMode('SUBMITTING');
+      setSubmitError('');
       try {
         const res = await fetch('/api/vocacional', {
           method: 'POST',
@@ -89,6 +91,7 @@ export default function CuestionarioPage() {
           body: JSON.stringify({ answers: finalAnswers }),
         });
         const result = await res.json();
+        if (!res.ok) throw new Error('No pudimos completar la evaluación. Tus respuestas se conservan; vuelve a intentarlo.');
         localStorage.setItem('vocational_results', JSON.stringify(result));
         localStorage.setItem('vocational_answers_v3', JSON.stringify(finalAnswers));
 
@@ -105,7 +108,8 @@ export default function CuestionarioPage() {
         }, 1800);
       } catch (err) {
         console.error('[Cuestionario] Error enviando respuestas:', err);
-        router.push('/resultados');
+        setSubmitError('No pudimos completar la evaluación. Tus respuestas se conservan; vuelve a intentarlo.');
+        setViewMode('MISSION_PROGRESS');
       }
     },
     [router]
@@ -209,6 +213,7 @@ export default function CuestionarioPage() {
       */}
 
       <main className="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 md:p-10">
+        {submitError && <p role="alert" className="mb-4 rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-950">{submitError}</p>}
         <AnimatePresence mode="wait">
           {viewMode === 'INTRO' && (
             <TestIntro

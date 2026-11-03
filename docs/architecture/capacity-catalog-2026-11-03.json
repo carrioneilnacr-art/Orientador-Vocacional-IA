@@ -1,0 +1,54 @@
+{
+  "base": "https://orientador-vocacional-ia.vercel.app",
+  "mode": "catalog",
+  "startedAt": "2026-11-03T20:29:38.053Z",
+  "stages": [
+    {
+      "users": 1,
+      "requests": 3,
+      "elapsedSeconds": 10.326801099999999,
+      "statuses": {
+        "200": 3
+      },
+      "unexpected": 0,
+      "streamErrors": 0,
+      "p50ms": 315.39530000000013,
+      "p95ms": 695.4594,
+      "maxMs": 695.4594,
+      "p95ttfbMs": 677.3262,
+      "stopped": false
+    },
+    {
+      "users": 5,
+      "requests": 16,
+      "elapsedSeconds": 13.285592000000001,
+      "statuses": {
+        "200": 16
+      },
+      "unexpected": 0,
+      "streamErrors": 0,
+      "p50ms": 297.1324999999997,
+      "p95ms": 546.083700000001,
+      "maxMs": 546.083700000001,
+      "p95ttfbMs": 543.0195000000003,
+      "stopped": false
+    },
+    {
+      "users": 10,
+      "requests": 31,
+      "elapsedSeconds": 13.240168400000002,
+      "statuses": {
+        "200": 31
+      },
+      "unexpected": 0,
+      "streamErrors": 0,
+      "p50ms": 301.70940000000337,
+      "p95ms": 763.3686000000016,
+      "maxMs": 783.518,
+      "p95ttfbMs": 761.4299000000028,
+      "stopped": false
+    }
+  ],
+  "scope": "HTTP only; no browser rendering or FPS. Closed workload, not maximum capacity. No student result writes.",
+  "finishedAt": "2026-11-03T20:30:14.914Z"
+}

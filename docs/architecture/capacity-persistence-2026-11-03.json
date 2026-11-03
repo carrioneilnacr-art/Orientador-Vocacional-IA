@@ -1,0 +1,55 @@
+{
+  "base": "https://orientador-vocacional-ia.vercel.app",
+  "mode": "adventure",
+  "writes": true,
+  "startedAt": "2026-11-03T20:30:23.294Z",
+  "stages": [
+    {
+      "users": 1,
+      "requests": 5,
+      "elapsedSeconds": 8.002098,
+      "statuses": {
+        "200": 5
+      },
+      "unexpected": 0,
+      "streamErrors": 0,
+      "p50ms": 354.59990000000016,
+      "p95ms": 703.7795,
+      "maxMs": 703.7795,
+      "p95ttfbMs": 690.6681,
+      "stopped": false
+    },
+    {
+      "users": 5,
+      "requests": 25,
+      "elapsedSeconds": 7.7284676999999995,
+      "statuses": {
+        "200": 25
+      },
+      "unexpected": 0,
+      "streamErrors": 0,
+      "p50ms": 321.4349000000002,
+      "p95ms": 471.6094000000003,
+      "maxMs": 478.96810000000005,
+      "p95ttfbMs": 467.0088000000005,
+      "stopped": false
+    },
+    {
+      "users": 10,
+      "requests": 50,
+      "elapsedSeconds": 7.806061100000001,
+      "statuses": {
+        "200": 50
+      },
+      "unexpected": 0,
+      "streamErrors": 0,
+      "p50ms": 305.16709999999875,
+      "p95ms": 437.03780000000006,
+      "maxMs": 447.1109000000015,
+      "p95ttfbMs": 429.32970000000023,
+      "stopped": false
+    }
+  ],
+  "scope": "HTTP only; no browser rendering or FPS. Closed workload, not maximum capacity. Writes only when WRITE_RESULTS=true, with synthetic anonymous exploration evidence.",
+  "finishedAt": "2026-11-03T20:30:46.832Z"
+}

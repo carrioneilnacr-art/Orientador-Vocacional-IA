@@ -5,6 +5,7 @@ import { Send, Loader2, Sparkles, ShieldCheck, Banknote, MapPin, ChevronRight, M
 import { Chaski } from "@/components/chaski/Chaski";
 import { ChaskiPersonality, ChaskiState } from "@/components/chaski/chaski.config";
 import { motion, AnimatePresence } from "framer-motion";
+import {ChatResponseError,readChatStream} from './chatStream';
 
 interface Message {
   id: string;
@@ -185,6 +186,7 @@ export default function CopilotChat({ profileName = 'Vocacional' }: CopilotChatP
       { id: assistantId, role: "assistant", content: "" },
     ]);
 
+    let partialText = '';
     try {
       const response = await fetch("/api/chat", {
         method: "POST",
@@ -198,43 +200,11 @@ export default function CopilotChat({ profileName = 'Vocacional' }: CopilotChatP
         }),
       });
 
-      if (!response.ok || !response.body) {
-        throw new Error(`Error ${response.status}`);
-      }
-
       setChaskiState('analyzing');
-
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
-      let fullText = "";
-      let buffer = "";
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split("\n");
-        buffer = lines.pop() ?? "";
-
-        for (const line of lines) {
-          if (!line.startsWith("data:")) continue;
-          const data = line.slice(5).trim();
-          if (data === "[DONE]") break;
-
-          try {
-            const parsed = JSON.parse(data);
-            if (parsed.type === "text-delta" && parsed.delta) {
-              fullText += parsed.delta;
-              setMessages((prev) =>
-                prev.map((m) =>
-                  m.id === assistantId ? { ...m, content: fullText } : m
-                )
-              );
-            }
-          } catch {}
-        }
-      }
+      const fullText = await readChatStream(response, text => {
+        partialText = text;
+        setMessages(prev => prev.map(m => m.id === assistantId ? {...m,content:text} : m));
+      });
 
       if (!fullText) {
         setMessages((prev) =>
@@ -249,11 +219,12 @@ export default function CopilotChat({ profileName = 'Vocacional' }: CopilotChatP
         setChaskiState('happy');
         setTimeout(() => setChaskiState('idle'), 3000);
       }
-    } catch {
+    } catch (error) {
+      const message = error instanceof ChatResponseError ? error.message : 'Ocurrió un error de conexión al consultar al copiloto. Inténtalo nuevamente.';
       setMessages((prev) =>
         prev.map((m) =>
           m.id === assistantId
-            ? { ...m, content: "Ocurrió un error de conexión al consultar al copiloto." }
+            ? { ...m, content: partialText ? `${partialText}\n\n${message}` : message }
             : m
         )
       );

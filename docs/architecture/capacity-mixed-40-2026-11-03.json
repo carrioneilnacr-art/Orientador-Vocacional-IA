@@ -1,0 +1,108 @@
+{
+  "runId": "9fbd8ed4-1a3c-4853-82ee-5df75288eb20",
+  "startedAt": "2026-11-03T20:52:31.935Z",
+  "config": {
+    "base": "http://localhost:3002",
+    "stages": [
+      40
+    ],
+    "rounds": 1,
+    "thinkMs": 3000,
+    "chatFraction": 1,
+    "chatMax": 40,
+    "writes": true,
+    "timeoutMs": 30000
+  },
+  "stages": [
+    {
+      "users": 40,
+      "elapsedSeconds": 59.0584196,
+      "completedUsers": 0,
+      "persistedSessionsConfirmed": 40,
+      "stopReason": "chat: HTTP 503",
+      "requests": 240,
+      "statuses": {
+        "0": 39,
+        "200": 200,
+        "503": 1
+      },
+      "unexpected": 1,
+      "cancelled": 39,
+      "p50ms": 10051.1089,
+      "p95ms": 17973.0003,
+      "p95firstTextMs": null,
+      "operations": {
+        "page": {
+          "requests": 40,
+          "statuses": {
+            "200": 40
+          },
+          "unexpected": 0,
+          "cancelled": 0,
+          "p50ms": 529.0706,
+          "p95ms": 545.3281,
+          "p95firstTextMs": null
+        },
+        "session": {
+          "requests": 40,
+          "statuses": {
+            "200": 40
+          },
+          "unexpected": 0,
+          "cancelled": 0,
+          "p50ms": 5677.3971,
+          "p95ms": 9518.414,
+          "p95firstTextMs": null
+        },
+        "catalog": {
+          "requests": 40,
+          "statuses": {
+            "200": 40
+          },
+          "unexpected": 0,
+          "cancelled": 0,
+          "p50ms": 17015.2479,
+          "p95ms": 19590.0153,
+          "p95firstTextMs": null
+        },
+        "save": {
+          "requests": 40,
+          "statuses": {
+            "200": 40
+          },
+          "unexpected": 0,
+          "cancelled": 0,
+          "p50ms": 17203.389900000002,
+          "p95ms": 17232.3098,
+          "p95firstTextMs": null
+        },
+        "recover": {
+          "requests": 40,
+          "statuses": {
+            "200": 40
+          },
+          "unexpected": 0,
+          "cancelled": 0,
+          "p50ms": 11600.552899999995,
+          "p95ms": 11671.133300000001,
+          "p95firstTextMs": null
+        },
+        "chat": {
+          "requests": 40,
+          "statuses": {
+            "0": 39,
+            "503": 1
+          },
+          "unexpected": 1,
+          "cancelled": 39,
+          "p50ms": 6767.282099999997,
+          "p95ms": 8068.9432000000015,
+          "p95firstTextMs": null
+        }
+      }
+    }
+  ],
+  "scope": "HTTP closed workloads; no rendering/FPS. Per-user cookies; no spoofed IPs. Synthetic anonymous results when writes=true. Chat budget shared across stages.",
+  "chatCalls": 40,
+  "finishedAt": "2026-11-03T20:53:31.003Z"
+}

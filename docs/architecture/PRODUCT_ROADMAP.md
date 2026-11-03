@@ -7,7 +7,7 @@ El sistema ofrece un flujo guiado y automatizado de descubrimiento profesional:
 - **Cuestionario Psicométrico Digital**: Evalúa los intereses y aptitudes del estudiante basándose en el modelo RIASEC (Realista, Investigador, Artístico, Social, Emprendedor, Convencional) con un fuerte enfoque en carreras STEM/Tecnológicas.
 - **Algoritmo de Matching**: Procesa instantáneamente las respuestas y calcula un porcentaje exacto de compatibilidad (Match %) frente a una base de datos de carreras, sedes y costos.
 - **Presentación Inmersiva (Estilo Wrapped)**: Muestra los resultados en un formato visual impactante, con un gráfico de "ADN Vocacional" y tarjetas interactivas que invitan a la exploración.
-- **Tutoría con Inteligencia Artificial**: Integra un Chatbot potenciado por **Gemini 3.6 Flash** que entra en acción *solo al final* del proceso. La IA conoce los resultados del usuario y responde preguntas sobre empleabilidad, currículo y dudas profesionales manteniendo un tono sobrio, directo y sin emojis.
+- **Tutoría con Inteligencia Artificial**: Integra un Chatbot potenciado exclusivamente por **GPT de OpenAI** que entra en acción *solo al final* del proceso. La IA conoce los resultados del usuario y responde preguntas sobre empleabilidad, currículo y dudas profesionales manteniendo un tono sobrio, directo y sin emojis.
 
 ## 2. Beneficios Clave
 ### Para los Estudiantes (Usuarios Finales)
@@ -19,7 +19,7 @@ El sistema ofrece un flujo guiado y automatizado de descubrimiento profesional:
 - **Captación Inteligente**: El sistema muestra sedes, facultades y pensiones, sirviendo como un embudo perfecto para captar prospectos altamente calificados y decididos.
 
 ## 3. ¿Qué lo hace Innovador y Diferente?
-1. **Fusión de Determinismo Analítico + IA Generativa**: A diferencia de los chatbots puros (que pueden alucinar respuestas) o los tests tradicionales (que son cerrados), este sistema une lo mejor de ambos mundos. Usa una base de datos relacional para el rigor de los porcentajes y usa IA generativa (Gemini) inyectándole el contexto del radar del usuario para dar una charla hiper-personalizada.
+1. **Fusión de Determinismo Analítico + IA Generativa**: A diferencia de los chatbots puros (que pueden alucinar respuestas) o los tests tradicionales (que son cerrados), este sistema une lo mejor de ambos mundos. Usa una base de datos relacional para el rigor de los porcentajes y usa IA generativa (GPT) inyectándole el contexto del radar del usuario para dar una charla hiper-personalizada.
 2. **UX de Entretenimiento (Estética Tech)**: Toma prestados principios de diseño del gaming y de plataformas de consumo (como los resúmenes de Spotify) aplicándolos a la psicología educativa. Se ve como una app premium, no como una tarea del colegio.
 3. **Personalidad Restringida de IA**: Evitar el tono exagerado de los chatbots modernos le da un peso de "autoridad profesional", alineándose perfectamente con el público objetivo que busca respuestas lógicas e ingenieriles.
 

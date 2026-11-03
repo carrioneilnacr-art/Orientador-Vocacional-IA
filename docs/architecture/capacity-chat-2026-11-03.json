@@ -1,0 +1,24 @@
+{
+  "base": "https://orientador-vocacional-ia.vercel.app",
+  "mode": "chat",
+  "startedAt": "2026-11-03T20:29:48.259Z",
+  "stages": [
+    {
+      "users": 1,
+      "requests": 1,
+      "elapsedSeconds": 5.231282200000001,
+      "statuses": {
+        "200": 1
+      },
+      "unexpected": 1,
+      "streamErrors": 1,
+      "p50ms": 2227.8459000000003,
+      "p95ms": 2227.8459000000003,
+      "maxMs": 2227.8459000000003,
+      "p95ttfbMs": 2045.291,
+      "stopped": false
+    }
+  ],
+  "scope": "HTTP only; no browser rendering or FPS. Closed workload, not maximum capacity. No student result writes.",
+  "finishedAt": "2026-11-03T20:29:53.496Z"
+}
