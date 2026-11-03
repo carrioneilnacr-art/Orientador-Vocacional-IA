@@ -2,9 +2,11 @@
 
 <!-- Arquitectura vigente: docs/architecture/ARQUITECTURA_MONOLITO_MODULAR.md -->
 
-# 🧭 Orientador Vocacional IA
+# Sistema Web de Orientación Vocacional con Inteligencia Artificial mediante una Experiencia Inmersiva 2D
 
-**Plataforma inteligente de orientación vocacional y exploración académica basada en IA con datos oficiales verificados.**
+**Nombre del producto: Chaski — Orientador Vocacional IA.**
+
+[Documentación para el informe académico](docs/INFORME_ACADEMICO.md)
 
 [![Next.js](https://img.shields.io/badge/Next.js-16.3.4-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
 [![React](https://img.shields.io/badge/React-19.0.0-blue?style=for-the-badge&logo=react)](https://react.dev/)
