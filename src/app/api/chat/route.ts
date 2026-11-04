@@ -5,6 +5,8 @@ import {configuredChatProviders,safeProviderError} from '@/modules/chaski-ai/inf
 import {streamChatResponse} from '@/modules/chaski-ai/infrastructure/streamChatResponse';
 import {buildChaskiPrompt} from '@/modules/chaski-ai/application/buildPrompt';
 import {chatRequestSchema} from '@/modules/chaski-ai/domain/chatRequest';
+import {savedGameContext} from '@/modules/chaski-ai/infrastructure/savedGameContext';
+import type {SavedChatEvidence} from '@/modules/chaski-ai/application/gameGuidance';
 
 export const maxDuration=30;
 export async function POST(req:Request){
@@ -27,16 +29,16 @@ export async function POST(req:Request){
   if(!parsed.success)return json('Mensajes inválidos o demasiado extensos.',400);
   const providers=configuredChatProviders();
   if(!providers.length)return json('Chaski no está disponible temporalmente. Referencia: '+requestId+'.',503);
-  const {messages}=parsed.data;
+  const {messages,gameContext}=parsed.data;
   // Bound the context wait; on timeout return unavailable instead of asking the
   // model to answer a catalog question with an unverified/partial context.
   let contextTimer:ReturnType<typeof setTimeout>|undefined;
   let onAbort:(()=>void)|undefined;
-  let careerContext:string;
+  let contextBundle:{careerContext:string;saved:SavedChatEvidence|undefined};
   const contextStart=performance.now();
   try{
-   careerContext=await Promise.race([
-    fetchCareerContext(messages[messages.length-1].content),
+   contextBundle=await Promise.race([
+    Promise.all([fetchCareerContext(messages[messages.length-1].content),gameContext?savedGameContext(req):Promise.resolve(undefined)]).then(([careerContext,saved])=>({careerContext,saved})),
     new Promise<never>((_,reject)=>{
      contextTimer=setTimeout(()=>reject(Object.assign(new Error('Context unavailable'),{code:'CONTEXT_TIMEOUT'})),10000);
      onAbort=()=>reject(Object.assign(new Error('Request aborted'),{code:'REQUEST_ABORTED'}));
@@ -49,7 +51,7 @@ export async function POST(req:Request){
    if(contextTimer)clearTimeout(contextTimer);
    if(onAbort)requestSignal.removeEventListener('abort',onAbort);
   }
-  const response=streamChatResponse({providers,messages,system:buildChaskiPrompt(careerContext),requestId,signal:requestSignal});
+  const response=streamChatResponse({providers,messages,system:buildChaskiPrompt(contextBundle.careerContext,gameContext,contextBundle.saved),requestId,signal:requestSignal});
   for(const [key,value] of Object.entries(quotaHeaders(quota)))response.headers.set(key,value);
   for(const [key,value] of Object.entries(timingHeaders()))response.headers.set(key,value);
   return response;

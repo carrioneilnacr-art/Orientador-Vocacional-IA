@@ -1,7 +1,8 @@
 import {afterEach,beforeEach,describe,expect,it,vi} from 'vitest';
-const mocks=vi.hoisted(()=>({context:vi.fn(),providers:vi.fn(),stream:vi.fn(),quota:vi.fn()}));
+const mocks=vi.hoisted(()=>({context:vi.fn(),providers:vi.fn(),stream:vi.fn(),quota:vi.fn(),saved:vi.fn()}));
 vi.mock('@/lib/requestRateLimit',()=>({checkRequestRateLimit:mocks.quota,quotaHeaders:(limit:{retryAfter?:number;setCookie?:string})=>({...limit.retryAfter?{'Retry-After':String(limit.retryAfter)}:{},...limit.setCookie?{'Set-Cookie':limit.setCookie}:{}})}));
 vi.mock('@/modules/chaski-ai/infrastructure/careerContext',()=>({fetchCareerContext:mocks.context}));
+vi.mock('@/modules/chaski-ai/infrastructure/savedGameContext',()=>({savedGameContext:mocks.saved}));
 vi.mock('@/modules/chaski-ai/infrastructure/chatProviders',()=>({configuredChatProviders:mocks.providers,safeProviderError:()=>({name:'Error'})}));
 vi.mock('@/modules/chaski-ai/infrastructure/streamChatResponse',()=>({streamChatResponse:mocks.stream}));
 import {POST} from '@/app/api/chat/route';
@@ -33,5 +34,20 @@ describe('chat request boundary',()=>{
   mocks.providers.mockReturnValue([{name:'openai'}]);mocks.context.mockResolvedValue('Official context');mocks.stream.mockReturnValue(new Response('stream'));
   const response=await POST(request());expect(await response.text()).toBe('stream');
   expect(mocks.stream.mock.calls[0][0].system).toContain('Official context');expect(mocks.stream.mock.calls[0][0].signal).toBeInstanceOf(AbortSignal);
+  expect(mocks.saved).not.toHaveBeenCalled();
+ });
+ it('only incorporates cookie-scoped dated evidence when validated game context is explicitly supplied',async()=>{
+  mocks.providers.mockReturnValue([{name:'openai'}]);mocks.context.mockResolvedValue('Official context');mocks.stream.mockReturnValue(new Response('stream'));
+  mocks.saved.mockResolvedValue({status:'saved',savedAt:'2026-11-02T15:00:00.000Z',notes:[{label:'Actividad',text:'Preferencia declarada.'}]});
+  const req=new Request('http://localhost/api/chat',{method:'POST',body:JSON.stringify({messages:[{role:'user',content:'¿Qué sigue?'}],gameContext:{version:1,scene:'colegio',room:'taller',rpgEntries:[],schoolEntries:[]}})});
+  expect((await POST(req)).status).toBe(200);expect(mocks.saved).toHaveBeenCalledWith(req);
+  const prompt=mocks.stream.mock.calls[0][0].system;
+  expect(prompt).toContain('Taller Creativo');expect(prompt).toContain('recorrido guardado con fecha 2026-11-02');expect(prompt).toContain('No mezcles sus elecciones');
+ });
+ it('fails closed without invoking GPT when private game-context retrieval fails',async()=>{
+  vi.spyOn(console,'error').mockImplementation(()=>{});
+  mocks.providers.mockReturnValue([{name:'openai'}]);mocks.context.mockResolvedValue('Official context');mocks.saved.mockRejectedValue(new Error('DB unavailable'));
+  const req=new Request('http://localhost/api/chat',{method:'POST',body:JSON.stringify({messages:[{role:'user',content:'¿Qué sigue?'}],gameContext:{version:1,scene:'plaza',rpgEntries:[],schoolEntries:[]}})});
+  expect((await POST(req)).status).toBe(503);expect(mocks.stream).not.toHaveBeenCalled();
  });
 });

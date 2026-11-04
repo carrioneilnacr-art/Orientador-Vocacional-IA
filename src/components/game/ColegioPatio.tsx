@@ -13,9 +13,10 @@ import type {SchoolContentVersions} from '@/game/adventureJourney';
 import {patioForeground,tracePatioForeground,patioForegroundBounds} from '@/game/colegioOcclusion';
 
 
-export default function ColegioPatio({paused=false,reducedMotion=false,onActivity,answers={},contentVersions={},onAnswer}:{paused?:boolean;reducedMotion?:boolean;onActivity:(entry:SchoolEvidence)=>void;answers?:Partial<Record<'elena'|'sofia',number>>;contentVersions?:SchoolContentVersions;onAnswer?:(id:'elena'|'sofia',choice:number)=>void}){
+export default function ColegioPatio({paused=false,reducedMotion=false,onActivity,answers={},contentVersions={},onAnswer,onRoomChange}:{paused?:boolean;reducedMotion?:boolean;onActivity:(entry:SchoolEvidence)=>void;answers?:Partial<Record<'elena'|'sofia',number>>;contentVersions?:SchoolContentVersions;onAnswer?:(id:'elena'|'sofia',choice:number)=>void;onRoomChange?:(room:SchoolRoomId|null)=>void}){
  const [talking,setTalking]=useState(false),[level,setLevel]=useState('Patio');
  const [room,setRoom]=useState<SchoolRoomId|null>(null),[speaker,setSpeaker]=useState<'elena'|'sofia'>('elena');
+ useEffect(()=>{onRoomChange?.(room);},[room,onRoomChange]);
  const roomOpen=useRef(false);
  const door=useRef<SchoolRoomId|null>(null),upstairs=useRef(false);
  const collisionState=useRef<{objects:readonly PatioSolid[];visible:boolean;selected:string}>({objects:patioSolids,visible:false,selected:''});

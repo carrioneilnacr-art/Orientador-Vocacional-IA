@@ -20,3 +20,6 @@
 @media(max-width:640px){.dialog{width:calc(100vw - 24px);padding:18px}.journalEntries{grid-template-columns:1fr}}
 
 .returnTravel span{display:inline!important}.returnTravel:disabled{opacity:.5;cursor:default}
+.chatPanel{height:min(660px,75dvh);min-height:360px;margin-top:28px;color:#082a4a}
+.chatOpen{display:inline-flex;align-items:center;gap:8px;margin-top:10px;min-height:44px;border:1px solid #d7b47f;border-radius:10px;background:#14394a;color:#fff0d4;padding:8px 12px;font:inherit;font-size:12px;cursor:pointer}.chatOpen:focus-visible{outline:3px solid #ffe3a5;outline-offset:3px}.chatOpen:disabled{opacity:.5;cursor:default}
+.chatPanel p{color:#082a4a}

@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowLeft, ArrowRight, BookOpen, Check, Compass, Leaf, Zap, RotateCcw, X, Users, Gamepad2, Landmark, MapPin, Maximize2 } from 'lucide-react';
 import { initialProgress, missions, recordPreference, recordNpcChoice, reflectionLabels, SAVE_KEY, type Mission, type Progress } from '@/game/adventure';
 import { plazaNpcs, type PlazaNpcId } from '@/game/plazaNpcs';
@@ -17,9 +17,11 @@ import {CURRENT_NARRATIVE_VERSION,getPlazaDialogue,getSchoolDialogue} from '@/mo
 import s from './Adventure.module.css';
 import './AdventureShell.css';
 import CompleteExplorationButton,{SUBMISSION_KEY} from '@/modules/adventure/presentation/CompleteExplorationButton';
+import {deriveGameChatContext} from '@/modules/adventure/presentation/gameChatContext';
 
 const ColegioPatio = dynamic(() => import('./ColegioPatio'));
 const AdventureWorld = dynamic(() => import('./AdventureWorld'));
+const CopilotChat = dynamic(() => import('@/components/chat/CopilotChat'));
 
 function Overlay({ title, onClose, children, returnTo }: { title: string; onClose: () => void; children: React.ReactNode; returnTo?: HTMLElement | null }) {
   const ref = useRef<HTMLDialogElement>(null);
@@ -134,7 +136,8 @@ export default function Adventure() {
   const [scene, setScene] = useState('plaza');
   const [saveState, setSaveState] = useState('Preparando aventura…');
   const [mission, setMission] = useState<Mission | null>(null);
-  const [panel, setPanel] = useState<'journal' | 'settings' | null>(null);
+  const [panel, setPanel] = useState<'journal' | 'settings' | 'chat' | null>(null);
+  const [chatRoom,setChatRoom]=useState<string|null>(null);
   const [confirmReset, setConfirmReset] = useState(false);
   const [notice, setNotice] = useState('');
   const [opener, setOpener] = useState<HTMLElement | null>(null);
@@ -156,7 +159,7 @@ export default function Adventure() {
     return () => window.clearTimeout(timer);
   }, [notice]);
 
-  function openPanel(value: 'journal' | 'settings') {
+  function openPanel(value: 'journal' | 'settings' | 'chat') {
     setOpener(document.activeElement instanceof HTMLElement ? document.activeElement : null);
     setActiveNpc(null);
     setPanel(value);
@@ -214,6 +217,7 @@ export default function Adventure() {
   }
 
   const reduced = progress.reducedMotion;
+  const gameContext=useMemo(()=>deriveGameChatContext({scene,room:chatRoom,activeNpc,rpgEntries,schoolEntries,schoolAnswers,schoolContentVersions}),[scene,chatRoom,activeNpc,rpgEntries,schoolEntries,schoolAnswers,schoolContentVersions]);
   const explored = rpgEntries.length;
   const plazaComplete=allPlazaNpcsCompleted(rpgEntries.map(entry=>entry.npcId));
   const plazaHint=plazaComplete?'El Metropolitano ya puede llevarte al colegio.':explored===4?'Habla con el personaje que falta para continuar.':`Habla con los ${rpgNpcs.length-explored} personajes que faltan para continuar.`;
@@ -242,7 +246,7 @@ export default function Adventure() {
         {scene === 'plaza' ? (
           <PlazaPlayable key={`plaza-${worldVersion}`} paused={!!mission || !!panel || !!activeNpc || !loaded} reducedMotion={reduced} activeNpc={activeNpc} completedNpcs={rpgEntries.map(e=>e.npcId)} onTalk={setActiveNpc} onBoard={()=>{if(plazaComplete)setScene('colegio');}} />
         ) : scene === 'colegio' ? (
-          <ColegioPatio key={`colegio-${worldVersion}`} paused={!!panel || !loaded} reducedMotion={reduced} answers={schoolAnswers} contentVersions={schoolContentVersions} onAnswer={(id,choice)=>{if(schoolAnswers[id]!==undefined)return;setSchoolAnswers(old=>recordSchoolAnswer(old,id,choice));setSchoolContentVersions(old=>({...old,[id]:CURRENT_NARRATIVE_VERSION}));setNotice('Conversación guardada en la bitácora.');}} onActivity={entry=>{setSchoolEntries(old=>recordSchoolEvidence(old,entry));setNotice('Chaski guardó tu descubrimiento en la bitácora.');}} />
+          <ColegioPatio key={`colegio-${worldVersion}`} onRoomChange={setChatRoom} paused={!!panel || !loaded} reducedMotion={reduced} answers={schoolAnswers} contentVersions={schoolContentVersions} onAnswer={(id,choice)=>{if(schoolAnswers[id]!==undefined)return;setSchoolAnswers(old=>recordSchoolAnswer(old,id,choice));setSchoolContentVersions(old=>({...old,[id]:CURRENT_NARRATIVE_VERSION}));setNotice('Conversación guardada en la bitácora.');}} onActivity={entry=>{setSchoolEntries(old=>recordSchoolEvidence(old,entry));setNotice('Chaski guardó tu descubrimiento en la bitácora.');}} />
         ) : (
           <AdventureWorld
             scene={scene}
@@ -263,6 +267,7 @@ export default function Adventure() {
           <div><MapPin size={24} /><span><strong>{location}</strong><small>{scene === 'colegio' ? 'Capítulo 2 · Descubre tus habilidades' : 'Capítulo 1 · Descubre tu camino'}</small></span></div>
         </div>
         <div className={`${s.gameTools} gameTools`}>
+          <button disabled={!loaded} onClick={()=>openPanel('chat')} aria-label="Conversar con Chaski sobre mi aventura"><Compass size={21}/><span>Chaski</span></button>
           {scene==='colegio'&&<button className={s.returnTravel} disabled={!loaded||!!panel} onClick={()=>{setActiveNpc(null);setScene('plaza');setNotice('Volviste a la Plaza de Lima. Tu bitácora y actividades completadas se conservan. Usa el Metropolitano para regresar al colegio.');}} aria-label="Volver a la Plaza de Lima conservando el progreso" title="Volver a la Plaza de Lima">
             <ArrowLeft size={20}/><span>Volver a la plaza</span>
           </button>}
@@ -283,7 +288,7 @@ export default function Adventure() {
       <section className="belowGame" aria-label="Orientación y progreso">
         <div className="assistantCard">
           <Image src="/game/chaski-2d.png" alt="Chaski" width={120} height={125} />
-          <div className="assistantCopy"><span className="cardKicker">CHASKI IA · TU GUÍA</span><h2>Chaski <span>✦</span></h2><p>{scene === 'plaza' ? explored ? `He guardado ${explored} ${explored===1?'pista':'pistas'} de tus conversaciones. ${plazaHint}` : 'Habla con los 5 personajes de la plaza. Acércate y pulsa E; guardaré lo que descubras.' : `Estamos en ${location}. Sigue explorando y yo guardaré las pistas de tu camino.`}</p><small>{explored ? `${explored} ${explored===1?'pista guardada':'pistas guardadas'}` : 'Tu camino empieza aquí'}</small></div>
+          <div className="assistantCopy"><span className="cardKicker">CHASKI IA · TU GUÍA</span><h2>Chaski <span>✦</span></h2><p>{scene === 'plaza' ? explored ? `Tu bitácora en este dispositivo contiene ${explored} ${explored===1?'pista':'pistas'} de tus conversaciones. ${plazaHint}` : 'Habla con los 5 personajes de la plaza. Acércate y pulsa E para explorar.' : `Estamos en ${location}. Sigue explorando y anota lo que te llama la atención.`}</p><small>{explored ? `${explored} ${explored===1?'pista local':'pistas locales'}` : 'Tu camino empieza aquí'}</small><button className={s.chatOpen} disabled={!loaded} onClick={()=>openPanel('chat')}>Conversar con Chaski <Compass size={16}/></button></div>
         </div>
         <div className="progressCard">
           <span className="cardKicker">{scene === 'colegio' ? 'CAPÍTULO 02 · EL COLEGIO' : 'CAPÍTULO 01 · EXPLORACIÓN'}</span><h2>{scene === 'colegio' ? 'Descubre qué disfrutas hacer' : 'Tu camino se va dibujando'}</h2>
@@ -303,6 +308,12 @@ export default function Adventure() {
           onFinish={finish}
           onClose={() => setMission(null)}
         />
+      )}
+
+      {panel === 'chat' && (
+        <Overlay returnTo={opener} title="Conversa con Chaski" onClose={()=>setPanel(null)}>
+          <div className={s.chatPanel}><CopilotChat gameContext={gameContext}/></div>
+        </Overlay>
       )}
 
       {panel === 'journal' && (

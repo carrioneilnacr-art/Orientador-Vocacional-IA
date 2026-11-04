@@ -6,6 +6,7 @@ import { Chaski } from "@/components/chaski/Chaski";
 import { ChaskiPersonality, ChaskiState } from "@/components/chaski/chaski.config";
 import { motion, AnimatePresence } from "framer-motion";
 import {ChatResponseError,readChatStream} from './chatStream';
+import type {GameContext} from '@/modules/chaski-ai/domain/gameContext';
 
 interface Message {
   id: string;
@@ -15,6 +16,7 @@ interface Message {
 
 interface CopilotChatProps {
   profileName?: string;
+  gameContext?: GameContext;
 }
 
 const QUICK_QUESTIONS = [
@@ -23,6 +25,13 @@ const QUICK_QUESTIONS = [
   { text: "¿Por qué esta carrera encaja conmigo?", icon: ShieldCheck },
   { text: "¿Qué campo laboral y sueldo tiene?", icon: Banknote },
 ];
+const GAME_QUESTIONS = [
+  {text:'¿Qué puedo explorar ahora?',icon:MapPin},
+  {text:'Ayúdame a reflexionar sobre mis elecciones.',icon:Sparkles},
+  {text:'¿Cómo puedo seguir probando lo que me interesa?',icon:ShieldCheck},
+  {text:'¿Qué significa lo que anoté en mi bitácora?',icon:MessageSquare},
+];
+const GAME_GREETING='Hola, soy Chaski. Puedo acompañarte en la plaza y el colegio, ayudarte a decidir qué explorar y conversar sobre las preferencias que has expresado. Estas pistas son exploratorias; no son un diagnóstico ni una medición de tus capacidades.';
 
 function renderInlineContent(text: string) {
   const parts = text.split(/(\*\*.*?\*\*|\*.*?\*)/g);
@@ -106,12 +115,14 @@ function FormattedChatMessage({ content }: { content: string }) {
   );
 }
 
-export default function CopilotChat({ profileName = 'Vocacional' }: CopilotChatProps) {
+export default function CopilotChat({ profileName = 'Vocacional',gameContext }: CopilotChatProps) {
+  const isGame=!!gameContext;
+  const questions=isGame?GAME_QUESTIONS:QUICK_QUESTIONS;
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "0",
       role: "assistant",
-      content: `Hola. Ya analicé tus resultados.\nTu perfil principal es **${profileName}**.\n\nPuedo ayudarte a entender mejor tus carreras recomendadas, el campo laboral, habilidades necesarias y más.\n¿Qué te gustaría saber?`,
+      content: isGame?GAME_GREETING:`Hola. Puedes preguntarme sobre tus resultados y consultar información de carreras disponible en nuestras fuentes.\nTu perfil mostrado es **${profileName}**.\n¿Qué te gustaría explorar?`,
     },
   ]);
   const [input, setInput] = useState("");
@@ -121,8 +132,11 @@ export default function CopilotChat({ profileName = 'Vocacional' }: CopilotChatP
   const [chaskiPersonality, setChaskiPersonality] = useState<ChaskiPersonality>('default');
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const requestRef = useRef<AbortController|null>(null);
+  useEffect(()=>()=>requestRef.current?.abort(),[]);
 
   useEffect(() => {
+    if(isGame)return;
     const saved = localStorage.getItem('vocational_results');
     if (saved) {
       try {
@@ -149,7 +163,7 @@ export default function CopilotChat({ profileName = 'Vocacional' }: CopilotChatP
         else if (topDim === 'ENTERPRISING') setChaskiPersonality('emprendedor');
       } catch {}
     }
-  }, []);
+  }, [isGame]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
@@ -187,16 +201,19 @@ export default function CopilotChat({ profileName = 'Vocacional' }: CopilotChatP
     ]);
 
     let partialText = '';
+    const controller=new AbortController();
+    requestRef.current=controller;
     try {
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        signal:controller.signal,
         body: JSON.stringify({
-          messages: [...messages, userMsg].map((m) => ({
+          messages: [...messages, userMsg].filter(m=>m.content.trim()).slice(-30).map((m) => ({
             role: m.role,
             content: m.content,
           })),
-          profileContext,
+          ...(gameContext?{gameContext}:{profileContext}),
         }),
       });
 
@@ -231,6 +248,7 @@ export default function CopilotChat({ profileName = 'Vocacional' }: CopilotChatP
       setChaskiState('surprised');
       setTimeout(() => setChaskiState('idle'), 3000);
     } finally {
+      if(requestRef.current===controller)requestRef.current=null;
       setIsLoading(false);
     }
   };
@@ -250,14 +268,14 @@ export default function CopilotChat({ profileName = 'Vocacional' }: CopilotChatP
       <div className="flex items-center justify-between px-6 py-4 border-b border-[#D6E5EF]/70 bg-gradient-to-r from-white to-[#F0F9FF] shrink-0">
         <div>
           <h3 className="font-bold text-[18px] text-[#082A4A] tracking-tight flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-[#00C2E0]" /> Copiloto Vocacional
+            <Sparkles className="w-4 h-4 text-[#00C2E0]" /> {isGame?'Conversa con Chaski':'Copiloto Vocacional'}
           </h3>
           <div className="flex items-center gap-2 text-[13px] font-medium text-[#4F6B85] mt-0.5">
             <span className="relative flex h-2.5 w-2.5">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#10B981] opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#10B981]"></span>
             </span>
-            Chaski en línea
+            {isGame?`Tu guía · ${gameContext.scene==='colegio'?'Colegio':'Plaza de Lima'}`:'Tu guía vocacional'}
           </div>
         </div>
         {!isInitialState && (
@@ -275,13 +293,10 @@ export default function CopilotChat({ profileName = 'Vocacional' }: CopilotChatP
           <div className="relative bg-white border-2 border-[#00C2E0] p-4 rounded-[20px] shadow-sm w-full shrink-0">
             <div className="text-[11px] text-[#00C2E0] font-bold tracking-wider uppercase mb-1.5 flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-[#00C2E0] animate-pulse"></span>
-              Respondiendo
+              ¿Qué quieres explorar?
             </div>
             <p className="text-[#082A4A] text-[13.5px] font-medium leading-relaxed">
-              Hola. Ya analicé tus resultados.<br />
-              Tu perfil principal es <strong className="font-bold text-[#082A4A]">{profileName}</strong>.<br /><br />
-              Puedo ayudarte a entender mejor tus carreras recomendadas, el campo laboral, habilidades necesarias y más.<br />
-              ¿Qué te gustaría saber?
+              {messages[0].content}
             </p>
             {/* Puntero de la burbuja hacia abajo */}
             <div className="absolute -bottom-[10px] left-1/2 -translate-x-1/2 w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[10px] border-t-[#00C2E0]" />
@@ -297,7 +312,7 @@ export default function CopilotChat({ profileName = 'Vocacional' }: CopilotChatP
 
           {/* 4 Preguntas Rápidas */}
           <div className="space-y-1.5 w-full shrink-0">
-            {QUICK_QUESTIONS.map((q, idx) => (
+            {questions.map((q, idx) => (
               <button
                 key={idx}
                 onClick={() => sendMessage(q.text)}
@@ -317,7 +332,7 @@ export default function CopilotChat({ profileName = 'Vocacional' }: CopilotChatP
       ) : (
         /* Estado Conversacional Activo */
         <div className="flex-1 flex flex-col min-h-0">
-          <div className="flex-1 overflow-y-auto p-5 space-y-4 scrollbar-thin scrollbar-thumb-[#DCEAF2] scrollbar-track-transparent">
+          <div role="log" aria-label="Conversación con Chaski" aria-live="polite" aria-busy={isLoading} className="flex-1 overflow-y-auto p-5 space-y-4 scrollbar-thin scrollbar-thumb-[#DCEAF2] scrollbar-track-transparent">
             <AnimatePresence initial={false}>
               {messages.map((m) => (
                 <motion.div
@@ -352,7 +367,7 @@ export default function CopilotChat({ profileName = 'Vocacional' }: CopilotChatP
           {/* Chips de sugerencias contextuales */}
           {!isLoading && (
             <div className="px-5 py-2 flex gap-1.5 overflow-x-auto no-scrollbar shrink-0 border-t border-[#D6E5EF]/40 bg-[#F8FCFF]/50">
-              {QUICK_QUESTIONS.map((q, idx) => (
+              {questions.map((q, idx) => (
                 <button
                   key={idx}
                   onClick={() => sendMessage(q.text)}
@@ -381,6 +396,8 @@ export default function CopilotChat({ profileName = 'Vocacional' }: CopilotChatP
             placeholder={isLoading ? "Chaski está respondiendo..." : "Escribe tu pregunta aquí..."}
             disabled={isLoading}
             autoComplete="off"
+            maxLength={6000}
+            aria-label="Pregunta para Chaski"
             className="w-full h-12 pl-4 pr-12 bg-white border-2 border-[#00C2E0]/40 focus:border-[#00C2E0] focus:ring-4 focus:ring-[#00C2E0]/20 rounded-[14px] text-[13.5px] text-[#082A4A] placeholder-[#4F6B85] focus:outline-none transition-all shadow-sm disabled:opacity-60"
           />
           <button
