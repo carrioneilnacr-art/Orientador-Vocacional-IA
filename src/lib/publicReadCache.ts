@@ -21,7 +21,9 @@ export function createPublicReadCache<T>(options:{maxEntries:number;ttlMs:number
     if(entries.get(key)===entry)entries.delete(key);
     throw error;
    });
-   const entry={promise,expiresAt:Infinity};
+   // A caller timeout does not cancel a database driver promise. Let a later
+   // request recover instead of retaining an unresolved loader indefinitely.
+   const entry={promise,expiresAt:now()+Math.min(options.ttlMs,10000)};
    entries.set(key,entry);
    return entry.promise;
   },

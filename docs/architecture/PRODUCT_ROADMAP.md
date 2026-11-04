@@ -1,5 +1,7 @@
 # Visión y Roadmap del Producto: Orientador Vocacional IA
 
+> Documento histórico de visión; sus afirmaciones sobre aptitudes, precisión psicométrica y disponibilidad no acreditan validación. La ruta vigente está en [RUTA_CHASKI_2026_11_04.md](RUTA_CHASKI_2026_11_04.md) y la arquitectura del monolito modular. La aventura actual es exploratoria, no un diagnóstico ni un ranking de carreras.
+
 Este documento resume la propuesta de valor, la funcionalidad principal y la visión a futuro de la plataforma, diseñada específicamente para conectar con estudiantes de 5to año de secundaria mediante tecnología moderna y perfiles psicológicos.
 
 ## 1. ¿Qué hace la plataforma actualmente? (Core Loop)

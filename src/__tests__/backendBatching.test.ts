@@ -2,12 +2,12 @@ import {afterEach,beforeEach,describe,expect,it,vi} from 'vitest';
 import {PgDialect} from 'drizzle-orm/pg-core';
 import type {SQL} from 'drizzle-orm';
 
-const probe=vi.hoisted(()=>({rows:[] as (unknown[]|Error)[],queries:0,filters:[] as SQL[]}));
+const probe=vi.hoisted(()=>({rows:[] as (unknown[]|Error)[],queries:0,filters:[] as SQL[],orders:[] as SQL[]}));
 vi.mock('@/db',()=>({db:{select:()=>{
  probe.queries++;
  const rows=probe.rows.shift()??[];
  const builder={
-  from:()=>builder,innerJoin:()=>builder,orderBy:()=>builder,limit:()=>builder,
+  from:()=>builder,innerJoin:()=>builder,orderBy:(...orders:SQL[])=>{probe.orders.push(...orders);return builder;},limit:()=>builder,
   where:(condition:SQL)=>{probe.filters.push(condition);return builder;},
   then:(resolve:(value:unknown[])=>unknown,reject?:(error:unknown)=>unknown)=>
    (rows instanceof Error?Promise.reject(rows):Promise.resolve(rows)).then(resolve,reject),
@@ -21,20 +21,44 @@ import {VERIFIED_16_QUESTIONS,VERIFIED_64_OPTIONS} from '@/data/questionnaireDat
 const career=(id:number)=>({id,name:`Carrera ${id}`,slug:`carrera-${id}`,faculty:'Facultad',degree:'Grado',generalProfile:'Perfil registrado'});
 const offer=(careerId:number,institutionId:number)=>({offerId:careerId*10+institutionId,careerId,institutionId,institutionShort:`U${institutionId}`,institutionName:`Universidad ${institutionId}`,campusName:'Los Olivos',district:'Los Olivos',sourceUrl:`https://official.example/offer-${careerId}-${institutionId}`});
 const sqlFilters=()=>probe.filters.map(filter=>new PgDialect().sqlToQuery(filter).sql).join('\n');
-beforeEach(()=>{probe.rows=[];probe.queries=0;probe.filters=[];});
+beforeEach(()=>{probe.rows=[];probe.queries=0;probe.filters=[];probe.orders=[];});
 afterEach(()=>{vi.useRealTimers();vi.restoreAllMocks();});
 
 describe('Batched verified chat context',()=>{
+ it('prefers an accent-normalized full career name over broad engineering matches',async()=>{
+  const selected={...career(3),name:'Ingeniería de Software'};
+  probe.rows=[[{...career(1),name:'Ingeniería Civil'},{...career(2),name:'Ingeniería Industrial'},selected],[offer(3,1)],[],[]];
+  const result=await fetchCareerContext('Quiero conocer ingeniería de software');
+  expect(result).toContain('CARRERA: Ingeniería de Software');expect(result).not.toContain('CARRERA: Ingeniería Civil');expect(result).not.toContain('CARRERA: Ingeniería Industrial');
+  const filter=probe.filters.map(value=>new PgDialect().sqlToQuery(value)).find(value=>value.sql.includes('academic_offers'))!;
+  expect(filter.params).toContain(3);expect(filter.params).not.toContain(1);expect(filter.params).not.toContain(2);
+  const ranked=new PgDialect().sqlToQuery(probe.orders[0]);expect(ranked.sql).toContain('case when');expect(ranked.sql).toContain('position(');expect(ranked.sql).toContain('desc');
+ });
+ it('preserves both explicitly named comparisons and compresses repeated URLs without dropping sixteen courses',async()=>{
+  const shared='https://official.example.edu.pe/documentos/academicos/mallas-curriculares/verificadas/2026/curricula-completa-ingresantes-2026-actualizacion-oficial.pdf';
+  const selected=[{...career(31),name:'Medicina Humana'},{...career(32),name:'Arquitectura'}];
+  const offers=[offer(31,1),offer(31,2),offer(32,1),offer(32,2)].map(value=>({...value,sourceUrl:shared}));
+  const curricula=[{id:3101,offerId:311},{id:3102,offerId:312},{id:3201,offerId:321},{id:3202,offerId:322}];
+  probe.rows=[[...selected,{...career(33),name:'Ingeniería Civil'}],offers,curricula,curricula.flatMap(value=>Array.from({length:16},(_,index)=>({curriculumId:value.id,name:`Curso-${value.id}-${index}`,cycle:index+1,sourceUrl:shared})))];
+  const result=await fetchCareerContext('Comparar medicina humana y arquitectura');
+  expect(result).toContain('CARRERA: Medicina Humana');expect(result).toContain('CARRERA: Arquitectura');expect(result).not.toContain('CARRERA: Ingeniería Civil');
+  expect(result.match(/Curso-\d+-\d+/g)).toHaveLength(64);expect(result.match(/fuente: F1/g)).toHaveLength(68);
+  expect(result.split(shared)).toHaveLength(2);expect(result).toContain(`F1: ${shared}`);
+  const expanded=result.split('FUENTES OFICIALES (')[0].replace(/\bF1\b/g,shared)+'=========================================================================\n';
+  const oldBytes=Buffer.byteLength(expanded),newBytes=Buffer.byteLength(result);
+  expect(newBytes).toBeLessThan(oldBytes);
+  console.info('[Context provenance fixture bytes]',{expandedUrlBytes:oldBytes,dictionaryBytes:newBytes,reductionPercent:Number(((1-newBytes/oldBytes)*100).toFixed(2))});
+ });
  it('coalesces forty normalized career queries into one verified four-read batch',async()=>{
   probe.rows=[[career(1)],[offer(1,1)],[{id:101,offerId:11}],[{curriculumId:101,name:'Curso oficial',cycle:1,sourceUrl:'https://official.example/course'}]];
-  const results=await Promise.all(Array.from({length:40},(_,i)=>fetchCareerContext(i%2?'Derecho administración':'administración DERECHO')));
+  const results=await Promise.all(Array.from({length:40},(_,i)=>fetchCareerContext(i%2?'Derecho administración':'DERECHO ADMINISTRACIÓN!')));
   expect(probe.queries).toBe(4);expect(new Set(results).size).toBe(1);expect(results[0]).toContain('https://official.example/course');
  });
  it('caches successful no-match responses but never a database failure',async()=>{
   vi.spyOn(console,'error').mockImplementation(()=>{});
   probe.rows=[[],new Error('offline'),[]];
   expect(await fetchCareerContext('intereses vocacionales')).toBe('');
-  expect(await fetchCareerContext('vocacionales intereses')).toBe('');expect(probe.queries).toBe(1);
+  expect(await fetchCareerContext('INTERESES VOCACIONALES!')).toBe('');expect(probe.queries).toBe(1);
   await expect(fetchCareerContext('contabilidad')).rejects.toThrow('VERIFIED_CATALOG_UNAVAILABLE');
   expect(await fetchCareerContext('contabilidad')).toBe('');expect(probe.queries).toBe(3);
  });

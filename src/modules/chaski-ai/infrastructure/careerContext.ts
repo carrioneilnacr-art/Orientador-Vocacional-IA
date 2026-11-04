@@ -1,6 +1,6 @@
 import { db } from '@/db';
 import { careers, campuses, academicOffers, institutions, curricula, curriculumCourses, sources } from '@/db/schema';
-import { and, asc, desc, eq, gte, ilike, inArray, isNull, or } from 'drizzle-orm';
+import { and, asc, desc, eq, gte, ilike, inArray, isNull, or, sql } from 'drizzle-orm';
 import {createHash} from 'node:crypto';
 import {createPublicReadCache} from '@/lib/publicReadCache';
 
@@ -10,24 +10,34 @@ const STOPWORDS = new Set(['hola','gracias','chaski','para','cuanto','cuesta','s
 // Successful no-match lookups are public catalog facts too. Failures reject and
 // are never cached, so an outage cannot masquerade as a verified empty result.
 const publicContextCache=createPublicReadCache<string>({maxEntries:64,ttlMs:30000,cacheable:()=>true});
+const normalize=(value:string)=>value.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9\s]/g,' ').replace(/\s+/g,' ').trim();
 
 export async function fetchCareerContext(userMessage: string): Promise<string> {
   const today = new Date().toISOString().slice(0, 10);
-  const words = [...new Set(userMessage.toLowerCase().replace(/[^a-záéíóúñü\s]/gi, ' ').split(/\s+/).filter(word => word.length >= 4 && !STOPWORDS.has(word)))].slice(0, 8);
+  const normalizedMessage=normalize(userMessage);
+  const words = [...new Set(normalizedMessage.split(' ').filter(word => word.length >= 4 && !STOPWORDS.has(word)))].slice(0, 8);
   if (!words.length) return '';
   // Key contains no message text or identity. UTC day prevents stale source
   // validity being carried across midnight; only official context is retained.
-  const key=createHash('sha256').update(today+':'+[...words].sort().join('|')).digest('hex');
-  return publicContextCache.read(key,()=>loadCareerContext(words,today));
+  // Phrase order matters for exact named-career selection. Only its hash is kept.
+  const key=createHash('sha256').update(today+':'+normalizedMessage).digest('hex');
+  return publicContextCache.read(key,()=>loadCareerContext(words,today,normalizedMessage));
 }
 
-async function loadCareerContext(words:string[],today:string):Promise<string>{
+async function loadCareerContext(words:string[],today:string,normalizedMessage:string):Promise<string>{
   try {
     // One parameterized search, rather than up to eight sequential round trips.
-    const foundCareers = await db.select().from(careers)
-      .where(or(...words.map(word => or(ilike(careers.name, `%${word}%`), ilike(careers.slug, `%${word}%`)))))
-      .orderBy(asc(careers.id)).limit(6);
-    if (!foundCareers.length) return '';
+    const normalizedName=sql<string>`translate(lower(${careers.name}), 'áéíóúüñ', 'aeiouun')`;
+    const normalizedSlug=sql<string>`translate(lower(${careers.slug}), 'áéíóúüñ', 'aeiouun')`;
+    const matches=words.map(word=>or(ilike(normalizedName,`%${word}%`),ilike(normalizedSlug,`%${word}%`))!);
+    const exactSqlName=sql<string>`trim(regexp_replace(${normalizedName}, '[^a-z0-9]+', ' ', 'g'))`;
+    const exactSql=sql<number>`case when position(' ' || ${exactSqlName} || ' ' in ${` ${normalizedMessage} `}) > 0 then 100 else 0 end`;
+    const relevance=sql<number>`(${exactSql} + ${sql.join(matches.map((match,index)=>sql`case when ${match} then ${words[index]==='ingenieria'?1:3} else 0 end`),sql` + `)})`;
+    const candidates = await db.select().from(careers)
+      .where(or(...matches)).orderBy(desc(relevance),asc(careers.id)).limit(6);
+    if (!candidates.length) return '';
+    const exact=candidates.filter(career=>` ${normalizedMessage} `.includes(` ${normalize(career.name)} `));
+    const foundCareers=exact.length?exact:candidates;
     const offers = await db.select({
       offerId: academicOffers.id, careerId: academicOffers.careerId, institutionId: institutions.id,
       institutionShort: institutions.shortName, institutionName: institutions.name,
@@ -64,6 +74,8 @@ async function loadCareerContext(words:string[],today:string):Promise<string>{
       if (group.length < 16) group.push(course);
       coursesByCurriculum.set(course.curriculumId, group);
     }
+    const sourceIds=new Map<string,string>();
+    const sourceRef=(url:string)=>{let id=sourceIds.get(url);if(!id){id=`F${sourceIds.size+1}`;sourceIds.set(url,id);}return id;};
     const details = foundCareers.map(career => {
       const careerOffers = offers.filter(offer => offer.careerId === career.id);
       if (!careerOffers.length) return UNAVAILABLE;
@@ -74,12 +86,13 @@ async function loadCareerContext(words:string[],today:string):Promise<string>{
         const north = group.filter(offer => LIMA_NORTE_DISTRICTS.has(offer.district.toLowerCase()) || /norte|comas|olivos/.test(offer.campusName.toLowerCase()));
         const curriculumId = chosen.get(`${career.id}:${institutionId}`);
         const courses = curriculumId ? coursesByCurriculum.get(curriculumId) ?? [] : [];
-        const courseText = courses.length ? courses.map(course => `${course.name} (Ciclo ${course.cycle}; fuente: ${course.sourceUrl})`).join(', ') : UNAVAILABLE;
-        return `• Universidad: ${institution.institutionShort} (${institution.institutionName})\n  - ${north.length ? `SEDES LIMA NORTE: ${[...new Set(north.map(offer => `${offer.campusName} (${offer.district})`))].join(', ')}` : 'Sin sede directa en Lima Norte'}\n  - Malla Curricular (Muestra de cursos oficiales): ${courseText}`;
+        const courseText = courses.length ? courses.map(course => `${course.name} (Ciclo ${course.cycle}; fuente: ${sourceRef(course.sourceUrl)})`).join(', ') : UNAVAILABLE;
+        return `• Universidad: ${institution.institutionShort} (${institution.institutionName})\n  - ${north.length ? `SEDES LIMA NORTE: ${[...new Set(north.map(offer => `${offer.campusName} (${offer.district}; fuente: ${sourceRef(offer.sourceUrl)})`))].join(', ')}` : 'Sin sede directa en Lima Norte'}\n  - Fuentes de ofertas: ${[...new Set(group.map(offer=>sourceRef(offer.sourceUrl)))].join(', ')}\n  - Malla Curricular (Muestra de cursos oficiales): ${courseText}`;
       });
-      return `CARRERA: ${career.name} (${career.faculty})\nGrado registrado: ${career.degree}\nFuentes de ofertas: ${[...new Set(careerOffers.map(offer => offer.sourceUrl))].join(', ')}\nPerfil: ${career.generalProfile?.substring(0, 280) || UNAVAILABLE}\n\nCOMPARATIVA DE UNIVERSIDADES DISPONIBLES (ENFOQUE ZONA NORTE):\n${comparisons.join('\n\n')}`;
+      return `CARRERA: ${career.name} (${career.faculty})\nGrado registrado: ${career.degree}\nFuentes de ofertas: ${[...new Set(careerOffers.map(offer => sourceRef(offer.sourceUrl)))].join(', ')}\nPerfil: ${career.generalProfile?.substring(0, 280) || UNAVAILABLE}\n\nCOMPARATIVA DE UNIVERSIDADES DISPONIBLES (ENFOQUE ZONA NORTE):\n${comparisons.join('\n\n')}`;
     });
-    return `\n\n=== DATOS OFICIALES DE LA BASE DE DATOS (ZONA NORTE Y UNIVERSIDADES) ===\n${details.join('\n\n---\n')}\n=========================================================================\n`;
+    const dictionary=[...sourceIds].map(([url,id])=>`${id}: ${url}`).join('\n');
+    return `\n\n=== DATOS OFICIALES DE LA BASE DE DATOS (ZONA NORTE Y UNIVERSIDADES) ===\n${details.join('\n\n---\n')}\nFUENTES OFICIALES (cada referencia F corresponde a esta URL; cita la URL al responder):\n${dictionary}\n=========================================================================\n`;
   } catch {
     console.error('[CareerContext] Verified catalog lookup unavailable');
     throw new Error('VERIFIED_CATALOG_UNAVAILABLE');

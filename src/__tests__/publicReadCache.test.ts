@@ -1,6 +1,15 @@
 import {describe,expect,it,vi} from 'vitest';
 import {createPublicReadCache} from '@/lib/publicReadCache';
 describe('bounded public read cache',()=>{
+ it('replaces a stuck pending read without letting its late result overwrite a new snapshot',async()=>{
+  let now=0;let release!:(value:string)=>void;
+  const cache=createPublicReadCache<string>({maxEntries:64,ttlMs:30000,cacheable:Boolean,now:()=>now});
+  const old=cache.read('hash',()=>new Promise<string>(resolve=>{release=resolve;}));
+  await Promise.resolve();now=10001;
+  expect(await cache.read('hash',async()=> 'fresh')).toBe('fresh');
+  release('old');await old;
+  expect(await cache.read('hash',async()=> 'unexpected')).toBe('fresh');
+ });
  it('coalesces forty concurrent reads and expires successful values after30seconds',async()=>{
   let now=0;const cache=createPublicReadCache<string>({maxEntries:64,ttlMs:30000,cacheable:Boolean,now:()=>now});
   const load=vi.fn(async()=> 'official context');
