@@ -1,0 +1,35 @@
+# Auditoría de seguridad y calidad
+
+Revisión estática del repositorio, 18 de noviembre de 2026. No incluye pruebas de intrusión ni verificación de la configuración efectiva de Supabase, Vercel o correo. Las mejoras siguientes son propuestas, no funcionalidades implementadas.
+
+## Estado observado
+
+| Área | Evidencia en el código | Estado y efecto |
+| --- | --- | --- |
+| Personal | `src/app/api/colegio/staff/login/route.ts`, `src/lib/staffAuth.ts` | Acceso con contraseña de Supabase Auth. Cookie HttpOnly, SameSite Strict y Secure en producción. Se consulta el usuario y se vuelve a consultar su rol institucional. No se observa desafío TOTP ni comprobación AAL2. |
+| Estudiantes | `src/lib/studentAuth.ts`, `src/app/api/colegio/acceso/route.ts` | Código de acceso reutilizable con cuatro caracteres aleatorios y prefijo, conservado como SHA-256. Existe una cuota por IP y por código. No es un OTP de un solo uso. |
+| Sesión del estudiante | `src/lib/studentAuth.ts`, `src/app/api/colegio/acceso/route.ts` | Cookie firmada con HMAC-SHA256 por siete días; el contenido codificado incluye nombre, código y colegio. La firma detecta manipulación, pero no cifra el contenido. No se observa revocación individual centralizada en la verificación de esta cookie. |
+| Cuotas | `src/lib/rateLimit.ts`, `src/lib/requestRateLimit.ts` | Contadores compartidos en PostgreSQL con cierre ante fallo. La extracción de IP de `x-forwarded-for` debe verificarse contra la configuración confiable del proxy antes de considerarla robusta. La protección por cada código no limita por sí sola un barrido de códigos distintos. |
+| Conversación | `src/app/api/chat/route.ts` | Cuotas, límite de cuerpo, validación y límite temporal. El contexto de exploración antiguo aún existe en el backend y debe auditarse y limpiarse de manera compatible con registros históricos. |
+| Autorización | `src/lib/staffAuth.ts` | Hay funciones y matriz de permisos; su existencia no prueba por sí sola que cada endpoint imponga el rol y el aislamiento por colegio. Revisar cada ruta y sus pruebas. |
+| Información del despliegue | `next.config.ts` | No hay cabeceras de seguridad configuradas en ese archivo. Verificar primero si Vercel u otra capa ya las aplica; esta revisión no acredita ausencia en producción. |
+
+## Riesgos y acciones priorizadas
+
+1. **Alta — acceso de estudiantes.** El espacio de códigos cortos y su hash rápido justifican evaluar resistencia ante adivinación y divulgación de hashes. Medir límites efectivos bajo NAT escolar, instrumentar alertas, usar credenciales aleatorias más largas y estudiar un código de un solo uso con vencimiento y canje atómico. Migrar cuentas gradualmente; no invalidar accesos escolares sin procedimiento de entrega y recuperación. Un hash sin clave de un código corto no garantiza protección ante búsqueda fuera de línea.
+2. **Alta — personal con acceso a datos sensibles.** Diseñar segundo factor TOTP en Supabase para administración y psicología. Inscribir el factor, emitir y verificar desafío, exigir AAL2 en servidor y, cuando corresponda, políticas RLS. Cubrir enrolamiento, bloqueo, recuperación segura y revocación. Un formulario que pida un código sin exigir AAL2 en las rutas sensibles no completa el control. Confirmar proveedores, disponibilidad y límites efectivos del proyecto. [Supabase TOTP](https://supabase.com/docs/guides/auth/auth-mfa/totp), [Supabase MFA y niveles de seguridad](https://supabase.com/docs/guides/auth/auth-mfa).
+3. **Alta — datos en la sesión del alumno.** Reducir la cookie a un identificador opaco y sesión verificable en servidor, con expiración, revocación y renovación. Comprobar que cambios de consentimiento y baja se apliquen de inmediato. Antes de elegir cifrado adicional, inventariar información, claves, accesos, copias y políticas de conservación. HTTPS y cifrado en reposo deben verificarse con la configuración y contratos del proveedor. No registrar códigos, cookies ni resultados en texto claro.
+4. **Alta — secretos y operaciones.** Revisar y rotar credenciales que hayan sido compartidas fuera de un gestor de secretos; invalidar la anterior tras comprobar el reemplazo, revisar registros de uso y actualizar variables del entorno correspondiente. No colocar valores en Git ni en informes. Activar MFA en las cuentas de administración de servicios y limitar privilegios. [Lista de producción de Supabase](https://supabase.com/docs/guides/security/production-checklist).
+5. **Alta — autorización y privacidad.** Crear una matriz endpoint × rol × colegio y pruebas negativas de acceso cruzado, sesiones expiradas, consentimiento revocado e importación de notas. Verificar RLS, roles y uso de credenciales privilegiadas en Supabase. Revisar consentimiento informado, retención, exportación y supresión con el responsable del colegio y asesoría aplicable.
+6. **Media — inicio de sesión.** Revisar cuota por cuenta además de IP para personal, medidas contra relleno de credenciales y recuperación accesible. El proveedor gestiona la contraseña institucional; verificar sus políticas actuales. Para contraseñas propias, OWASP recomienda funciones adaptativas y con sal, como Argon2id. El código escolar de alta entropía y la contraseña humana tienen modelos de amenaza distintos. [OWASP Password Storage](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html), [OWASP MFA](https://cheatsheetseries.owasp.org/cheatsheets/Multifactor_Authentication_Cheat_Sheet.html).
+7. **Media — resistencia y accesibilidad.** Ensayar login y OTP con 40 estudiantes compartiendo red, fallos del proveedor, códigos vencidos y asistencia para pérdida de dispositivo. No afirmar capacidad sin resultados medidos. Para OTP por correo revisar entrega real, SMTP y cuotas antes de elegirlo. [Límites de Supabase Auth](https://supabase.com/docs/guides/auth/rate-limits).
+8. **Media — calidad del código.** `src/lib/staffAuth.ts` mezcla sesión, matriz de roles y reglas de módulos, mientras `src/app/api/colegio/acceso/route.ts` concentra autenticación, consultas, vinculación y auditoría. Separar responsabilidades mediante refactorizaciones pequeñas con pruebas de contrato y rutas negativas; evitar alterar el comportamiento sin pruebas. Documentar los límites entre identidad, consentimiento, acceso al catálogo y chat.
+
+## Criterios de aceptación sugeridos para MFA
+
+- El personal autorizado puede activar TOTP y confirmar un primer código válido.
+- Un código inválido, vencido o reutilizado se rechaza según las reglas del proveedor, con límites de intentos y mensajes claros.
+- Las rutas protegidas rechazan sesiones sin AAL2 cuando la política del rol lo exige, incluso si se llama a la API directamente.
+- El cierre de sesión y la baja del personal invalidan el acceso a rutas protegidas de acuerdo con la política definida y verificada.
+- Existe un procedimiento de recuperación auditado que no dependa de revelar contraseñas ni secretos TOTP.
+- Las pruebas abarcan acceso concurrente, indisponibilidad, expiración, aislamiento por colegio y navegación por teclado.

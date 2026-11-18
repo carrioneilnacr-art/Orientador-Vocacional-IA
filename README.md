@@ -2,11 +2,13 @@
 
 <!-- Arquitectura vigente: docs/architecture/ARQUITECTURA_MONOLITO_MODULAR.md -->
 
-# Sistema Web de Orientación Vocacional con Inteligencia Artificial mediante una Experiencia Inmersiva 2D
+# Sistema Web de Orientación Vocacional con Inteligencia Artificial
 
 **Nombre del producto: Chaski — Orientador Vocacional IA.**
 
 [Documentación para el informe académico](docs/INFORME_ACADEMICO.md)
+
+**Documentación vigente del producto:** [Requerimientos e historias](docs/REQUERIMIENTOS_E_HISTORIAS.md) · [Plan propuesto de 14 semanas](docs/PLAN_14_SEMANAS_CUESTIONARIO.md) · [Seguridad y calidad](docs/architecture/AUDITORIA_SEGURIDAD_Y_CALIDAD.md) · [Diseño, accesibilidad y experiencia](docs/architecture/DISENO_Y_EXPERIENCIA.md). Los documentos anteriores del videojuego son antecedentes históricos.
 
 [![Next.js](https://img.shields.io/badge/Next.js-16.3.4-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
 [![React](https://img.shields.io/badge/React-19.0.0-blue?style=for-the-badge&logo=react)](https://react.dev/)
@@ -37,20 +39,20 @@
 
 La plataforma combina:
 1. **Exploración estructurada:** Cuestionario propio de 16 preguntas inspirado en el modelo **RIASEC** (*Realista, Investigador, Artístico, Social, Emprendedor, Convencional*) de John Holland complementado con factores de afinidad tecnológica y lógica.
-2. **IA con información verificable:** Toda recomendación, duración de carrera, malla curricular ciclo a ciclo, créditos, sedes, costos y tasas de empleabilidad proviene estrictamente de registros auditados en nuestra base de datos relacional PostgreSQL en Supabase.
-3. **Experiencia Gamificada y Accesible:** Interfaz interactiva acompañada por el avatar guía **Chaski**, transiciones fluidas, feedback en tiempo real y descarga de informe vocacional personalizado en formato PDF.
+2. **IA con información verificable:** El sistema consulta registros de carreras y fuentes en PostgreSQL/Supabase. La disponibilidad y vigencia de cada dato dependen del catálogo y requieren verificación.
+3. **Cuestionario y resultados:** Interfaz interactiva acompañada por **Chaski**, con resultados y opción de imprimir el informe como PDF.
 
 ---
 
 ## ✨ Características Principales
 
-- **🎮 Cuestionario Interactivo por Misiones:** 16 preguntas agrupadas en 4 fases vocacionales con acompañamiento de avatar, indicador de avance segmentado y persistencia en sesión.
+- **Cuestionario interactivo:** 16 preguntas agrupadas en 4 fases. Las respuestas se guardan en el navegador durante el recorrido; al volver a cargar se borran y no se garantiza la reanudación.
 - **📊 Radar Psicométrico RIASEC:** Visualización gráfica del perfil vocacional del estudiante mediante gráficos radiales dinámicos generados con Recharts.
 - **🎯 Algoritmo de Matching Vocacional:** Inferencia ponderada que clasifica las mejores carreras afines con porcentaje de compatibilidad y explicación contextualizada.
 - **🏛️ Catálogo Multi-Universitario:** Información oficial y comparativa de las principales universidades peruanas en Lima Norte y a nivel nacional (UPN, UTP, UCV, UCH, UCSUR, USMP).
 - **📚 Visor de Mallas Curriculares Oficiales:** Visualización estructurada por ciclos académicos, asignaturas formativas, créditos y certificaciones progresivas.
 - **📄 Exportación de Informe Vocacional PDF:** Generación nativa en cliente de un reporte profesional descargable con el resumen del perfil vocacional y las carreras sugeridas.
-- **🔒 Seguridad y Gobernanza de Datos:** Persistencia anonimizada en Supabase con Row Level Security (RLS) habilitado en todas las tablas.
+- **Seguridad y datos:** Acceso institucional y controles de sesión implementados en código. La configuración efectiva de RLS, el MFA y la protección de datos deben verificarse antes de producción; véase la auditoría.
 
 ---
 
