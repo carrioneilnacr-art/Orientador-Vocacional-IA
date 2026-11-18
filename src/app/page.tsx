@@ -175,7 +175,7 @@ export default function Home() {
           {/* CTA */}
           <div className="relative flex flex-wrap items-center gap-4 mb-10">
             <Link
-              href="/aventura"
+              href="/cuestionario"
               id="hero-cta"
               className="group inline-flex items-center gap-2 font-bold text-white transition-all duration-300 hover:-translate-y-0.5"
               style={{
@@ -186,13 +186,10 @@ export default function Home() {
                 boxShadow: "0 6px 24px rgba(8,187,213,0.32)",
               }}
             >
-              Comenzar aventura
+              Comenzar cuestionario
               <ArrowRight
                 className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1"
               />
-            </Link>
-            <Link href="/cuestionario" className="text-sm font-semibold text-[#355B78] underline underline-offset-4 hover:text-[#006B7A]">
-              Ir al cuestionario
             </Link>
           </div>
 

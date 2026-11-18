@@ -47,7 +47,7 @@ export function TestIntro({ onStart }: TestIntroProps) {
               <div className="flex-1 text-center lg:text-left flex flex-col items-center lg:items-start">
                 <div className="inline-flex items-center gap-2 rounded-full bg-[#E8F7FB] px-3 py-1.5 text-[11px] font-bold uppercase tracking-wide text-[#08AFC8] mb-4">
                   <Sparkles size={13} />
-                  AVENTURA VOCACIONAL
+                  CUESTIONARIO VOCACIONAL
                 </div>
                 
                 <h1 className="text-3xl font-extrabold leading-tight tracking-[-0.03em] text-[#0B2D4D] sm:text-4xl lg:text-[42px]">
@@ -55,7 +55,7 @@ export function TestIntro({ onStart }: TestIntroProps) {
                 </h1>
                 
                 <p className="mt-3 max-w-[650px] text-[15px] leading-7 text-[#42627D] sm:text-base">
-                  No es un examen ni un cuestionario tradicional. Vivirás una travesía de <strong className="font-bold text-[#0B2D4D]">16 decisiones</strong> para encontrar los patrones de tus intereses y sugerirte carreras compatibles en las principales universidades del país.
+                  Responde <strong className="font-bold text-[#0B2D4D]">16 preguntas</strong> sobre tus intereses y preferencias para explorar carreras relacionadas con tu perfil.
                 </p>
               </div>
             </div>
@@ -65,7 +65,7 @@ export function TestIntro({ onStart }: TestIntroProps) {
             {/* Missions */}
             <div>
               <p className="mb-4 text-xs font-bold uppercase tracking-[0.08em] text-[#6A8AA3] text-center lg:text-left">
-                Tu ruta de 4 misiones
+                Cuatro temas para conocerte
               </p>
 
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -112,7 +112,7 @@ export function TestIntro({ onStart }: TestIntroProps) {
                 className="inline-flex min-h-[76px] w-full sm:w-auto min-w-[235px] items-center justify-center gap-3 rounded-2xl bg-[#08BBD5] px-8 py-4 text-base font-bold text-white shadow-[0_10px_25px_rgba(8,187,213,0.20)] transition-all duration-200 hover:-translate-y-1 hover:bg-[#07AFC8] hover:shadow-[0_14px_30px_rgba(8,187,213,0.25)]"
               >
                 <span className="text-center sm:text-left">
-                  Comenzar<br className="hidden sm:block" /> aventura
+                  Comenzar cuestionario
                 </span>
                 <ArrowRight className="w-5 h-5 shrink-0" />
               </button>

@@ -74,7 +74,7 @@ export function MissionInterlude({ completedMissionNumber, onContinue }: Mission
         onClick={onContinue}
         className="flex items-center justify-center gap-2.5 w-full sm:w-auto px-8 py-3.5 bg-gradient-to-r from-[#00C2E0] to-[#0EA5C6] hover:from-[#0EA5C6] hover:to-[#0284C7] text-white rounded-xl font-bold text-base shadow-md hover:shadow-lg transition-all active:scale-98"
       >
-        <span>Continuar aventura</span>
+        <span>Continuar cuestionario</span>
         <ArrowRight className="w-4 h-4 stroke-[2.5]" />
       </button>
     </motion.div>

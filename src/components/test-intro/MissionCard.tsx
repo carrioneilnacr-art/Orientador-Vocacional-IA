@@ -31,7 +31,7 @@ export function MissionCard({
       </div>
       <div>
         <span className="text-[10px] font-bold uppercase tracking-wide text-[#08AFC8]">
-          MISIÓN {number}
+          TEMA {number}
         </span>
         <h3 className="mt-0.5 text-sm font-bold text-[#0B2D4D] sm:text-base">
           {title}

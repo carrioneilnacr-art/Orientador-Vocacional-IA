@@ -177,7 +177,7 @@ export default function CuestionarioPage() {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-[#F8FCFF]">
         <div className="w-10 h-10 border-4 border-[#00C2E0] border-t-transparent rounded-full animate-spin" />
-        <p className="text-[#4F6B85] font-medium text-sm">Cargando la aventura de Chaski...</p>
+        <p className="text-[#4F6B85] font-medium text-sm">Cargando el cuestionario...</p>
       </div>
     );
   }
